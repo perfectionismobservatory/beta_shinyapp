@@ -11,9 +11,9 @@ box::use(
 )
 
 box::use(
-  app / view / home,
-  app / view / explore,
-  app / view / upload,
+  app / view / pages / home,
+  app / view / pages / explore,
+  app / view / pages / contribute,
   app / logic / frontend[theme_light],
 )
 
@@ -40,8 +40,8 @@ ui <- function(id) {
         explore$ui(ns("explore"))
       ),
       route(
-        "upload",
-        upload$ui(ns("upload"))
+        "contribute",
+        contribute$ui(ns("contribute"))
       )
     )
   )
@@ -51,8 +51,8 @@ ui <- function(id) {
 server <- function(id) {
   sh$moduleServer(id, function(input, output, session) {
     router_server("/")
-    home$server("home", page = c("explore", "upload"))
+    home$server("home", page = c("explore", "contribute"))
     explore$server("explore")
-    upload$server("upload")
+    contribute$server("contribute")
   })
 }

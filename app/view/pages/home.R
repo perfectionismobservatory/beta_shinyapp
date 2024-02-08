@@ -35,7 +35,7 @@ ui <- function(id) {
                                 style = "padding: 2rem 5rem;"
                             ),
                             sh$actionButton(
-                                ns("upload"),
+                                ns("contribute"),
                                 sh$p(
                                     sh$h3("Contribute"),
                                     sh$p(class = "fs-m", "perfectionism data")
