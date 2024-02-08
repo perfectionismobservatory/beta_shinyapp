@@ -10,6 +10,9 @@ box::use(
 row2 <- layouts$row2
 
 #' @export
+head <- layouts$head
+
+#' @export
 btn_return <- inputs$btn_return
 
 #' @export

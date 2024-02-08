@@ -28,13 +28,19 @@ ui <- function(id) {
                             style = "gap: 4rem;",
                             sh$actionButton(
                                 ns("explore"),
-                                "View data",
-                                style = "padding: 3rem 5rem;"
+                                sh$p(
+                                    sh$h3("View"),
+                                    sh$p(class = "fs-m", "perfectionism data")
+                                ),
+                                style = "padding: 2rem 5rem;"
                             ),
                             sh$actionButton(
                                 ns("upload"),
-                                "Contribute data",
-                                style = "padding: 3rem 5rem;"
+                                sh$p(
+                                    sh$h3("Contribute"),
+                                    sh$p(class = "fs-m", "perfectionism data")
+                                ),
+                                style = "padding: 2rem 5rem;"
                             )
                         )
                     ),

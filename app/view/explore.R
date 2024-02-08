@@ -5,6 +5,7 @@ box::use(
 
 box::use(
     fe = app / logic / frontend,
+    be = app / logic / backend,
 )
 
 #' @export
@@ -12,27 +13,54 @@ ui <- function(id) {
     ns <- sh$NS(id)
     sh$div(
         fe$row2(
-            colwidths = list(1, 10, 1),
+            class = "row py-2 m-4 d-flex justify-content-center align-items-center",
+            colwidths = list(2, 4, 4, 2),
             content = list(
                 NULL,
-                sh$h1("Perfectionism Repository - View data", class = "px-3 my-3"),
+                fe$btn_return(ns("return")),
+                sh$h1("Logo", style = "text-align: end;"),
                 NULL
             )
         ),
         fe$row2(
-            colwidths = list(1, 10, 1),
+            colwidths = list(2, 8, 2),
             content = list(
                 NULL,
-                bsl$layout_sidebar(
-                    sidebar = bsl$sidebar(title = "Filters", position = "left"),
-                    bsl$layout_sidebar(
-                        sidebar = bsl$sidebar(title = "Extras", position = "right"),
-                        "Main contents",
-                        border = FALSE
+                bsl$navset_card_tab(
+                    height = 600,
+                    title = "Data viewer title",
+                    # TODO namespace `id`
+                    id = "nav",
+                    sidebar = bsl$sidebar(
+                        title = "Sidebar title",
+                        # TODO adjust `condition` once `id` is in module namespace
+                        sh$conditionalPanel(
+                            condition = "input.nav === 'Plot A'",
+                            "Page 1 sidebar"
+                        ),
+                        sh$conditionalPanel(
+                            condition = "input.nav === 'Plot B'",
+                            "Page 2 sidebar"
+                        )
                     ),
-                    border_radius = FALSE,
-                    fillable = TRUE,
-                    class = "p-0"
+                    bsl$nav_panel(
+                        "Plot A",
+                        bsl$card_title("Default plot"),
+                        bsl$card_footer(
+                            class = "d-flex flex-row justify-content-between align-items-center",
+                            sh$actionButton(ns("download-default"), "Download A"),
+                            "Note or icon A"
+                        ),
+                    ),
+                    bsl$nav_panel(
+                        "Plot B",
+                        bsl$card_title("Custom plot"),
+                        bsl$card_footer(
+                            class = "d-flex flex-row justify-content-between align-items-center",
+                            sh$actionButton(ns("download-custom"), "Download B"),
+                            "Note or icon B"
+                        ),
+                    )
                 ),
                 NULL
             )
@@ -43,6 +71,6 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
     sh$moduleServer(id, function(input, output, session) {
-
+        be$obs_return(input)
     })
 }
