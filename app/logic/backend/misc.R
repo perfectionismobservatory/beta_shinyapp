@@ -13,3 +13,8 @@ obs_return <- function(input) {
     router$change_page("/")
   })
 }
+
+#' @export
+`%ifNA%` <- function(x, y) {
+  if (is.na(x)) y else x
+}

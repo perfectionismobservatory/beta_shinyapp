@@ -1,8 +1,11 @@
 box::use(
-    app / logic / backend / observers,
+    app / logic / backend / misc,
 )
 
 # Backend reexports
 
 #' @export
-obs_return <- observers$obs_return
+obs_return <- misc$obs_return
+
+#' @export
+`%ifNA%` <- misc$`%ifNA%`

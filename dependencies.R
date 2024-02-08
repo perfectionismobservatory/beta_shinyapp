@@ -6,14 +6,18 @@ library(dplyr)
 # General tools
 library(rlang)
 library(purrr)
+library(lubridate)
+library(stringr)
 
 # Shiny
 library(rhino)
 library(shiny)
 library(bslib)
+library(bsicons)
 library(shiny.router)
 library(shinyjs)
 library(shinyFeedback)
+library(shinyWidgets)
 
 # Data storage
 library(googledrive)
