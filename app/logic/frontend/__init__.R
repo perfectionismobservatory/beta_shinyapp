@@ -16,4 +16,7 @@ head <- layouts$head
 btn_return <- inputs$btn_return
 
 #' @export
+radio <- inputs$radio
+
+#' @export
 theme_light <- themes$light
