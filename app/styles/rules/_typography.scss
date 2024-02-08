@@ -1,0 +1,15 @@
+@mixin fs($font-size) {
+    font-size: $font-size;
+}
+
+.fs-s {
+    @include fs($font-size-small);
+}
+
+.fs-m {
+    @include fs($font-size-medium);
+}
+
+.fs-lg {
+    @include fs($font-size-large);
+}
