@@ -25,7 +25,9 @@ load_dot_env(file = here(".env"))
 # gs4_auth(token = drive_token(), email = Sys.getenv("EMAIL"))
 
 # Load simulated data while UI testing
-data <- vroom$vroom("data/simulate.csv")
+# Drop column 1 (rownumber) ... some "data.frame" goofiness caused by write.csv?
+# Anyway, we don't need to solve this "properly" with the play data
+data <- vroom$vroom("data/simulate.csv")[, -1]
 
 #' @export
 ui <- function(id) {

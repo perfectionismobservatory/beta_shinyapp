@@ -8,6 +8,7 @@ box::use(
     fe = app / logic / frontend,
     be = app / logic / backend,
     app / view / modules / plot,
+    app / view / modules / filter,
 )
 
 #' @export
@@ -28,44 +29,35 @@ ui <- function(id) {
             colwidths = list(2, 8, 2),
             content = list(
                 NULL,
-                bsl$navset_card_tab(
-                    height = 600,
-                    title = "Data viewer title",
-                    # TODO namespace `id`
-                    id = "nav",
-                    sidebar = bsl$sidebar(
-                        title = "Sidebar title",
-                        # TODO adjust `condition` once `id` is in module namespace
-                        sh$conditionalPanel(
-                            condition = "input.nav === 'Plot A'",
-                            "Page 1 sidebar"
-                            # TODO open `accordion` here and add `accordion_panel`s from `filter`
+                sh$div(
+                    bsl$navset_card_tab(
+                        height = 600,
+                        title = "Data viewer title",
+                        # TODO namespace `id`
+                        id = "nav",
+                        sidebar = bsl$sidebar(
+                            title = "Sidebar title",
+                            width = 300,
+                            # TODO adjust `condition` once `id` is in module namespace
+                            sh$conditionalPanel(
+                                condition = "input.nav === 'Default'",
+                                bsl$accordion(
+                                    open = FALSE,
+                                    plot$ui_input(ns("plotdefault")),
+                                    !!!filter$ui(ns("filterdefault"))
+                                )
+                            ),
+                            sh$conditionalPanel(
+                                condition = "input.nav === 'Custom'",
+                                bsl$accordion(
+                                    open = FALSE,
+                                    plot$ui_input(ns("plotcustom")),
+                                    !!!filter$ui(ns("filtercustom"))
+                                )
+                            )
                         ),
-                        sh$conditionalPanel(
-                            condition = "input.nav === 'Plot B'",
-                            "Page 2 sidebar"
-                            # TODO open `accordion` here and add `accordion_panel`s from `filter` and `plot`
-                            # We can reuse the `filter` accordions but need a different id
-                        )
-                    ),
-                    bsl$nav_panel(
-                        "Plot A",
-                        bsl$card_title("Default plot (simulated data)"),
-                        bsl$card_body(plot$ui(ns("plotdefault"))),
-                        bsl$card_footer(
-                            class = "d-flex flex-row justify-content-between align-items-center",
-                            sh$actionButton(ns("download-default"), "Download A"),
-                            sh$div(bsi$bs_icon("lightbulb"), "Hover to see details")
-                        ),
-                    ),
-                    bsl$nav_panel(
-                        "Plot B",
-                        bsl$card_title("Custom plot"),
-                        bsl$card_footer(
-                            class = "d-flex flex-row justify-content-between align-items-center",
-                            sh$actionButton(ns("download-custom"), "Download B"),
-                            "Note or icon B"
-                        ),
+                        plot$ui_output(ns("plotdefault"), "Default", "Default (simulated data)"),
+                        plot$ui_output(ns("plotcustom"), "Custom", "Custom (simulated data)")
                     )
                 ),
                 NULL
@@ -79,9 +71,10 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         be$obs_return(input)
 
-        # TODO add filtering to server
+        filtered_data_default <- filter$server("filterdefault", sh$reactive(data))
+        filtered_data_custom <- filter$server("filtercustom", sh$reactive(data))
 
-        # We won't be wrapping `data` in a reactive later because `filter` will return one
-        plot$server("plotdefault", sh$reactive(data))
+        plot$server("plotdefault", filtered_data_default)
+        plot$server("plotcustom", filtered_data_custom)
     })
 }

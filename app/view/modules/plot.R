@@ -1,15 +1,45 @@
 box::use(
     sh = shiny,
     e4r = echarts4r,
+    bsl = bslib,
+    bsi = bsicons,
     dp = dplyr[`%>%`],
     htw = htmlwidgets,
 )
 
+box::use(
+    fe = app / logic / frontend,
+)
+
 #' @export
-ui <- function(id) {
+ui_input <- function(id) {
     ns <- sh$NS(id)
-    sh$tagList(
-        e4r$echarts4rOutput(ns("plot"))
+    bsl$accordion_panel(
+        "Scales", icon = bsi$bs_icon("rulers"),
+        fe$radio(ns("scale"), "Pick scale", choices = c("A", "B", "C")),
+        fe$radio(ns("subscale"), "Pick subscale", choices = c("A1", "A2", "A3")) # Subscale conditional on scale?
+    )
+}
+
+#' @export
+ui_output <- function(id, nav_title, card_title = NULL) {
+    ns <- sh$NS(id)
+    bsl$nav_panel(
+        nav_title,
+        bsl$card_title(card_title),
+        bsl$card_body(e4r$echarts4rOutput(ns("plot"))),
+        bsl$card_footer(
+            class = "d-flex flex-row justify-content-between align-items-center",
+            sh$actionButton(
+                style = "border: none;",
+                ns("download-default"),
+                sh$div(
+                    class = "d-flex gap-2 align-items-center",
+                    bsi$bs_icon("download", size = "1.25rem"), "Download"
+                )
+            ),
+            sh$div(bsi$bs_icon("lightbulb"), "Hover to see details")
+        )
     )
 }
 
@@ -17,8 +47,6 @@ ui <- function(id) {
 server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
-
-        # TODO `y` should be an argument to the server function
         y <- "sop_om"
 
         res_interactive <- sh$reactive({

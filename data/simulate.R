@@ -1,4 +1,8 @@
 # Let's cook up some data
+box::use(
+    dp = dplyr,
+    tbl = tibble,
+)
 
 # Number of rows of simulated data
 n_studies <- 50
@@ -18,7 +22,7 @@ female_n <- rbinom(n_studies, samplesize, female_p)
 age <- rnorm(n_studies, 22, 2)
 
 # Wrap all in data frame
-df <- data.frame(
+df <- tbl$tibble(
     country = countries,
     year = year,
     N = samplesize,
@@ -32,11 +36,6 @@ df <- data.frame(
     age = age
 )
 
-# Let's get rid of excess precision
-for (i in seq_len(ncol(df))) {
-    if (is.numeric(df[, i])) {
-        df[, i] <- round(df[, i], 2)
-    }
-}
+df <- dp$mutate(df, dp$across(dp$where(is.numeric), \(col) round(col, 2)))
 
 write.csv(df, "data/simulate.csv")
