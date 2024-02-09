@@ -2,6 +2,7 @@
 
 # Tabular data
 library(dplyr)
+library(vroom)
 
 # General tools
 library(rlang)
@@ -18,6 +19,7 @@ library(shiny.router)
 library(shinyjs)
 library(shinyFeedback)
 library(shinyWidgets)
+library(htmlwidgets)
 
 # Data storage
 library(googledrive)
@@ -26,3 +28,8 @@ library(googlesheets4)
 # Path management
 library(here)
 library(dotenv)
+
+# Visualisation
+library(echarts4r)
+# probably for export later?
+# library(ggplot2)

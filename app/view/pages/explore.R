@@ -1,11 +1,13 @@
 box::use(
     sh = shiny,
     bsl = bslib,
+    bsi = bsicons,
 )
 
 box::use(
     fe = app / logic / frontend,
     be = app / logic / backend,
+    app / view / modules / plot,
 )
 
 #' @export
@@ -37,19 +39,23 @@ ui <- function(id) {
                         sh$conditionalPanel(
                             condition = "input.nav === 'Plot A'",
                             "Page 1 sidebar"
+                            # TODO open `accordion` here and add `accordion_panel`s from `filter`
                         ),
                         sh$conditionalPanel(
                             condition = "input.nav === 'Plot B'",
                             "Page 2 sidebar"
+                            # TODO open `accordion` here and add `accordion_panel`s from `filter` and `plot`
+                            # We can reuse the `filter` accordions but need a different id
                         )
                     ),
                     bsl$nav_panel(
                         "Plot A",
-                        bsl$card_title("Default plot"),
+                        bsl$card_title("Default plot (simulated data)"),
+                        bsl$card_body(plot$ui(ns("plotdefault"))),
                         bsl$card_footer(
                             class = "d-flex flex-row justify-content-between align-items-center",
                             sh$actionButton(ns("download-default"), "Download A"),
-                            "Note or icon A"
+                            sh$div(bsi$bs_icon("lightbulb"), "Hover to see details")
                         ),
                     ),
                     bsl$nav_panel(
@@ -69,8 +75,13 @@ ui <- function(id) {
 }
 
 #' @export
-server <- function(id) {
+server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         be$obs_return(input)
+
+        # TODO add filtering to server
+
+        # We won't be wrapping `data` in a reactive later because `filter` will return one
+        plot$server("plotdefault", sh$reactive(data))
     })
 }

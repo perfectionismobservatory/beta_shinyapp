@@ -5,7 +5,7 @@ box::use(
 box::use(
     fe = app / logic / frontend,
     be = app / logic / backend,
-    app / view / modules / check,
+    app / view / modules / validation,
     app / view / modules / upload,
     app / view / modules / summary,
 )
@@ -31,14 +31,14 @@ ui <- function(id) {
             colwidths = list(2, 6, 2, 2),
             content = list(
                 NULL,
-                check$ui(
-                    ns("check"),
-                    !!!check$inputs
+                validation$ui(
+                    ns("validation"),
+                    !!!fe$validation_inputs
                     # Passing the popout correctly will either have us
-                    # skip the last element of inputs in `check.R`, or
+                    # skip the last element of inputs in `validation.R`, or
                     # make another arg field
                 ),
-                summary$ui(ns("check")),
+                summary$ui(ns("validation")),
                 NULL
             )
         )
@@ -49,6 +49,6 @@ ui <- function(id) {
 server <- function(id) {
     sh$moduleServer(id, function(input, output, session) {
         be$obs_return(input)
-        summary$server("check")
+        summary$server("validation")
     })
 }

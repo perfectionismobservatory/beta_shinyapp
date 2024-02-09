@@ -11,7 +11,8 @@ light <- bsl$bs_theme(
     bsl$font_google("Commissioner", local = FALSE), "Roboto", "serif"
   ),
   heading_font = bsl$font_google("Fraunces"),
-  code_font = bsl$font_google("Roboto Mono")#,
+  code_font = bsl$font_google("Roboto Mono")
+  #spacer = "1.5rem"
   #"btn-border-radius" = "0px",
   #"btn-hover-bg" = "black"
 )

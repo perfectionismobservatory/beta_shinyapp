@@ -8,6 +8,7 @@ box::use(
   dotenv[load_dot_env],
   here[here],
   shinyFeedback[useShinyFeedback],
+  vroom,
 )
 
 box::use(
@@ -22,6 +23,9 @@ load_dot_env(file = here(".env"))
 # Authenticate Google sheets
 # drive_auth(cache = ".secrets", email = Sys.getenv("EMAIL"))
 # gs4_auth(token = drive_token(), email = Sys.getenv("EMAIL"))
+
+# Load simulated data while UI testing
+data <- vroom$vroom("data/simulate.csv")
 
 #' @export
 ui <- function(id) {
@@ -52,7 +56,7 @@ server <- function(id) {
   sh$moduleServer(id, function(input, output, session) {
     router_server("/")
     home$server("home", page = c("explore", "contribute"))
-    explore$server("explore")
+    explore$server("explore", data)
     contribute$server("contribute")
   })
 }
