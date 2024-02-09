@@ -54,12 +54,8 @@ add_main_window <- function(ns, n) {
                     } else {
                         sh$actionButton(
                             class = "my-3",
-                            paste0("add", n),
-                            sh$div(
-                                class = "d-flex align-items-center gap-2",
-                                bsi$bs_icon("plus-circle"),
-                                "Add another window"
-                            )
+                            ns(paste0("add", n)),
+                            "Add window below"
                         )
                     }
                 )
@@ -86,7 +82,7 @@ ui <- function(id) {
         add_main_window(ns, 1),
         !!!pr$map(2:4, \(n) {
             sh$conditionalPanel(
-                condition = paste0("input.add", n - 1, " > 0"),
+                condition = paste0("input['", ns(paste0("add", n - 1)), "'] % 2"),
                 add_main_window(ns, n)
             )
         })
@@ -98,6 +94,19 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         be$obs_return(input)
 
+        pr$map(paste0("add", 1:4), \(id) {
+            sh$observeEvent(input[[id]], {
+                if (input[[id]] %% 2) {
+                    sh$updateActionButton(session, id, "Remove window below")
+                } else {
+                    sh$updateActionButton(session, id, "Add window below")
+                }
+            })
+        })
+
+        # I am slightly confused as to how / why this works below ...
+        # all objects are named filtered_data, but there is no mixups
+        # Do the objects carry some namespace signature?
         filtered_data <- filter$server("filter1", sh$reactive(data))
         plot$server("plot1", filtered_data)
 
