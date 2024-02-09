@@ -2,6 +2,8 @@ box::use(
     sh = shiny,
     bsl = bslib,
     bsi = bsicons,
+    dp = dplyr[`%>%`],
+    pr = purrr,
 )
 
 box::use(
@@ -10,6 +12,62 @@ box::use(
     app / view / modules / plot,
     app / view / modules / filter,
 )
+
+add_main_window <- function(ns, n) {
+    fe$row2(
+        colwidths = list(2, 8, 2),
+        content = list(
+            NULL,
+            sh$div(
+                bsl$card(
+                    height = 615,
+                    bsl$card_header(
+                        class = "d-flex justify-content-between align-items-center",
+                        "Data viewer title",
+                        sh$actionButton(
+                            style = "border: none;",
+                            ns(paste0("download", n)),
+                            sh$div(
+                                class = "d-flex gap-2 align-items-center",
+                                bsi$bs_icon("palette2", size = "1.25rem"), "Customise"
+                            )
+                        )
+                    ),
+                    bsl$layout_sidebar(
+                        sidebar = bsl$sidebar(
+                            # Do we want a title?
+                            # title = "Filter menu",
+                            width = 300,
+                            bsl$accordion(
+                                open = FALSE,
+                                plot$ui_input(ns(paste0("plot", n))),
+                                !!!filter$ui(ns(paste0("filter", n)))
+                            )
+                        ),
+                        plot$ui_output(ns(paste0("plot", n)), "Default", NULL),
+                    )
+                ),
+                sh$div(
+                    style = "text-align: center;",
+                    if (n == 4) {
+                        NULL
+                    } else {
+                        sh$actionButton(
+                            class = "my-3",
+                            paste0("add", n),
+                            sh$div(
+                                class = "d-flex align-items-center gap-2",
+                                bsi$bs_icon("plus-circle"),
+                                "Add another window"
+                            )
+                        )
+                    }
+                )
+            ),
+            NULL
+        )
+    )
+}
 
 #' @export
 ui <- function(id) {
@@ -25,44 +83,13 @@ ui <- function(id) {
                 NULL
             )
         ),
-        fe$row2(
-            colwidths = list(2, 8, 2),
-            content = list(
-                NULL,
-                sh$div(
-                    bsl$navset_card_tab(
-                        height = 600,
-                        title = "Data viewer title",
-                        # TODO namespace `id`
-                        id = "nav",
-                        sidebar = bsl$sidebar(
-                            title = "Sidebar title",
-                            width = 300,
-                            # TODO adjust `condition` once `id` is in module namespace
-                            sh$conditionalPanel(
-                                condition = "input.nav === 'Default'",
-                                bsl$accordion(
-                                    open = FALSE,
-                                    plot$ui_input(ns("plotdefault")),
-                                    !!!filter$ui(ns("filterdefault"))
-                                )
-                            ),
-                            sh$conditionalPanel(
-                                condition = "input.nav === 'Custom'",
-                                bsl$accordion(
-                                    open = FALSE,
-                                    plot$ui_input(ns("plotcustom")),
-                                    !!!filter$ui(ns("filtercustom"))
-                                )
-                            )
-                        ),
-                        plot$ui_output(ns("plotdefault"), "Default", "Default (simulated data)"),
-                        plot$ui_output(ns("plotcustom"), "Custom", "Custom (simulated data)")
-                    )
-                ),
-                NULL
+        add_main_window(ns, 1),
+        !!!pr$map(2:4, \(n) {
+            sh$conditionalPanel(
+                condition = paste0("input.add", n - 1, " > 0"),
+                add_main_window(ns, n)
             )
-        )
+        })
     )
 }
 
@@ -71,10 +98,16 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         be$obs_return(input)
 
-        filtered_data_default <- filter$server("filterdefault", sh$reactive(data))
-        filtered_data_custom <- filter$server("filtercustom", sh$reactive(data))
+        filtered_data <- filter$server("filter1", sh$reactive(data))
+        plot$server("plot1", filtered_data)
 
-        plot$server("plotdefault", filtered_data_default)
-        plot$server("plotcustom", filtered_data_custom)
+        filtered_data <- filter$server("filter2", sh$reactive(data))
+        plot$server("plot2", filtered_data)
+
+        filtered_data <- filter$server("filter3", sh$reactive(data))
+        plot$server("plot3", filtered_data)
+
+        filtered_data <- filter$server("filter4", sh$reactive(data))
+        plot$server("plot4", filtered_data)
     })
 }
