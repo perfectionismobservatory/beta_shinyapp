@@ -18,3 +18,8 @@ obs_return <- function(input) {
 `%ifNA%` <- function(x, y) {
   if (is.na(x)) y else x
 }
+
+#' @export
+between <- function(lwr, x, upr) {
+    lwr <= x & x <= upr
+}

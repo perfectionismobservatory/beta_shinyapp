@@ -30,13 +30,31 @@ ui <- function(id, ...) {
                 bsl$card_header(e$header),
                 bsl$card_body(class = e$class, e$body(ns))
             )
-        })
+        }),
+        sh$conditionalPanel(
+            condition = paste0("input['", ns("status"), "'] !== 'Unspecified'"),
+            sh$htmlOutput(ns("conditionalinputs"))
+        )
     )
 }
 
 #' @export
 server <- function(id) {
     sh$moduleServer(id, function(input, output, session) {
-
+        output$conditionalinputs <- sh$renderUI({
+            if (input$status == "Unspecified") {
+                NULL
+            } else if (input$status == "Published") {
+                names <- c("name", "email", "type", "pubyear", "doi")
+                fe$conditional_validation_card(
+                    !!!pr$map(names, \(x) fe$conditional_validation_inputs[[x]](session$ns))
+                )
+            } else {
+                names <- c("name", "email", "type", "prereg")
+                fe$conditional_validation_card(
+                    !!!pr$map(names, \(x) fe$conditional_validation_inputs[[x]](session$ns))
+                )
+            }
+        })
     })
 }

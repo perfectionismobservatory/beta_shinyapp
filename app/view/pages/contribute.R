@@ -49,6 +49,7 @@ ui <- function(id) {
 server <- function(id) {
     sh$moduleServer(id, function(input, output, session) {
         be$obs_return(input)
+        validation$server("validation")
         summary$server("validation")
     })
 }

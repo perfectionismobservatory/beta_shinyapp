@@ -12,4 +12,7 @@ obs_return <- misc$obs_return
 `%ifNA%` <- misc$`%ifNA%`
 
 #' @export
+between <- misc$between
+
+#' @export
 filter_inputs <- filters$filter_inputs

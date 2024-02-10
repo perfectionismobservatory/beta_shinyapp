@@ -16,8 +16,8 @@ ui_input <- function(id) {
     ns <- sh$NS(id)
     bsl$accordion_panel(
         "Scales", icon = bsi$bs_icon("rulers"),
-        fe$radio(ns("scale"), "Pick scale", choices = c("A", "B", "C")),
-        fe$radio(ns("subscale"), "Pick subscale", choices = c("A1", "A2", "A3")) # Subscale conditional on scale?
+        fe$radio(ns("scale"), "Pick scale", choices = c("SOP", "SPP", "OOP")),
+        fe$radio(ns("subscale"), "Pick subscale", choices = c("OM", "OSD")) # Subscale conditional on scale?
     )
 }
 
@@ -47,14 +47,13 @@ ui_output <- function(id, nav_title, card_title = NULL) {
 server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
-        y <- "sop_om"
 
         res_interactive <- sh$reactive({
             min_x <- min(data()$year)
             max_x <- max(data()$year)
             data() %>%
                 e4r$e_charts_("year") %>%
-                e4r$e_effect_scatter_(y, "N") %>%
+                e4r$e_effect_scatter_(tolower(paste(input$scale, input$subscale, sep = "_")), "N") %>%
                 # This would color the points after N as well
                 # e4r$e_visual_map_("N", scale = e4r$e_scale) %>%
                 e4r$e_tooltip(

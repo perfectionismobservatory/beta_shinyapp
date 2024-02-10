@@ -3,6 +3,8 @@ box::use(
     shw = shinyWidgets,
     lub = lubridate,
     bsi = bsicons,
+    bsl = bslib,
+    rl = rlang[`%||%`],
 )
 
 #' @export
@@ -18,19 +20,19 @@ btn_return <- function(id) {
 #' @export
 radio <- function(id, label, choices, selected = NULL) {
     shw$prettyRadioButtons(
-                id,
-                label = label,
-                choices = choices,
-                selected = selected,
-                status = "primary",
-                shape = "curve",
-                animation = "smooth",
-                outline = TRUE
-            )
+        id,
+        label = label,
+        choices = choices,
+        selected = selected,
+        status = "primary",
+        shape = "curve",
+        animation = "smooth",
+        outline = TRUE
+    )
 }
 
 # CSS classes for inputs below
-class_summary <- "d-flex flex-row align-items-center gap-3"
+class_summary <- "d-flex flex-row align-items-center justify-content-between"
 class_center <- "d-flex flex-row justify-content-center align-items-center"
 class_header <- "d-flex gap-2 align-items-center"
 
@@ -40,18 +42,35 @@ validation_icons <- list(
     scale = bsi$bs_icon("rulers"),
     sample = bsi$bs_icon("person-bounding-box"),
     age = bsi$bs_icon("calculator"),
-    status = bsi$bs_icon("send-check")
+    status = bsi$bs_icon("send-check"),
+    details = bsi$bs_icon("zoom-in")
+)
+
+icon_filled <- list(
+    bsi$bs_icon("x-lg", class = "text-danger"),
+    bsi$bs_icon("check-lg", class = "text-success")
 )
 
 #' @export
 #' List of anonymous functions to programmatically create the summary
 validation_summary <- list(
-    year = \(x) sh$div(class = class_summary, validation_icons$year, x),
-    scale = \(x) sh$div(class = class_summary, validation_icons$scale, x),
-    sample = \(x) sh$div(class = class_summary, validation_icons$sample, x),
-    age = \(x) sh$div(class = class_summary, validation_icons$age, x),
-    status = \(x) sh$div(class = class_summary, validation_icons$status, x)
+    year = \(x, fill) {
+        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$year, x), icon_filled[[fill + 1]])
+    },
+    scale = \(x, fill) {
+        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$scale, x), icon_filled[[fill + 1]])
+    },
+    sample = \(x, fill) {
+        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$sample, x), icon_filled[[fill + 1]])
+    },
+    age = \(x, fill) {
+        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$age, x), icon_filled[[fill + 1]])
+    },
+    status = \(x, fill) {
+        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$status, x), icon_filled[[fill + 1]])
+    }
 )
+
 
 #' @export
 validation_inputs <- list(
@@ -105,3 +124,108 @@ validation_inputs <- list(
         )
     )
 )
+
+#' @export
+conditional_validation_inputs <- list(
+    name = \(ns) sh$textInput(ns("name"), "Enter author name", placeholder = "Surname, Name"),
+    email = \(ns) sh$textInput(ns("email"), "Enter email"), # either make custom input or only corresponding author mail?
+    type = \(ns) radio(ns("type"), "Type of document", c("Journal article", "Thesis", "Poster")),
+    pubyear = \(ns) sh$numericInput(ns("pubyear"), "Year of publication", NULL),
+    doi = \(ns) sh$textInput(ns("doi"), "Enter doi", placeholder = "10. ..."),
+    prereg = \(ns) sh$textInput(ns("prereg"), "Enter preregistration link", placeholder = "https:// ...")
+)
+
+#' @export
+conditional_validation_card <- function(...) {
+    bsl$card(
+        bsl$card_header(sh$div(class = class_header, validation_icons$details, "Details")),
+        bsl$card_body(...)
+    )
+}
+
+#' @export
+btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dismiss = NULL, ..., modal_bl = NULL) {
+    dots <- rl$list2(...)
+
+    if (!is.null(footer_dismiss)) {
+        footer_dismiss <- sh$tags$button(
+            type = "button",
+            class = "btn btn-secondary hover",
+            `data-bs-dismiss` = "modal",
+            footer_dismiss
+        )
+    }
+
+    if (!is.null(footer_confirm)) {
+        footer_confirm <- sh$tags$button(
+            id = id,
+            type = "button",
+            class = "btn btn-success action-button hover-success",
+            `data-bs-dismiss` = "modal",
+            footer_confirm
+        )
+    }
+
+    if (!is.null(dots$class_toggle)) {
+        toggle <- sh$tags$button(
+            id = paste("openModal", id, sep = "-"),
+            class = dots$class_toggle,
+            type = "button",
+            `data-bs-toggle` = "modal",
+            `data-bs-target` = paste("#inputModal", id, sep = "-"),
+            label
+        )
+    } else {
+        toggle <- sh$tags$button(
+            id = paste("openModal", id, sep = "-"),
+            class = "btn btn-secondary hover",
+            type = "button",
+            `data-bs-toggle` = "modal",
+            `data-bs-target` = paste("#inputModal", id, sep = "-"),
+            label
+        )
+    }
+
+    sh$div(
+        toggle,
+        sh$div(
+            class = "modal fade",
+            id = paste("inputModal", id, sep = "-"),
+            tabindex = "-1",
+            `aria-labelledby` = paste("inputModalLabel", id, sep = "-"),
+            `aria-hidden` = "true",
+            sh$div(
+                class = "modal-dialog",
+                sh$div(
+                    class = "modal-content",
+                    sh$div(
+                        class = "bg-secondary modal-header",
+                        sh$tags$h1(
+                            class = "modal-title fs-5",
+                            id = paste("inputModalLabel", id, sep = "-"),
+                            modal_title
+                        ),
+                        sh$tags$button(
+                            type = "button",
+                            class = "btn-close",
+                            `data-bs-dismiss` = "modal",
+                            `aria-label` = "Close"
+                        ),
+                    ),
+                    sh$div(
+                        class = "modal-body",
+                        !!!dots
+                    ),
+                    sh$div(
+                        class = "modal-footer justify-content-between",
+                        sh$div(modal_bl),
+                        sh$div(
+                            footer_dismiss,
+                            footer_confirm
+                        )
+                    )
+                )
+            )
+        )
+    )
+}
