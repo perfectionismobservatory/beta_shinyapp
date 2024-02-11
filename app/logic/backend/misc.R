@@ -20,6 +20,17 @@ obs_return <- function(input) {
 }
 
 #' @export
+`%ifNAorNULL%` <- function(x, y) {
+  if (is.null(x)) {
+    return(y)
+  } else if (is.na(x)) {
+    return(y)
+  } else {
+    return(x)
+  }
+}
+
+#' @export
 between <- function(lwr, x, upr) {
-    lwr <= x & x <= upr
+  lwr <= x & x <= upr
 }

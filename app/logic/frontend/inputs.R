@@ -55,19 +55,40 @@ icon_filled <- list(
 #' List of anonymous functions to programmatically create the summary
 validation_summary <- list(
     year = \(x, fill) {
-        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$year, x), icon_filled[[fill + 1]])
+        sh$div(
+            class = class_summary,
+            sh$div(class = class_header, validation_icons$year, x), icon_filled[[fill + 1]]
+        )
     },
     scale = \(x, fill) {
-        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$scale, x), icon_filled[[fill + 1]])
+        sh$div(
+            class = class_summary,
+            sh$div(class = class_header, validation_icons$scale, x), icon_filled[[fill + 1]]
+        )
     },
     sample = \(x, fill) {
-        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$sample, x), icon_filled[[fill + 1]])
+        sh$div(
+            class = class_summary,
+            sh$div(class = class_header, validation_icons$sample, x), icon_filled[[fill + 1]]
+        )
     },
     age = \(x, fill) {
-        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$age, x), icon_filled[[fill + 1]])
+        sh$div(
+            class = class_summary,
+            sh$div(class = class_header, validation_icons$age, x), icon_filled[[fill + 1]]
+        )
     },
     status = \(x, fill) {
-        sh$div(class = class_summary, sh$div(class = class_header, validation_icons$status, x), icon_filled[[fill + 1]])
+        sh$div(
+            class = class_summary,
+            sh$div(class = class_header, validation_icons$status, x), icon_filled[[fill + 1]]
+        )
+    },
+    details = \(x, fill) {
+        sh$div(
+            class = class_summary,
+            sh$div(class = class_header, validation_icons$details, x), icon_filled[[fill + 1]]
+        )
     }
 )
 
@@ -129,7 +150,7 @@ validation_inputs <- list(
 conditional_validation_inputs <- list(
     name = \(ns) sh$textInput(ns("name"), "Enter author name", placeholder = "Surname, Name"),
     email = \(ns) sh$textInput(ns("email"), "Enter email"), # either make custom input or only corresponding author mail?
-    type = \(ns) radio(ns("type"), "Type of document", c("Journal article", "Thesis", "Poster")),
+    type = \(ns) radio(ns("type"), "Type of document", c("Unspecified", "Journal article", "Thesis", "Poster")),
     pubyear = \(ns) sh$numericInput(ns("pubyear"), "Year of publication", NULL),
     doi = \(ns) sh$textInput(ns("doi"), "Enter doi", placeholder = "10. ..."),
     prereg = \(ns) sh$textInput(ns("prereg"), "Enter preregistration link", placeholder = "https:// ...")

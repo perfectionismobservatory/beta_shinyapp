@@ -6,6 +6,7 @@ box::use(
     fe = app / logic / frontend,
     be = app / logic / backend,
     app / view / modules / validation,
+    app / view / modules / feedback,
     app / view / modules / upload,
     app / view / modules / summary,
 )
@@ -50,6 +51,7 @@ server <- function(id) {
     sh$moduleServer(id, function(input, output, session) {
         be$obs_return(input)
         validation$server("validation")
+        feedback$server("validation")
         summary$server("validation")
     })
 }

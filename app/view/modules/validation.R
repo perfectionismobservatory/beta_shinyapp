@@ -5,7 +5,7 @@ box::use(
     rl = rlang,
     pr = purrr,
     lub = lubridate,
-    shw = shinyWidgets
+    shw = shinyWidgets,
 )
 
 box::use(

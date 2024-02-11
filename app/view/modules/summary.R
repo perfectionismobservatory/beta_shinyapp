@@ -6,11 +6,14 @@ box::use(
     pr = purrr,
     str = stringr,
     shj = shinyjs, # can probably remove this later
+    rl = rlang[`%||%`],
+    shf = shinyFeedback,
+    lub = lubridate,
 )
 
 box::use(
     fe = app / logic / frontend,
-    be = app / logic / backend[`%ifNA%`],
+    be = app / logic / backend[`%ifNA%`, `%ifNAorNULL%`],
 )
 
 #' @export
@@ -25,6 +28,21 @@ ui <- function(id) {
 #' @export
 server <- function(id) {
     sh$moduleServer(id, function(input, output, session) {
+        # We'll need these a few times downstream, we'll wrap them here
+        # Might eventually want to move this to a `misc` file or so
+        published_inputs <- c("name", "email", "type", "pubyear", "doi")
+        unpublished_inputs <- c("name", "email", "prereg")
+
+        active_conditional_inputs <- sh$reactive({
+            if (input$status == "Unspecified") {
+                NULL
+            } else if (input$status == "Published") {
+                published_inputs
+            } else {
+                unpublished_inputs
+            }
+        })
+
         # `pass` is TRUE if a user meets the inclusion criteria, and FALSE otherwise
         pass <- sh$reactive({
             cond_validation <- if (input$status == "Unspecified") {
@@ -32,12 +50,14 @@ server <- function(id) {
             } else if (input$status == "Published") {
                 pr$reduce(
                     .f = `&`,
-                    pr$map(c("name", "email", "type", "pubyear", "doi"), \(x) !is.na(x) && x != "Unspecified")
+                    # This here should also check for NULLs?
+                    pr$map(published_inputs, \(x) !is.na(input[[x]]) && input[[x]] != "Unspecified")
                 )
             } else {
                 pr$reduce(
                     .f = `&`,
-                    pr$map(c("name", "email", "prereg"), \(x) !is.na(x) && x != "Unspecified")
+                    # This here should also check for NULLs?
+                    pr$map(unpublished_inputs, \(x) !is.na(input[[x]]) && input[[x]] != "Unspecified")
                 )
             }
             pr$reduce(
@@ -60,9 +80,31 @@ server <- function(id) {
             # Get those inputs that have corresponding icons
             inputs_w_icons <- names(input)[names(input) %in% names(fe$validation_summary)]
             # Probably not the most elegant, but one way to check if all items are specified
+            # Step 1, check conditional inputs (need this object further down)
+            conditionals_filled <- pr$reduce(
+                pr$map(
+                    active_conditional_inputs() %||% FALSE,
+                    \(x) {
+                        if (isFALSE(x)) {
+                            x
+                        } else {
+                            !(input[[x]] %ifNAorNULL% "Unspecified") %in% c("Unspecified", "")
+                        }
+                    }
+                ),
+                .f = `&`
+            )
+            # Step 2, check main inputs
             all_filled <- pr$reduce(
-                pr$map(inputs_w_icons, \(x) (input[[x]] %ifNA% "Unspecified") != "Unspecified"),
-                `&`
+                c(
+                    pr$map(
+                        inputs_w_icons,
+                        # Mind the negation!
+                        \(x) (input[[x]] %ifNA% "Unspecified") != "Unspecified"
+                    ),
+                    conditionals_filled
+                ),
+                .f = `&`
             )
 
             if (pass()) {
@@ -77,12 +119,15 @@ server <- function(id) {
                         footer_dismiss = NULL,
                         sh$div(
                             class = "d-flex flex-row flex-wrap justify-content-center gap-4",
-                            sh$numericInput(session$ns("v1"), "Variable 1", value = NA, width = "100px"),
-                            sh$numericInput(session$ns("v2"), "Variable 2", value = NA, width = "100px"),
-                            sh$numericInput(session$ns("v3"), "Variable 3", value = NA, width = "100px"),
-                            sh$numericInput(session$ns("v4"), "Variable 4", value = NA, width = "100px"),
-                            sh$numericInput(session$ns("v5"), "Variable 5", value = NA, width = "100px"),
-                            sh$numericInput(session$ns("v6"), "Variable 6", value = NA, width = "100px")
+                            !!!pr$map(
+                                1:6,
+                                \(n) sh$numericInput(
+                                    session$ns(paste0("v", n)),
+                                    paste("Variable", n),
+                                    value = NA,
+                                    width = "100px"
+                                )
+                            )
                         )
                     )
                 )
@@ -111,12 +156,14 @@ server <- function(id) {
                     # If current name is last name, make icon only
                     # Else, make icon and hr tag
                     !!!pr$map(
-                        inputs_w_icons,
+                        c(inputs_w_icons, "details"),
                         \(name) {
-                            val <- input[[name]] %ifNA% "Unspecified"
-                            if (name == ut$tail(inputs_w_icons, 1)) {
-                                fe$validation_summary[[name]](val, val != "Unspecified")
+                            last_icon <- name == ut$tail(inputs_w_icons, 1)
+                            if (name == "details") {
+                                val <- if (conditionals_filled) "Complete" else "Unspecified"
+                                fe$validation_summary[[name]](val, conditionals_filled)
                             } else {
+                                val <- input[[name]] %ifNA% "Unspecified"
                                 sh$div(class = "py-1", fe$validation_summary[[name]](val, val != "Unspecified"))
                             }
                         }

@@ -12,6 +12,9 @@ obs_return <- misc$obs_return
 `%ifNA%` <- misc$`%ifNA%`
 
 #' @export
+`%ifNAorNULL%` <- misc$`%ifNAorNULL%`
+
+#' @export
 between <- misc$between
 
 #' @export
