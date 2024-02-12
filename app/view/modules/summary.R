@@ -26,8 +26,9 @@ ui <- function(id) {
 }
 
 #' @export
-server <- function(id) {
+server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
+        stopifnot(sh$is.reactive(data))
         # We'll need these a few times downstream, we'll wrap them here
         # Might eventually want to move this to a `misc` file or so
         published_inputs <- c("name", "email", "type", "pubyear", "doi")
@@ -107,7 +108,24 @@ server <- function(id) {
                 .f = `&`
             )
 
-            if (pass()) {
+            if (!pass() || input$doi %in% data()$doi) {
+                conditional_modal_footer <- bsl$card_footer(
+                    style = "text-align: center;",
+                    fe$btn_modal(
+                        session$ns("confirm"),
+                        label = "Confirm",
+                        modal_title = "Oh no, disappoint.",
+                        class_toggle = if (all_filled) "btn btn-default" else "btn btn-default disabled",
+                        footer_confirm = NULL,
+                        footer_dismiss = "Home",
+                        if (!pass()) {
+                            "Failed check: Did not meet inclusion criteria."
+                        } else {
+                            "Failed check: DOI already exists."
+                        }
+                    )
+                )
+            } else {
                 conditional_modal_footer <- bsl$card_footer(
                     style = "text-align: center;",
                     fe$btn_modal(
@@ -118,30 +136,19 @@ server <- function(id) {
                         footer_confirm = "Continue",
                         footer_dismiss = NULL,
                         sh$div(
-                            class = "d-flex flex-row flex-wrap justify-content-center gap-4",
+                            class = "d-flex flex-row flex-wrap gap-4",
                             !!!pr$map(
-                                1:6,
-                                \(n) sh$numericInput(
-                                    session$ns(paste0("v", n)),
-                                    paste("Variable", n),
+                                c("sop_om", "sop_osd", "spp_om", "spp_osd", "oop_om", "oop_osd", "N", "female_N"),
+                                \(v) sh$numericInput(
+                                    session$ns(v),
+                                    toupper(v),
                                     value = NA,
                                     width = "100px"
                                 )
-                            )
+                            ),
+                            # Might want a dropdown instead
+                            fe$radio(session$ns("country"), label = "Pick country", choices = c("USA", "UK", "CAN"))
                         )
-                    )
-                )
-            } else {
-                conditional_modal_footer <- bsl$card_footer(
-                    style = "text-align: center;",
-                    fe$btn_modal(
-                        session$ns("confirm"),
-                        label = "Confirm",
-                        modal_title = "Oh no, disappoint.",
-                        class_toggle = if (all_filled) "btn btn-default" else "btn btn-default disabled",
-                        footer_confirm = NULL,
-                        footer_dismiss = "Home",
-                        "No inputs here"
                     )
                 )
             }

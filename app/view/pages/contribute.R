@@ -1,5 +1,6 @@
 box::use(
     sh = shiny,
+    bsi = bsicons,
 )
 
 box::use(
@@ -20,11 +21,19 @@ ui <- function(id) {
     sh$div(
         fe$row2(
             class = "row py-2 m-4 d-flex justify-content-center align-items-center",
-            colwidths = list(2, 4, 4, 2),
+            colwidths = list(2, 8, 2),
             content = list(
                 NULL,
-                fe$btn_return(ns("return")),
-                sh$h1("Logo", style = "text-align: end;"),
+                sh$div(
+                    class = "d-flex flex-row justify-content-between align-items-center",
+                    fe$btn_return(ns("return")),
+                    sh$div(
+                        class = "bg-warning py-2 px-3 shadow",
+                        style = "border-radius: 1rem; text-align: center;",
+                        "Try DOI 10.25563/abc.def"
+                    ),
+                    sh$h1("Logo", style = "text-align: end;")
+                ),
                 NULL
             )
         ),
@@ -47,11 +56,12 @@ ui <- function(id) {
 }
 
 #' @export
-server <- function(id) {
+server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         be$obs_return(input)
         validation$server("validation")
         feedback$server("validation")
-        summary$server("validation")
+        summary$server("validation", sh$reactive(data))
+        upload$server("validation")
     })
 }

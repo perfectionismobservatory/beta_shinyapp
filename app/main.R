@@ -2,7 +2,7 @@ box::use(
   sh = shiny,
   bsl = bslib,
   shiny.router[router_ui, router_server, route],
-  googlesheets4[gs4_auth],
+  googlesheets4[gs4_auth, read_sheet],
   googledrive[drive_token, drive_auth],
   shinyjs[useShinyjs],
   dotenv[load_dot_env],
@@ -21,13 +21,15 @@ box::use(
 load_dot_env(file = here(".env"))
 
 # Authenticate Google sheets
-# drive_auth(cache = ".secrets", email = Sys.getenv("EMAIL"))
-# gs4_auth(token = drive_token(), email = Sys.getenv("EMAIL"))
+drive_auth(cache = ".secrets", email = Sys.getenv("EMAIL"))
+gs4_auth(token = drive_token(), email = Sys.getenv("EMAIL"))
 
 # Load simulated data while UI testing
 # Drop column 1 (rownumber) ... some "data.frame" goofiness caused by write.csv?
 # Anyway, we don't need to solve this "properly" with the play data
-data <- vroom$vroom("data/simulate.csv")[, -1]
+# data <- vroom$vroom("data/simulate.csv")[, -1]
+
+data <- read_sheet(Sys.getenv("URL"), col_types = "_cninnnnnnincc")
 
 #' @export
 ui <- function(id) {
@@ -59,6 +61,6 @@ server <- function(id) {
     router_server("/")
     home$server("home", page = c("explore", "contribute"))
     explore$server("explore", data)
-    contribute$server("contribute")
+    contribute$server("contribute", data)
   })
 }
