@@ -12,17 +12,13 @@ box::use(
 )
 
 #' @export
-ui_input <- function(id) {
+header_ui <- function(id) {
     ns <- sh$NS(id)
-    bsl$accordion_panel(
-        "Scales", icon = bsi$bs_icon("rulers"),
-        fe$radio(ns("scale"), "Pick scale", choices = c("SOP", "SPP", "OOP")),
-        fe$radio(ns("subscale"), "Pick subscale", choices = c("OM", "OSD")) # Subscale conditional on scale?
-    )
+    fe$toggleswitch(ns("regression"), "Toggle regression line")
 }
 
 #' @export
-ui_output <- function(id, nav_title, card_title = NULL) {
+main_ui <- function(id, nav_title, card_title = NULL) {
     ns <- sh$NS(id)
     bsl$nav_panel(
         nav_title,
@@ -38,7 +34,14 @@ ui_output <- function(id, nav_title, card_title = NULL) {
                     bsi$bs_icon("download", size = "1.25rem"), "Download"
                 )
             ),
-            sh$div(bsi$bs_icon("lightbulb"), "Hover to see details")
+            sh$actionButton(
+                style = "border: none;",
+                ns("customise"),
+                sh$div(
+                    class = "d-flex gap-2 align-items-center",
+                    bsi$bs_icon("palette2", size = "1.25rem"), "Customise"
+                )
+            )
         )
     )
 }
@@ -52,20 +55,35 @@ server <- function(id, data) {
             min_x <- min(data()$year)
             max_x <- max(data()$year)
             data() %>%
-                e4r$e_charts_("year") %>%
-                e4r$e_effect_scatter_(tolower(paste(input$scale, input$subscale, sep = "_")), "N") %>%
+                dp$group_by(scale) %>%
+                e4r$e_charts(year) %>%
+                e4r$e_effect_scatter(value, N, bind = author) %>%
                 # This would color the points after N as well
                 # e4r$e_visual_map_("N", scale = e4r$e_scale) %>%
                 e4r$e_tooltip(
                     formatter = htw$JS("
                         function(params){
-                            return('<b>Year</b>: ' + params.value[0] + '<br /><b>Value</b>: ' + params.value[1] + '<br /><b>N</b>: ' + params.value[2])
+                            return('<strong>' + params.name +
+                                    '</strong><br />Year: ' + params.value[0] +
+                                    '<br />Value: ' + params.value[1] +
+                                    '<br />N: ' + params.value[2]
+                                )
                         }
                     "),
                     # textStyle = list(fontFamily = "Comissioner"),
                     trigger = "item"
                 ) %>%
-                e4r$e_legend(FALSE) %>%
+                e4r$e_legend(bottom = 0) %>%
+                e4r$e_title(
+                    text = paste0(
+                        "Viewing ",
+                        if (length(unique(data()$scale)) > 1) "scales: " else "scale: ",
+                        toupper(paste0(unique(data()$scale), collapse = ", ")),
+                        " for subscale: ",
+                        toupper(unique(data()$subscale))
+                    ),
+                    subtext = "We could also have a subtitle"
+                ) %>%
                 e4r$e_x_axis(min = min_x, max = max_x)
         })
 

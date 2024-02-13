@@ -1,6 +1,7 @@
 box::use(
     app / logic / backend / misc,
     app / logic / backend / filters,
+    app / logic / backend / validation,
 )
 
 # Backend reexports
@@ -15,7 +16,13 @@ obs_return <- misc$obs_return
 `%ifNAorNULL%` <- misc$`%ifNAorNULL%`
 
 #' @export
+`%//%` <- misc$`%//%`
+
+#' @export
 between <- misc$between
 
 #' @export
 filter_inputs <- filters$filter_inputs
+
+#' @export
+invalid_format <- validation$invalid_format

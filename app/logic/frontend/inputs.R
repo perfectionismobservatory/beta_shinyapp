@@ -31,6 +31,20 @@ radio <- function(id, label, choices, selected = NULL) {
     )
 }
 
+#' @export
+checkboxgroup <- function(id, label, choices, selected = NULL) {
+    shw$prettyCheckboxGroup(
+        id,
+        label = label,
+        choices = choices,
+        selected = selected %||% choices,
+        status = "primary",
+        shape = "curve",
+        animation = "smooth",
+        outline = TRUE
+    )
+}
+
 # CSS classes for inputs below
 class_summary <- "d-flex flex-row align-items-center justify-content-between"
 class_center <- "d-flex flex-row justify-content-center align-items-center"
@@ -247,6 +261,37 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
                     )
                 )
             )
+        )
+    )
+}
+
+#' @export
+#' Custom toggle switch
+toggleswitch <- function(id, label, value = FALSE, class = NULL) {
+    if (!is.null(class)) {
+        class <- paste("form-check form-switch", class, " ")
+    } else {
+        class <- "form-check form-switch"
+    }
+
+    input_tag <- sh$tags$input(
+        class = "form-check-input",
+        type = "checkbox",
+        role = "switch",
+        id = id
+    )
+
+    if (!is.null(value) && value) {
+        input_tag$attribs$checked <- "checked"
+    }
+
+    sh$div(
+        class = class,
+        input_tag,
+        sh$tags$label(
+            class = "form-check-label",
+            `for` = id,
+            label
         )
     )
 }

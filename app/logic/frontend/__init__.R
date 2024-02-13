@@ -25,6 +25,12 @@ btn_modal <- inputs$btn_modal
 radio <- inputs$radio
 
 #' @export
+toggleswitch <- inputs$toggleswitch
+
+#' @export
+checkboxgroup <- inputs$checkboxgroup
+
+#' @export
 validation_icons <- inputs$validation_icons
 
 #' @export

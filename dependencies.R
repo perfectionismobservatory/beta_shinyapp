@@ -2,6 +2,7 @@
 
 # Tabular data
 library(dplyr)
+library(tidyr)
 library(vroom)
 
 # General tools

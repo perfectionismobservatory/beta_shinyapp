@@ -16,6 +16,12 @@ ui <- function(id) {
     ns <- sh$NS(id)
     sh$tagList(
         bsl$accordion_panel(
+            "Scales",
+            icon = bsi$bs_icon("rulers"),
+            fe$checkboxgroup(ns("scale"), "Pick scale", choices = c(SOP = "sop", SPP = "spp", OOP = "oop")),
+            fe$radio(ns("subscale"), "Pick subscale", choices = c(OM = "om", OSD = "osd"))
+        ),
+        bsl$accordion_panel(
             "Demography",
             icon = bsi$bs_icon("person-bounding-box"),
             shw$numericRangeInput(

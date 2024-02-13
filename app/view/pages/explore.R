@@ -23,15 +23,15 @@ add_main_window <- function(ns, n) {
                     height = 615,
                     bsl$card_header(
                         class = "d-flex justify-content-between align-items-center",
-                        "Data viewer title",
-                        sh$actionButton(
-                            style = "border: none;",
-                            ns(paste0("download", n)),
-                            sh$div(
-                                class = "d-flex gap-2 align-items-center",
-                                bsi$bs_icon("palette2", size = "1.25rem"), "Customise"
+                        sh$div(
+                            class = "d-flex align-items-center gap-2",
+                            "Data viewer title",
+                            bsl$tooltip(
+                                bsi$bs_icon("info-circle", size = "1.1rem"),
+                                sh$HTML("The plot is interactive. Try hovering over points or clicking the legend!")
                             )
-                        )
+                        ),
+                        plot$header_ui(ns(paste0("plot", n)))
                     ),
                     bsl$layout_sidebar(
                         sidebar = bsl$sidebar(
@@ -40,11 +40,10 @@ add_main_window <- function(ns, n) {
                             width = 300,
                             bsl$accordion(
                                 open = FALSE,
-                                plot$ui_input(ns(paste0("plot", n))),
                                 !!!filter$ui(ns(paste0("filter", n)))
                             )
                         ),
-                        plot$ui_output(ns(paste0("plot", n)), "Default", NULL),
+                        plot$main_ui(ns(paste0("plot", n)), "Default", NULL),
                     )
                 ),
                 sh$div(

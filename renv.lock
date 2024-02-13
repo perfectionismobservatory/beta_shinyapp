@@ -4,7 +4,7 @@
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://ftp.acc.umu.se/mirror/CRAN/"
+        "URL": "https://ftp.acc.umu.se/mirror/CRAN"
       }
     ]
   },

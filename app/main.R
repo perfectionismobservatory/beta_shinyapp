@@ -1,6 +1,8 @@
 box::use(
   sh = shiny,
   bsl = bslib,
+  dp = dplyr[`%>%`],
+  tdr = tidyr,
   shiny.router[router_ui, router_server, route],
   googlesheets4[gs4_auth, read_sheet],
   googledrive[drive_token, drive_auth],
@@ -9,6 +11,7 @@ box::use(
   here[here],
   shinyFeedback[useShinyFeedback],
   vroom,
+  str = stringr,
 )
 
 box::use(
@@ -24,12 +27,16 @@ load_dot_env(file = here(".env"))
 drive_auth(cache = ".secrets", email = Sys.getenv("EMAIL"))
 gs4_auth(token = drive_token(), email = Sys.getenv("EMAIL"))
 
-# Load simulated data while UI testing
-# Drop column 1 (rownumber) ... some "data.frame" goofiness caused by write.csv?
-# Anyway, we don't need to solve this "properly" with the play data
-# data <- vroom$vroom("data/simulate.csv")[, -1]
-
-data <- read_sheet(Sys.getenv("URL"), col_types = "_cninnnnnnincc")
+data <-
+  read_sheet(Sys.getenv("URL"), col_types = "_cninnnnnnincc") %>%
+  tdr$pivot_longer(c(sop_om, sop_osd, spp_osd, oop_om, oop_osd, spp_om)) %>%
+  tdr$separate_wider_delim(name, delim = "_", names = c("scale", "subscale")) %>%
+  dp$mutate(
+    author = str$str_extract(email, "[a-z]+\\.[a-z]+"),
+    author = str$str_replace(author, "\\.", " "),
+    author = str$str_to_title(author),
+    author = paste0(author, " et al., ", year) # the pipe isn't prettier than this
+  )
 
 #' @export
 ui <- function(id) {
