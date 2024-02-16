@@ -85,11 +85,11 @@ server <- function(id, data) {
             conditionals_filled <- pr$reduce(
                 pr$map(
                     active_conditional_inputs() %||% FALSE,
-                    \(x) {
-                        if (isFALSE(x)) {
-                            x
+                    \(name) {
+                        if (isFALSE(name)) {
+                            name
                         } else {
-                            !(input[[x]] %ifNAorNULL% "Unspecified") %in% c("Unspecified", "")
+                            !(input[[name]] %ifNAorNULL% "Unspecified") %in% c("Unspecified", "") && be$is_valid(input, name)
                         }
                     }
                 ),
@@ -115,7 +115,7 @@ server <- function(id, data) {
                         session$ns("confirm"),
                         label = "Confirm",
                         modal_title = "Oh no, disappoint.",
-                        class_toggle = if (all_filled) "btn btn-default" else "btn btn-default disabled",
+                        class_toggle = if (all_filled) fe$class_button else paste(fe$class_button, "disabled"),
                         footer_confirm = NULL,
                         footer_dismiss = "Home",
                         if (!pass()) {
@@ -132,7 +132,8 @@ server <- function(id, data) {
                         session$ns("confirm"),
                         label = "Confirm",
                         modal_title = "Great! Congrats!",
-                        class_toggle = if (all_filled) "btn btn-default" else "btn btn-default disabled",
+                        # Could we say something like "if all filled &&  all_valid" ?
+                        class_toggle = if (all_filled) fe$class_button else paste(fe$class_button, "disabled"),
                         footer_confirm = "Continue",
                         footer_dismiss = NULL,
                         sh$div(
@@ -153,7 +154,6 @@ server <- function(id, data) {
                 )
             }
 
-
             out <- bsl$card(
                 # Same height as `layout_column_wrap` in `contribute.R`
                 min_height = paste0(fe$height_layoutcolumnwrap, "px"),
@@ -161,7 +161,7 @@ server <- function(id, data) {
                 bsl$card_body(
                     # Iterate over all input names that have a corresponding icon-function
                     # If current name is last name, make icon only
-                    # Else, make icon and hr tag
+                    # Else, make icon with padding
                     !!!pr$map(
                         c(inputs_w_icons, "details"),
                         \(name) {
@@ -171,20 +171,15 @@ server <- function(id, data) {
                                 fe$validation_summary[[name]](val, conditionals_filled)
                             } else {
                                 val <- input[[name]] %ifNA% "Unspecified"
-                                sh$div(class = "py-1", fe$validation_summary[[name]](val, val != "Unspecified"))
+                                sh$div(
+                                    class = "py-1",
+                                    fe$validation_summary[[name]](val, val != "Unspecified" && be$is_valid(input, name))
+                                )
                             }
                         }
                     )
                 ),
                 conditional_modal_footer
-                # If we turn this part into a dataentry module, we get
-                # + upload interface in that module
-                # + cleaner compartmentalised code
-                # - we would have to forward the inpu- ...
-                # why should the user be allowed to change, e.g., mean age again later?
-                # Shouldn't we just log that into the final data frame already?
-                # ... this would also mean that we have to forward it, though!
-                # Might be worth it to have the data entry in here, and then forward all inputs to an upload module?
             )
         })
     })

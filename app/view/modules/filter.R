@@ -36,11 +36,6 @@ ui <- function(id) {
                 selected = c("USA", "CAN", "UK"),
                 multiple = TRUE
             )
-        ),
-        bsl$accordion_panel(
-            "Surprise",
-            icon = bsi$bs_icon("balloon"),
-            fe$radio(ns("dino"), "Favourite dinosaur?", choices = c("Ankylosaurus", "Quetzalcoatlus", "Iguanodon"))
         )
         # Not sure how many panels we need, but these can then be spliced
         # into the main accordion on `explore.R`

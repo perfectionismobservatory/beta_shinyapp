@@ -15,32 +15,36 @@ ui <- function(id) {
         sh$div(
             class = "container-fluid",
             fe$row2(
-                colwidths = list(1, 10, 1),
+                colwidths = list(2, 8, 2),
                 content = list(
                     NULL,
                     sh$div(
                         sh$div(
-                            class = "d-flex flex-column justify-content-center align-items-center text-center mt-5",
-                            sh$h1("Perfectionism repository", style = "margin-bottom: 4rem;")
+                            class = "d-flex justify-content-center align-items-center my-5",
+                            sh$img(
+                                src = "static/logo_light_centered.png",
+                                width = "400px",
+                                style = "margin-bottom: 1.5rem;"
+                            )
                         ),
                         sh$div(
                             class = "d-flex flex-row justify-content-center",
                             style = "gap: 4rem;",
                             sh$actionButton(
                                 ns("explore"),
+                                class = paste(fe$class_button, "px-5 py-3"),
                                 sh$p(
                                     sh$h3("View"),
                                     sh$p(class = "fs-m", "perfectionism data")
-                                ),
-                                style = "padding: 2rem 5rem;"
+                                )
                             ),
                             sh$actionButton(
                                 ns("contribute"),
+                                class = paste(fe$class_button, "px-5 py-3"),
                                 sh$p(
                                     sh$h3("Contribute"),
                                     sh$p(class = "fs-m", "perfectionism data")
-                                ),
-                                style = "padding: 2rem 5rem;"
+                                )
                             )
                         )
                     ),

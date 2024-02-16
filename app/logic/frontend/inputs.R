@@ -11,9 +11,9 @@ box::use(
 btn_return <- function(id) {
     sh$actionButton(
         id,
+        class = "btn btn-secondary hover shadow border-info border-4",
         label = "Back",
-        icon = sh$icon("angles-left"),
-        # class = "hover"
+        icon = sh$icon("angles-left")
     )
 }
 
@@ -25,7 +25,7 @@ radio <- function(id, label, choices, selected = NULL) {
         choices = choices,
         selected = selected,
         status = "primary",
-        shape = "curve",
+        shape = "round",
         animation = "smooth",
         outline = TRUE
     )
@@ -39,7 +39,7 @@ checkboxgroup <- function(id, label, choices, selected = NULL) {
         choices = choices,
         selected = selected %||% choices,
         status = "primary",
-        shape = "curve",
+        shape = "round",
         animation = "smooth",
         outline = TRUE
     )
@@ -49,6 +49,9 @@ checkboxgroup <- function(id, label, choices, selected = NULL) {
 class_summary <- "d-flex flex-row align-items-center justify-content-between"
 class_center <- "d-flex flex-row justify-content-center align-items-center"
 class_header <- "d-flex gap-2 align-items-center"
+
+#' @export
+class_button <- "btn btn-secondary hover shadow border-info border-4 px-4"
 
 #' @export
 validation_icons <- list(
@@ -110,10 +113,10 @@ validation_summary <- list(
 #' @export
 validation_inputs <- list(
     list( # no restriction
-        header = sh$div(class = class_header, validation_icons$year, "Year of data collection"),
+        header = sh$div(class = class_header, validation_icons$year, "Data collection"),
         body = \(ns) sh$numericInput(
             ns("year"),
-            label = "Enter a value below",
+            label = "Enter year",
             min = 1988,
             max = lub$year(lub$today()),
             value = NA,
@@ -139,10 +142,10 @@ validation_inputs <- list(
         )
     ),
     list( # must be below 25
-        header = sh$div(class = class_header, validation_icons$age, "Mean age"),
+        header = sh$div(class = class_header, validation_icons$age, "Age"),
         body = \(ns) sh$numericInput(
             ns("age"),
-            label = "Enter a value below",
+            label = "Enter sample mean",
             value = NA,
             min = 18,
             max = 100,

@@ -19,3 +19,13 @@ invalid_format <- list(
     doi = \(x) !str$str_detect(x, regex_doi) && x != "",
     pubyear = \(x) !between(1900, x, lub$year(lub$today()))
 )
+
+#' @export
+is_valid <- function(input, name) {
+    # If no check exists, input is always valid
+    if (is.null(invalid_format[[name]])) {
+        return(TRUE)
+    } else {
+        !invalid_format[[name]](input[[name]])
+    }
+}

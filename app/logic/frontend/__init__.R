@@ -22,6 +22,9 @@ btn_return <- inputs$btn_return
 btn_modal <- inputs$btn_modal
 
 #' @export
+class_button <- inputs$class_button
+
+#' @export
 radio <- inputs$radio
 
 #' @export

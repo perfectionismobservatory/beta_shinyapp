@@ -20,16 +20,12 @@ add_main_window <- function(ns, n) {
             NULL,
             sh$div(
                 bsl$card(
-                    height = 615,
+                    height = 580, # this value is ~ the lowest we can have before scrolling is enabled
                     bsl$card_header(
                         class = "d-flex justify-content-between align-items-center",
                         sh$div(
                             class = "d-flex align-items-center gap-2",
-                            "Data viewer title",
-                            bsl$tooltip(
-                                bsi$bs_icon("info-circle", size = "1.1rem"),
-                                sh$HTML("The plot is interactive. Try hovering over points or clicking the legend!")
-                            )
+                            sh$img(src = "static/icon.png", width = "50px"),
                         ),
                         plot$header_ui(ns(paste0("plot", n)))
                     ),
@@ -40,7 +36,8 @@ add_main_window <- function(ns, n) {
                             width = 300,
                             bsl$accordion(
                                 open = FALSE,
-                                !!!filter$ui(ns(paste0("filter", n)))
+                                !!!filter$ui(ns(paste0("filter", n))),
+                                plot$sidebar_ui(ns(paste0("plot", n))),
                             )
                         ),
                         plot$main_ui(ns(paste0("plot", n)), "Default", NULL),
@@ -52,7 +49,7 @@ add_main_window <- function(ns, n) {
                         NULL
                     } else {
                         sh$actionButton(
-                            class = "my-3",
+                            class = paste(fe$class_button, "my-3"),
                             ns(paste0("add", n)),
                             "Add window below"
                         )
@@ -70,11 +67,14 @@ ui <- function(id) {
     sh$div(
         fe$row2(
             class = "row py-2 m-4 d-flex justify-content-center align-items-center",
-            colwidths = list(2, 4, 4, 2),
+            colwidths = list(2, 8, 2),
             content = list(
                 NULL,
-                fe$btn_return(ns("return")),
-                sh$h1("Logo", style = "text-align: end;"),
+                sh$div(
+                    class = "d-flex justify-content-between align-items-center",
+                    fe$btn_return(ns("return")),
+                    sh$img(src = "static/logo_lightblue.png", width = "200px", style = "text-align: end;")
+                ),
                 NULL
             )
         ),

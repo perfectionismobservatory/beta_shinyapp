@@ -27,12 +27,7 @@ ui <- function(id) {
                 sh$div(
                     class = "d-flex flex-row justify-content-between align-items-center",
                     fe$btn_return(ns("return")),
-                    sh$div(
-                        class = "bg-warning py-2 px-3 shadow",
-                        style = "border-radius: 1rem; text-align: center;",
-                        "Try DOI 10.25563/abc.def"
-                    ),
-                    sh$h1("Logo", style = "text-align: end;")
+                    sh$img(src = "static/logo_lightblue.png", width = "200px", style = "text-align: end;")
                 ),
                 NULL
             )

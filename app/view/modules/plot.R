@@ -14,7 +14,35 @@ box::use(
 #' @export
 header_ui <- function(id) {
     ns <- sh$NS(id)
-    fe$toggleswitch(ns("regression"), "Toggle regression line")
+    sh$div(
+        class = "d-flex flex-row gap-3 align-items-center",
+        sh$actionButton(
+            class = fe$class_button,
+            ns("download-default"),
+            sh$div(
+                class = "d-flex gap-2 align-items-center",
+                bsi$bs_icon("download", size = "1.25rem"), "Download"
+            )
+        ),
+        sh$actionButton(
+            class = fe$class_button,
+            ns("customise"),
+            sh$div(
+                class = "d-flex gap-2 align-items-center",
+                bsi$bs_icon("brush", size = "1.25rem"), "Customise"
+            )
+        )
+    )
+}
+
+#' @export
+sidebar_ui <- function(id) {
+    ns <- sh$NS(id)
+    bsl$accordion_panel(
+        "Analysis",
+        icon = bsi$bs_icon("graph-up-arrow"),
+        fe$toggleswitch(ns("regression"), "Toggle regression line")
+    )
 }
 
 #' @export
@@ -23,26 +51,7 @@ main_ui <- function(id, nav_title, card_title = NULL) {
     bsl$nav_panel(
         nav_title,
         bsl$card_title(card_title),
-        bsl$card_body(e4r$echarts4rOutput(ns("plot"))),
-        bsl$card_footer(
-            class = "d-flex flex-row justify-content-between align-items-center",
-            sh$actionButton(
-                style = "border: none;",
-                ns("download-default"),
-                sh$div(
-                    class = "d-flex gap-2 align-items-center",
-                    bsi$bs_icon("download", size = "1.25rem"), "Download"
-                )
-            ),
-            sh$actionButton(
-                style = "border: none;",
-                ns("customise"),
-                sh$div(
-                    class = "d-flex gap-2 align-items-center",
-                    bsi$bs_icon("palette2", size = "1.25rem"), "Customise"
-                )
-            )
-        )
+        bsl$card_body(e4r$echarts4rOutput(ns("plot")))
     )
 }
 
@@ -57,7 +66,7 @@ server <- function(id, data) {
             data() %>%
                 dp$group_by(scale) %>%
                 e4r$e_charts(year) %>%
-                e4r$e_effect_scatter(value, N, bind = author) %>%
+                e4r$e_scatter(value, N, bind = author) %>%
                 # This would color the points after N as well
                 # e4r$e_visual_map_("N", scale = e4r$e_scale) %>%
                 e4r$e_tooltip(
@@ -84,7 +93,8 @@ server <- function(id, data) {
                     ),
                     subtext = "We could also have a subtitle"
                 ) %>%
-                e4r$e_x_axis(min = min_x, max = max_x)
+                e4r$e_x_axis(min = min_x, max = max_x) %>%
+                e4r$e_theme_custom("app/static/echarts_theme.json")
         })
 
         output$plot <- e4r$renderEcharts4r(res_interactive())

@@ -3,6 +3,7 @@ box::use(
     shf = shinyFeedback,
     lub = lubridate,
     str = stringr,
+    pr = purrr,
 )
 
 box::use(

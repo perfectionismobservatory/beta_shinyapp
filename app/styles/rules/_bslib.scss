@@ -1,0 +1,26 @@
+.card-body {
+    background-color: $secondary;
+}
+
+.card-header {
+    border-radius: 0px !important;
+    background-color: darken($secondary, 10%) !important;
+} 
+
+.card-footer {
+    border-radius: 0px !important;
+    background-color: darken($secondary, 10%) !important;
+}
+
+.bslib-sidebar-layout {
+    background-color: $secondary !important;
+
+    .card-footer {
+        background-color: $secondary !important;
+    }
+}
+
+.bslib-card {
+    border-width: 4px;
+    border-color: $info;
+}

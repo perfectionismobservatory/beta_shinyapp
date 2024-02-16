@@ -26,3 +26,6 @@ filter_inputs <- filters$filter_inputs
 
 #' @export
 invalid_format <- validation$invalid_format
+
+#' @export
+is_valid <- validation$is_valid
