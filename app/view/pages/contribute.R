@@ -33,9 +33,10 @@ ui <- function(id) {
             )
         ),
         fe$row2(
-            colwidths = list(2, 6, 2, 2),
+            colwidths = list(2, 2, 6, 2),
             content = list(
                 NULL,
+                summary$ui(ns("validation")),
                 validation$ui(
                     ns("validation"),
                     !!!fe$validation_inputs
@@ -43,7 +44,15 @@ ui <- function(id) {
                     # skip the last element of inputs in `validation.R`, or
                     # make another arg field
                 ),
-                summary$ui(ns("validation")),
+                NULL
+            )
+        ),
+        fe$row2(
+            colwidths = list(2, 6, 2, 2),
+            content = list(
+                NULL,
+                upload$ui(ns("validation")),
+                NULL,
                 NULL
             )
         )
@@ -56,7 +65,7 @@ server <- function(id, data) {
         be$obs_return(input)
         validation$server("validation")
         feedback$server("validation")
-        summary$server("validation", sh$reactive(data))
-        upload$server("validation")
+        summary$server("validation")
+        upload$server("validation", sh$reactive(data))
     })
 }

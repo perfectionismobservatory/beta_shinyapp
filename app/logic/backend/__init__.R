@@ -22,6 +22,9 @@ obs_return <- misc$obs_return
 between <- misc$between
 
 #' @export
+is_nothing <- misc$is_nothing
+
+#' @export
 filter_inputs <- filters$filter_inputs
 
 #' @export

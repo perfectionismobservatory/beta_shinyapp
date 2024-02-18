@@ -25,7 +25,7 @@ add_main_window <- function(ns, n) {
                         class = "d-flex justify-content-between align-items-center",
                         sh$div(
                             class = "d-flex align-items-center gap-2",
-                            sh$img(src = "static/icon.png", width = "50px"),
+                            sh$img(src = "static/icon.png", width = "40px"),
                         ),
                         plot$header_ui(ns(paste0("plot", n)))
                     ),

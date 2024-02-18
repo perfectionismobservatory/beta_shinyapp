@@ -15,9 +15,9 @@ box::use(
 header_ui <- function(id) {
     ns <- sh$NS(id)
     sh$div(
-        class = "d-flex flex-row gap-3 align-items-center",
+        class = "d-flex flex-row gap-2 align-items-center",
         sh$actionButton(
-            class = fe$class_button,
+            class = "btn btn-secondary hover bg-transparent border-0 p-2",
             ns("download-default"),
             sh$div(
                 class = "d-flex gap-2 align-items-center",
@@ -25,7 +25,7 @@ header_ui <- function(id) {
             )
         ),
         sh$actionButton(
-            class = fe$class_button,
+            class = "btn btn-secondary hover bg-transparent border-0 p-2",
             ns("customise"),
             sh$div(
                 class = "d-flex gap-2 align-items-center",

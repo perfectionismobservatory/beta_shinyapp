@@ -69,5 +69,8 @@ server <- function(id) {
     home$server("home", page = c("explore", "contribute"))
     explore$server("explore", data)
     contribute$server("contribute", data)
+    # Would it make sense to download the data separately inside the contribute server and update that
+    # each time a new article is uploaded?
+    # This would allow us to easily prevent the same DOI being uploaded twice in the same session / concurrent sessions
   })
 }

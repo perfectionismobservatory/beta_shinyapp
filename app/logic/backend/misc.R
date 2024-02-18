@@ -40,3 +40,8 @@ obs_return <- function(input) {
 between <- function(lwr, x, upr) {
   lwr <= x & x <= upr
 }
+
+#' @export
+is_nothing <- function(x) {
+  is.na(x) || is.null(x) || x == ""
+}

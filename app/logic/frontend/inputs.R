@@ -84,6 +84,7 @@ validation_summary <- list(
         )
     },
     sample = \(x, fill) {
+        x <- ifelse(x == "University students", "Uni students", x)
         sh$div(
             class = class_summary,
             sh$div(class = class_header, validation_icons$sample, x), icon_filled[[fill + 1]]
