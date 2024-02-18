@@ -10,7 +10,7 @@ box::use(
 
 #' @export
 #' Height for the layout_column_wrap elements on the `contribute` page
-height_layoutcolumnwrap <- 400
+height_layoutcolumnwrap <- 420
 
 #' @export
 row2 <- function(content = list(), class = NULL, colwidths = list()) {

@@ -6,6 +6,7 @@ box::use(
     pr = purrr,
     lub = lubridate,
     shw = shinyWidgets,
+    shj = shinyjs,
 )
 
 box::use(
@@ -20,20 +21,22 @@ box::use(
 ui <- function(id, ...) {
     dots <- rl$list2(...)
     ns <- sh$NS(id)
-    bsl$layout_column_wrap(
-        width = 1 / 3,
-        height = fe$height_layoutcolumnwrap,
-        fixed_width = TRUE,
-        gap = "1.5rem",
-        !!!pr$map(dots, \(e) {
-            bsl$card(
-                bsl$card_header(e$header),
-                bsl$card_body(class = e$class, e$body(ns))
+    sh$div(
+        bsl$layout_column_wrap(
+            width = 1 / 3,
+            height = fe$height_layoutcolumnwrap,
+            fixed_width = TRUE,
+            gap = "1.5rem",
+            !!!pr$map(dots, \(e) {
+                bsl$card(
+                    bsl$card_header(e$header),
+                    bsl$card_body(class = e$class, e$body(ns))
+                )
+            }),
+            sh$conditionalPanel(
+                condition = paste0("input['", ns("status"), "'] !== 'Unspecified'"),
+                sh$htmlOutput(ns("conditionalinputs"))
             )
-        }),
-        sh$conditionalPanel(
-            condition = paste0("input['", ns("status"), "'] !== 'Unspecified'"),
-            sh$htmlOutput(ns("conditionalinputs"))
         )
     )
 }
