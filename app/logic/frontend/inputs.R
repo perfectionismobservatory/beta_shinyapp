@@ -167,9 +167,17 @@ validation_inputs <- list(
 #' @export
 conditional_validation_inputs <- list(
     name = \(ns) sh$textInput(ns("name"), "Enter author name", placeholder = "Surname, Name"),
-    email = \(ns) sh$textInput(ns("email"), "Enter email"), # either make custom input or only corresponding author mail?
+    # either make custom input or only corresponding author mail?
+    email = \(ns) sh$textInput(ns("email"), "Enter email"), 
     type = \(ns) radio(ns("type"), "Type of document", c("Unspecified", "Journal article", "Thesis", "Poster")),
-    pubyear = \(ns) sh$numericInput(ns("pubyear"), "Year of publication", NULL),
+    pubyear = \(ns) sh$numericInput(
+        ns("pubyear"),
+        "Year of publication",
+        min = 1988,
+        max = lub$year(lub$today()),
+        value = NA,
+        width = "150px",
+    ),
     doi = \(ns) sh$textInput(ns("doi"), "Enter doi", placeholder = "10. ..."),
     prereg = \(ns) sh$textInput(ns("prereg"), "Enter preregistration link", placeholder = "https:// ...")
 )
