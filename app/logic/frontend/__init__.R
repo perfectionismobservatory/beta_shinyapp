@@ -50,3 +50,6 @@ conditional_validation_card <- inputs$conditional_validation_card
 
 #' @export
 theme_light <- themes$light
+
+#' @export
+ggtheme <- themes$ggtheme

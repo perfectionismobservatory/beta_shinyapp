@@ -12,6 +12,8 @@ box::use(
   shinyFeedback[useShinyFeedback],
   vroom,
   str = stringr,
+  showtext[showtext_auto],
+  sysfonts[font_add_google],
 )
 
 box::use(
@@ -26,6 +28,12 @@ load_dot_env(file = here(".env"))
 # Authenticate Google sheets
 drive_auth(cache = ".secrets", email = Sys.getenv("EMAIL"))
 gs4_auth(token = drive_token(), email = Sys.getenv("EMAIL"))
+
+# Add the fonts needed for pdf exports
+font_add_google("Roboto", "Roboto") # Are we using Roboto right now?
+font_add_google("Merriweather", "Merriweather")
+font_add_google("Noto Sans", "Noto Sans")
+showtext_auto()
 
 data <-
   read_sheet(Sys.getenv("URL"), col_types = "_cninnnnnnincc") %>%

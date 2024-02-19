@@ -1,5 +1,7 @@
 box::use(
     bsl = bslib,
+    gg = ggplot2,
+    ggt = ggtext,
 )
 
 #' @export
@@ -16,9 +18,31 @@ light <- bsl$bs_theme(
   ),
   heading_font = bsl$font_google("Palatino"),
   code_font = bsl$font_google("Roboto Mono"),
-  #spacer = "1.5rem"
   "btn-border-radius" = "10px"
-  #"btn-hover-bg" = "black"
 )
 
 dark <- bsl$bs_theme()
+
+#' @export
+ggtheme <- gg$theme(
+  text = gg$element_text(family = "Noto Sans"),
+  plot.title = ggt$element_textbox_simple(
+    family = "Merriweather",
+    hjust = 0,
+    size = 18,
+  ),
+  plot.subtitle = ggt$element_textbox_simple(
+    family = "Noto Sans",
+    hjust = 0,
+    lineheight = 1.2,
+    margin = gg$margin(t = 8, b = 16)
+  ),
+  plot.caption = gg$element_text(
+    family = "Noto Sans",
+    hjust = 1,
+    lineheight = 1,
+    margin = gg$margin(t = 20)
+  ),
+  plot.margin = gg$margin(16, 20, 16, 16),
+  strip.placement = "outside"
+)

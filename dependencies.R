@@ -32,5 +32,7 @@ library(dotenv)
 
 # Visualisation
 library(echarts4r)
-# probably for export later?
-# library(ggplot2)
+library(ggplot2)
+library(ggtext)
+library(sysfonts)
+library(showtext)
