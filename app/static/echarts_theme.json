@@ -106,13 +106,9 @@
         "symbol": "emptyCircle",
         "smooth": false,
         "color": [
-            "#4161ab",
-            "#71a774",
-            "#f8b859",
-            "#ce5c30",
-            "#98cac9",
-            "#923e88",
-            "#e681b1"
+            "#7a9daf",
+            "#668466",
+            "#b2b29e"
         ],
         "label": {
             "color": "#eeeeee"
@@ -228,7 +224,7 @@
         },
         "axisLabel": {
             "show": true,
-            "color": "#4161ab"
+            "color": "#000000"
         },
         "splitLine": {
             "show": true,
@@ -252,18 +248,18 @@
         "axisLine": {
             "show": true,
             "lineStyle": {
-                "color": "#4161ab"
+                "color": "#000000"
             }
         },
         "axisTick": {
             "show": true,
             "lineStyle": {
-                "color": "#4161ab"
+                "color": "#000000"
             }
         },
         "axisLabel": {
             "show": true,
-            "color": "#4161ab"
+            "color": "#000000"
         },
         "splitLine": {
             "show": false,
@@ -295,7 +291,7 @@
     },
     "legend": {
         "textStyle": {
-            "color": "#4161ab"
+            "color": "#000000"
         }
     },
     "tooltip": {
@@ -325,7 +321,7 @@
             "borderWidth": "1"
         },
         "checkpointStyle": {
-            "color": "#4161ab",
+            "color": "#000000",
             "borderColor": "#ffffff"
         },
         "label": {
@@ -337,7 +333,7 @@
                 "color": "#2b4071"
             },
             "controlStyle": {
-                "color": "#4161ab",
+                "color": "#000000",
                 "borderColor": "rgba(65,97,171,0.59)",
                 "borderWidth": "1"
             },
@@ -351,7 +347,7 @@
                 "color": "#7c98da"
             },
             "label": {
-                "color": "#4161ab",
+                "color": "#000000",
                 "fontFamily": "Roboto"
             },
             "itemStyle": {

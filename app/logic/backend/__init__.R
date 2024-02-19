@@ -1,7 +1,7 @@
 box::use(
     app / logic / backend / misc,
     app / logic / backend / filters,
-    app / logic / backend / validation,
+    app / logic / backend / validations,
 )
 
 # Backend reexports
@@ -28,7 +28,7 @@ is_nothing <- misc$is_nothing
 filter_inputs <- filters$filter_inputs
 
 #' @export
-invalid_format <- validation$invalid_format
+invalid_format <- validations$invalid_format
 
 #' @export
-is_valid <- validation$is_valid
+is_valid <- validations$is_valid

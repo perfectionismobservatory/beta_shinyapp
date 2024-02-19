@@ -5,6 +5,8 @@ box::use(
     bsi = bsicons,
     dp = dplyr[`%>%`],
     htw = htmlwidgets,
+    gg = ggplot2,
+    lub = lubridate,
 )
 
 box::use(
@@ -16,9 +18,10 @@ header_ui <- function(id) {
     ns <- sh$NS(id)
     sh$div(
         class = "d-flex flex-row gap-2 align-items-center",
-        sh$actionButton(
+        sh$downloadButton(
+            icon = NULL,
             class = "btn btn-secondary hover bg-transparent border-0 p-2",
-            ns("download-default"),
+            ns("download"),
             sh$div(
                 class = "d-flex gap-2 align-items-center",
                 bsi$bs_icon("download", size = "1.25rem"), "Download"
@@ -60,6 +63,24 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
 
+        res_download <- sh$reactive({
+            data() %>%
+                dp$mutate(scale = toupper(scale)) %>%
+                dp$rename(Scale = scale, `Sample size` = N) %>%
+                gg$ggplot(gg$aes(year, value, group = Scale, color = Scale)) +
+                gg$geom_point(gg$aes(size = `Sample size`), alpha = 0.7) +
+                gg$scale_color_manual(values = c("#7a9daf", "#668466", "#b2b29e")) +
+                gg$labs(
+                    x = "Year",
+                    y = "Value",
+                    title = "Main title",
+                    subtitle = "Subtitle with more info",
+                    caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
+                ) +
+                gg$theme_bw() +
+                fe$ggtheme
+        })
+
         res_interactive <- sh$reactive({
             min_x <- min(data()$year)
             max_x <- max(data()$year)
@@ -67,8 +88,6 @@ server <- function(id, data) {
                 dp$group_by(scale) %>%
                 e4r$e_charts(year) %>%
                 e4r$e_scatter(value, N, bind = author) %>%
-                # This would color the points after N as well
-                # e4r$e_visual_map_("N", scale = e4r$e_scale) %>%
                 e4r$e_tooltip(
                     formatter = htw$JS("
                         function(params){
@@ -79,7 +98,6 @@ server <- function(id, data) {
                                 )
                         }
                     "),
-                    # textStyle = list(fontFamily = "Comissioner"),
                     trigger = "item"
                 ) %>%
                 e4r$e_legend(bottom = 0) %>%
@@ -93,10 +111,23 @@ server <- function(id, data) {
                     ),
                     subtext = "We could also have a subtitle"
                 ) %>%
-                e4r$e_x_axis(min = min_x, max = max_x) %>%
+                e4r$e_x_axis(year, formatter = htw$JS("
+                    function(value){
+                        return(value.toString())
+                    }
+                "), min = min_x, max = max_x) %>%
                 e4r$e_theme_custom("app/static/echarts_theme.json")
         })
 
         output$plot <- e4r$renderEcharts4r(res_interactive())
+
+        output$download <- sh$downloadHandler(
+            filename = \() {
+                paste(lub$today(), "perfectrepo.pdf", sep = "_")
+            },
+            content = \(file) {
+                gg$ggsave(file, res_download(), width = 7, height = 5)
+            }
+        )
     })
 }
