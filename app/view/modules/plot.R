@@ -77,6 +77,7 @@ server <- function(id, data) {
                     subtitle = "Subtitle with more info",
                     caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
                 ) +
+                gg$scale_size(guide = "none") + # No legend for size aes
                 gg$theme_bw() +
                 fe$ggtheme
         })
