@@ -5,6 +5,7 @@ box::use(
     bsi = bsicons,
     bsl = bslib,
     rl = rlang[`%||%`],
+    shj = shinyjs,
 )
 
 #' @export
@@ -169,7 +170,7 @@ validation_inputs <- list(
 conditional_validation_inputs <- list(
     name = \(ns) sh$textInput(ns("name"), "Enter author name", placeholder = "Surname, Name"),
     # either make custom input or only corresponding author mail?
-    email = \(ns) sh$textInput(ns("email"), "Enter email"), 
+    email = \(ns) sh$textInput(ns("email"), "Enter email"),
     type = \(ns) radio(ns("type"), "Type of document", c("Unspecified", "Journal article", "Thesis", "Poster")),
     pubyear = \(ns) sh$numericInput(
         ns("pubyear"),
@@ -277,6 +278,90 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
         )
     )
 }
+
+#' @export
+disabled_upload_inputs <- list(
+    age = \(id, ns, value) {
+        shj$disabled(
+            sh$numericInput(
+                ns(id),
+                "Mean age",
+                value = value,
+                width = "120px"
+            )
+        )
+    },
+    year = \(id, ns, value) {
+        shj$disabled(
+            sh$numericInput(
+                ns(id),
+                "Data collection",
+                value = value,
+                width = "120px"
+            )
+        )
+    },
+    scale = \(id, ns, value) {
+        shj$disabled(
+            sh$textInput(
+                ns(id),
+                "Scale",
+                value = value,
+                width = "120px"
+            )
+        )
+    },
+    doi = \(id, ns, value) {
+        shj$disabled(
+            sh$textInput(
+                ns(id),
+                "DOI",
+                value = value,
+                width = "265px"
+            )
+        )
+    },
+    status = \(id, ns, value) {
+        shj$disabled(
+            sh$textInput(
+                ns(id),
+                "Status",
+                value = value,
+                width = "120px"
+            )
+        )
+    },
+    sample = \(id, ns, value) {
+        shj$disabled(
+            sh$textInput(
+                ns(id),
+                "Sample",
+                value = value,
+                width = "120px"
+            )
+        )
+    },
+    type = \(id, ns, value) {
+        shj$disabled(
+            sh$textInput(
+                ns(id),
+                "Document type",
+                value = value,
+                width = "120px"
+            )
+        )
+    },
+    name = \(id, ns, value) {
+        shj$disabled(
+            sh$textInput(
+                ns(id),
+                "Author name",
+                value = value,
+                width = "120px"
+            )
+        )
+    }
+)
 
 #' @export
 #' Custom toggle switch
