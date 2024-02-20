@@ -15,7 +15,7 @@ box::use(
 
 add_main_window <- function(ns, n) {
     fe$row2(
-        colwidths = list(2, 8, 2),
+        colwidths = list(1, 10, 1),
         content = list(
             NULL,
             sh$div(
