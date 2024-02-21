@@ -239,7 +239,7 @@ server <- function(id, data) {
                                         class = "d-flex align-items-center gap-2",
                                         bsi$bs_icon("clipboard2-plus", size = "1.25rem"), "Add another study"
                                     )
-                                ) %>% bsl$tooltip("Feature in development")
+                                )
                             ),
                             shj$disabled(
                                 sh$actionButton(
@@ -249,10 +249,8 @@ server <- function(id, data) {
                                         class = "d-flex align-items-center gap-2",
                                         bsi$bs_icon("graph-up-arrow", size = "1.25rem"), "Show graph"
                                     )
-                                )
+                                ) %>% bsl$tooltip("Feature in development")
                             )
-                            # Could we have the whole if (input$upload) then reset and view buttons
-                            # Action here ... ?
                         )
                     )
                 )
