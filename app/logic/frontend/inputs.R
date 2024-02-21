@@ -146,14 +146,7 @@ validation_inputs <- list(
     ),
     list( # must be below 25
         header = sh$div(class = class_header, validation_icons$age, "Age"),
-        body = \(ns) sh$numericInput(
-            ns("age"),
-            label = "Enter sample mean",
-            value = NA,
-            min = 18,
-            max = 100,
-            width = "150px"
-        )
+        body = \(ns) sh$textInput(ns("age"), "Enter sample mean", placeholder = "e.g. 20.3")
     ),
     list( # must be uni
         class = class_center,
@@ -168,9 +161,9 @@ validation_inputs <- list(
 
 #' @export
 conditional_validation_inputs <- list(
-    name = \(ns) sh$textInput(ns("name"), "Enter author name", placeholder = "Surname, Name"),
+    name = \(ns) sh$textInput(ns("name"), "Enter main author", placeholder = "Surname, Name"),
     # either make custom input or only corresponding author mail?
-    email = \(ns) sh$textInput(ns("email"), "Enter email"),
+    email = \(ns) sh$textInput(ns("email"), "Enter institution email"),
     type = \(ns) radio(ns("type"), "Type of document", c("Unspecified", "Journal article", "Thesis", "Poster")),
     pubyear = \(ns) sh$numericInput(
         ns("pubyear"),
@@ -280,10 +273,11 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
 }
 
 #' @export
+#' Custom toggle switch
 disabled_upload_inputs <- list(
     age = \(id, ns, value) {
         shj$disabled(
-            sh$numericInput(
+            sh$textInput(
                 ns(id),
                 "Mean age",
                 value = value,
@@ -364,7 +358,6 @@ disabled_upload_inputs <- list(
 )
 
 #' @export
-#' Custom toggle switch
 toggleswitch <- function(id, label, value = FALSE, class = NULL) {
     if (!is.null(class)) {
         class <- paste("form-check form-switch", class, " ")

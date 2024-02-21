@@ -34,7 +34,7 @@ server <- function(id) {
             shf$feedbackDanger(
                 "age",
                 be$invalid_format$age(input$age),
-                text = "Must be between X and Y",
+                text = "Provide one decimal, e.g., 20.3",
                 icon = NULL,
                 session = session
             )

@@ -116,10 +116,12 @@ server <- function(id) {
                             val <- if (conditionals_filled()) "Complete" else "Unspecified"
                             fe$validation_summary[[name]](val, conditionals_filled())
                         } else {
-                            val <- input[[name]] %ifNA% "Unspecified"
+                            # If current input is nothing-like, return "Unspecified", else the value
+                            val <- ifelse(be$is_nothing(input[[name]]), "Unspecified", input[[name]])
+                            check <- val != "Unspecified" && be$is_valid(input, name)
                             sh$div(
                                 class = "py-1",
-                                fe$validation_summary[[name]](val, val != "Unspecified" && be$is_valid(input, name))
+                                fe$validation_summary[[name]](val, check)
                             )
                         }
                     }
