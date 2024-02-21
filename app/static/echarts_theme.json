@@ -1,9 +1,9 @@
 
 {
     "color": [
-        "#7a9daf",
-        "#668466",
-        "#b2b29e"
+        "#aee0fa",
+        "#92bc92",
+        "#fefee1"
     ],
     "textStyle": {},
     "title": {
@@ -50,8 +50,8 @@
     },
     "scatter": {
         "itemStyle": {
-            "borderWidth": "0",
-            "borderColor": "#ccc"
+            "borderWidth": "1",
+            "borderColor": "#000000"
         }
     },
     "boxplot": {
