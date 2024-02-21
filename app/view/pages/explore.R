@@ -15,7 +15,7 @@ box::use(
 
 add_main_window <- function(ns, n) {
     fe$row2(
-        colwidths = list(2, 8, 2),
+        colwidths = list(1, 10, 1),
         content = list(
             NULL,
             sh$div(
@@ -67,13 +67,13 @@ ui <- function(id) {
     sh$div(
         fe$row2(
             class = "row py-2 m-4 d-flex justify-content-center align-items-center",
-            colwidths = list(2, 8, 2),
+            colwidths = list(1, 10, 1),
             content = list(
                 NULL,
                 sh$div(
                     class = "d-flex justify-content-between align-items-center",
                     fe$btn_return(ns("return")),
-                    sh$img(src = "static/logo_lightblue.png", width = "200px", style = "text-align: end;")
+                    sh$img(src = "static/logo_light_right.png", width = "200px", style = "text-align: end;")
                 ),
                 NULL
             )

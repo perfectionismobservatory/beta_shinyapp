@@ -34,7 +34,7 @@ header_ui <- function(id) {
                 class = "d-flex gap-2 align-items-center",
                 bsi$bs_icon("brush", size = "1.25rem"), "Customise"
             )
-        )
+        ) %>% bsl$tooltip("Feature in development")
     )
 }
 

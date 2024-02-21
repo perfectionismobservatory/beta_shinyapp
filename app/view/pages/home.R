@@ -15,7 +15,7 @@ ui <- function(id) {
         sh$div(
             class = "container-fluid",
             fe$row2(
-                colwidths = list(2, 8, 2),
+                colwidths = list(1, 10, 1),
                 content = list(
                     NULL,
                     sh$div(
