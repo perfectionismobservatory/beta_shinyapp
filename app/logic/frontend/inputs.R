@@ -39,7 +39,8 @@ checkboxgroup <- function(id, label, choices, selected = NULL) {
         choices = choices,
         selected = selected %||% choices,
         status = "primary",
-        shape = "round",
+        shape = "curve",
+        icon = sh$icon("check"),
         animation = "smooth",
         outline = TRUE
     )

@@ -29,12 +29,10 @@ ui <- function(id) {
                 "Select years",
                 value = c(1988, lub$year(lub$today()))
             ),
-            sh$selectizeInput( # eventually replace this with shinyWidgets
+            fe$checkboxgroup( # eventually replace this with shinyWidgets
                 ns("country"),
                 "Select countries",
-                choices = c("USA", "CAN", "UK"),
-                selected = c("USA", "CAN", "UK"),
-                multiple = TRUE
+                choices = c("USA", "CAN", "UK")
             )
         )
         # Not sure how many panels we need, but these can then be spliced

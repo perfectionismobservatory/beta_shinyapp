@@ -165,11 +165,11 @@
             }
         },
         "splitArea": {
-            "show": true,
+            "show": false,
             "areaStyle": {
                 "color": [
-                    "rgba(250,250,250,0.2)",
-                    "rgba(210,219,238,0.2)"
+                    "#ffffff",
+                    "#fafafa"
                 ]
             }
         }

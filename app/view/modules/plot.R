@@ -63,6 +63,9 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
 
+        min_x <- sh$reactive(min(data()$year))
+        max_x <- sh$reactive(max(data()$year))
+
         res_download <- sh$reactive({
             data() %>%
                 dp$mutate(scale = toupper(scale)) %>%
@@ -73,8 +76,13 @@ server <- function(id, data) {
                 gg$labs(
                     x = "Year",
                     y = "Value",
-                    title = "Main title",
-                    subtitle = "Subtitle with more info",
+                    title = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
+                    subtitle = paste0(
+                        if (length(unique(data()$scale)) > 1) "Scales: " else "Scale: ",
+                        toupper(paste0(unique(data()$scale), collapse = ", ")),
+                        " for subscale: ",
+                        toupper(unique(data()$subscale))
+                    ),
                     caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
                 ) +
                 gg$scale_size(guide = "none") + # No legend for size aes
@@ -83,8 +91,6 @@ server <- function(id, data) {
         })
 
         res_interactive <- sh$reactive({
-            min_x <- min(data()$year)
-            max_x <- max(data()$year)
             data() %>%
                 # Turn year into factor to avoid decimals on small year input ranges
                 dp$mutate(year = factor(year)) %>%
@@ -107,7 +113,7 @@ server <- function(id, data) {
                 ) %>%
                 e4r$e_legend(bottom = 0) %>%
                 e4r$e_title(
-                    text = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
+                    text = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
                     subtext = paste0(
                         if (length(unique(data()$scale)) > 1) "Scales: " else "Scale: ",
                         toupper(paste0(unique(data()$scale), collapse = ", ")),
@@ -115,14 +121,6 @@ server <- function(id, data) {
                         toupper(unique(data()$subscale))
                     ),
                 ) %>%
-                # e4r$e_x_axis(year,
-                #     formatter = htw$JS("
-                #     function(value){
-                #         return(value.toString())
-                #     }
-                # "),
-                #    min = min_x, max = max_x
-                #) %>%
                 e4r$e_theme_custom("app/static/echarts_theme.json")
         })
 
