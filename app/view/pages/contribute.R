@@ -27,7 +27,7 @@ ui <- function(id) {
                 sh$div(
                     class = "d-flex flex-row justify-content-between align-items-center",
                     fe$btn_return(ns("return")),
-                    sh$img(src = "static/logo_lightblue.png", width = "200px", style = "text-align: end;")
+                    sh$img(src = "static/logo_light_right.png", width = "200px", style = "text-align: end;")
                 ),
                 NULL
             )
