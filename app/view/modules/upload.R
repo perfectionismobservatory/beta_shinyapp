@@ -249,7 +249,7 @@ server <- function(id, data) {
                                         class = "d-flex align-items-center gap-2",
                                         bsi$bs_icon("clipboard2-plus", size = "1.25rem"), "Add another study"
                                     )
-                                )
+                                ) %>% bsl$tooltip("Feature in development")
                             ),
                             shj$disabled(
                                 sh$actionButton(
