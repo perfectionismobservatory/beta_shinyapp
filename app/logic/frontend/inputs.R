@@ -9,12 +9,12 @@ box::use(
 )
 
 #' @export
-btn_return <- function(id) {
+btn_return <- function(id, label = "Back", icon = sh$icon("angles-left")) {
     sh$actionButton(
         id,
         class = "btn btn-secondary hover shadow border-info border-4",
-        label = "Back",
-        icon = sh$icon("angles-left")
+        label = label,
+        icon = icon
     )
 }
 
