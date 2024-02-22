@@ -8,7 +8,7 @@ box::use(
 light <- bsl$bs_theme(
   version = 5,
   primary = "#7A9DAF",
-  secondary = "#f7fcff",
+  secondary = "#f9fbfb",
   warning = "#FFD885",
   danger = "#FF230F",
   success = "#00B321",

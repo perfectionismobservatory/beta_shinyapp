@@ -25,6 +25,9 @@ ui <- function(id) {
 server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
+
+        be$obs_return(input)
+
         published_inputs <- c("name", "email", "type", "pubyear", "doi")
         unpublished_inputs <- c("name", "email", "prereg")
 
@@ -101,26 +104,27 @@ server <- function(id, data) {
                             sh$div(
                                 class = "d-flex align-items-center gap-2",
                                 bsi$bs_icon("x-circle", class = "text-danger", size = "1.5rem"),
-                                "Your study is not eligible for upload."
+                                "Initial data check failed"
                             )
                         ),
                         bsl$card_body(
                             if (input$doi %in% data()$doi %//% FALSE) {
                                 sh$tagList(
-                                    sh$p("The DOI you entered is already part of our data base."),
-                                    sh$p("Click the button below to return to the start page.")
+                                    sh$p("A study with the DOI you entered is already part of our data base.")
                                 )
                             } else {
                                 sh$tagList(
-                                    sh$p("We regret that your study does not fulfill our inclusion criteria.
-                                         Thank you for your interest in our data base."),
-                                    sh$p("Click the button below to return to the start page.")
+                                    sh$p(
+                                        "Your study is not eligible for upload because
+                                        it does not fulfill our inclusion criteria.
+                                        Thank you for your interest in our data base."
+                                    )
                                 )
                             }
                         ),
                         bsl$card_footer(
                             style = "text-align: center;",
-                            sh$actionButton(class = fe$class_button, session$ns("send"), sh$div("Upload"))
+                            fe$btn_return(session$ns("return"), label = "Return to start page", icon = NULL)
                         )
                     )
                 )
@@ -135,97 +139,88 @@ server <- function(id, data) {
                             sh$div(
                                 class = "d-flex align-items-center gap-2",
                                 bsi$bs_icon("check2-circle", class = "text-success", size = "1.5rem"),
-                                "Your study is eligible for upload!"
+                                "Initial data check passed!"
                             )
                         ),
                         bsl$card_body(
                             sh$p(
-                                "Please fill out the fields below that apply to your study.
+                                "Your study is eligible for upload.
+                                Please fill out the fields below that apply to your study.
                                 Then click the", bsi$bs_icon("cloud-arrow-up", size = "1.25rem"), "Upload button below.
-                                After this, you can choose between resetting this page to add another study, or jumping 
+                                After this, you can choose between resetting this page to add another study, or jumping
                                 to a graph highlighting your contribution."
                             ),
-                            sh$div(
-                                class = "d-flex flex-row flex-wrap gap-4",
-                                sh$selectizeInput(
-                                    session$ns("country"),
-                                    "Country",
-                                    choices = c("Other", "CAN", "UK", "USA"),
-                                    multiple = FALSE,
-                                    options = list(`live-search` = TRUE),
-                                    width = "120px"
-                                ),
-                                !!!pr$map(
-                                    c("sop_om", "sop_osd", "spp_om", "spp_osd", "oop_om", "oop_osd", "N", "female_N"),
-                                    \(v) sh$numericInput(
-                                        session$ns(v),
-                                        toupper(str$str_replace(v, "_", " ")),
-                                        value = NA,
-                                        width = "120px"
+                            bsl$accordion(
+                                open = FALSE,
+                                bsl$accordion_panel(
+                                    title = "Pre-entered",
+                                    icon = bsi$bs_icon("clipboard2-check"),
+                                    sh$div(
+                                        class = "d-flex flex-row flex-wrap gap-4",
+                                        fe$disabled_upload_inputs$age("age_upload", session$ns, input$age),
+                                        fe$disabled_upload_inputs$year("year_upload", session$ns, input$year),
+                                        fe$disabled_upload_inputs$scale("scale_upload", session$ns, input$scale),
+                                        fe$disabled_upload_inputs$doi("doi_upload", session$ns, input$doi),
+                                        fe$disabled_upload_inputs$status("status_upload", session$ns, input$status),
+                                        fe$disabled_upload_inputs$sample("sample_upload", session$ns, input$sample),
+                                        fe$disabled_upload_inputs$type("type_upload", session$ns, input$type),
+                                        fe$disabled_upload_inputs$name("name_upload", session$ns, input$name)
                                     )
                                 ),
-                                shj$disabled(
-                                    sh$numericInput(
-                                        session$ns("age_upload"),
-                                        "Mean age",
-                                        value = input$age,
-                                        width = "120px"
+                                bsl$accordion_panel(
+                                    title = "Sample details",
+                                    icon = bsi$bs_icon("person-bounding-box"),
+                                    sh$div(
+                                        class = "d-flex flex-row flex-wrap gap-4",
+                                        sh$selectizeInput(
+                                            session$ns("country"),
+                                            "Country",
+                                            choices = c("Other", "CAN", "UK", "USA"),
+                                            multiple = FALSE,
+                                            options = list(`live-search` = TRUE),
+                                            width = "120px"
+                                        ),
+                                        !!!pr$map(
+                                            c("total_N", "female_N"),
+                                            \(v) sh$numericInput(
+                                                session$ns(v),
+                                                str$str_to_title(str$str_replace(v, "_", " ")),
+                                                value = NA,
+                                                width = "120px"
+                                            )
+                                        )
                                     )
                                 ),
-                                shj$disabled(
-                                    sh$numericInput(
-                                        session$ns("year_upload"),
-                                        "Data collection",
-                                        value = input$year,
-                                        width = "120px"
-                                    )
-                                ),
-                                shj$disabled(
-                                    sh$textInput(
-                                        session$ns("scale_upload"),
-                                        "Scale",
-                                        value = input$scale,
-                                        width = "120px"
-                                    )
-                                ),
-                                shj$disabled(
-                                    sh$textInput(
-                                        session$ns("doi_upload"),
-                                        "DOI",
-                                        value = input$doi,
-                                        width = "265px"
-                                    )
-                                ),
-                                shj$disabled(
-                                    sh$textInput(
-                                        session$ns("status_upload"),
-                                        "Status",
-                                        value = input$status,
-                                        width = "120px"
-                                    )
-                                ),
-                                shj$disabled(
-                                    sh$textInput(
-                                        session$ns("sample_upload"),
-                                        "Sample",
-                                        value = input$sample,
-                                        width = "120px"
-                                    )
-                                ),
-                                shj$disabled(
-                                    sh$textInput(
-                                        session$ns("type_upload"),
-                                        "Document type",
-                                        value = input$type,
-                                        width = "120px"
-                                    )
-                                ),
-                                shj$disabled(
-                                    sh$textInput(
-                                        session$ns("name_upload"),
-                                        "Author name",
-                                        value = input$name,
-                                        width = "120px"
+                                bsl$accordion_panel(
+                                    title = "Values",
+                                    icon = bsi$bs_icon("rulers"),
+                                    sh$div(
+                                        class = "d-flex flex-row flex-wrap justify-content-center gap-4",
+                                        !!!pr$map(
+                                            c("sop_om", "sop_osd", "spp_om", "spp_osd", "oop_om", "oop_osd"),
+                                            \(v) {
+                                                sh$div(
+                                                    class = "d-flex flex-column p-3
+                                                             bg-secondary border border-info rounded",
+                                                    sh$p(toupper(str$str_replace(v, "_", " "))),
+                                                    sh$div(
+                                                        class = "d-flex flex-row gap-4",
+                                                        sh$numericInput(
+                                                            session$ns(v),
+                                                            "Value",
+                                                            value = NA,
+                                                            width = "120px"
+                                                        ),
+                                                        sh$numericInput(
+                                                            session$ns(paste0(v, "_len")),
+                                                            "Item number",
+                                                            value = NA,
+                                                            width = "120px"
+                                                        )
+                                                    ),
+                                                )
+                                            }
+                                        )
                                     )
                                 )
                             )
@@ -249,7 +244,7 @@ server <- function(id, data) {
                                         class = "d-flex align-items-center gap-2",
                                         bsi$bs_icon("clipboard2-plus", size = "1.25rem"), "Add another study"
                                     )
-                                ) %>% bsl$tooltip("Feature in development")
+                                )
                             ),
                             shj$disabled(
                                 sh$actionButton(
@@ -259,10 +254,8 @@ server <- function(id, data) {
                                         class = "d-flex align-items-center gap-2",
                                         bsi$bs_icon("graph-up-arrow", size = "1.25rem"), "Show graph"
                                     )
-                                )
+                                ) %>% bsl$tooltip("Feature in development")
                             )
-                            # Could we have the whole if (input$upload) then reset and view buttons
-                            # Action here ... ?
                         )
                     )
                 )
@@ -279,7 +272,7 @@ server <- function(id, data) {
                 removethis = "", # TODO remove, just an artifact of saving a funny csv to drive
                 country = input$country,
                 year = input$year,
-                N = input$N,
+                N = input$total_N,
                 sop_om = input$sop_om,
                 sop_osd = input$sop_osd,
                 spp_om = input$spp_om,

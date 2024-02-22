@@ -112,15 +112,19 @@ server <- function(id) {
                     c(inputs_w_icons(), "details"),
                     \(name) {
                         last_icon <- name == ut$tail(inputs_w_icons(), 1)
-                        if (name == "details") {
-                            val <- if (conditionals_filled()) "Complete" else "Unspecified"
-                            fe$validation_summary[[name]](val, conditionals_filled())
-                        } else {
-                            val <- input[[name]] %ifNA% "Unspecified"
+                        if (name != "details") {
+                            val <- ifelse(be$is_nothing(input[[name]]), "Unspecified", input[[name]])
+                            check <- val != "Unspecified" && be$is_valid(input, name)
                             sh$div(
                                 class = "py-1",
-                                fe$validation_summary[[name]](val, val != "Unspecified" && be$is_valid(input, name))
+                                fe$validation_summary[[name]](val, check)
                             )
+                        } else if (input$status != "Unspecified" && name == "details") {
+                            # If current input is nothing-like, return "Unspecified", else the value
+                            val <- if (conditionals_filled()) "Complete" else "Unspecified"
+                            fe$validation_summary[[name]](val, conditionals_filled())
+                        } else { # This is name == "details" && input$status == "Unspecified"
+                            NULL
                         }
                     }
                 )

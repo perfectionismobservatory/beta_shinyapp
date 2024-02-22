@@ -40,6 +40,9 @@ validation_icons <- inputs$validation_icons
 validation_inputs <- inputs$validation_inputs
 
 #' @export
+disabled_upload_inputs <- inputs$disabled_upload_inputs
+
+#' @export
 validation_summary <- inputs$validation_summary
 
 #' @export
