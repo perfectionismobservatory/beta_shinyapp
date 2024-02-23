@@ -10,8 +10,9 @@ box::use(
 #' For by-item-selection, treat respective vars as characters!
 #' Regarding factor types, I think we should not have factors at this stage -> if needed, convert later
 filter_col <- function(col, val) {
-    if (is.null(val)) {
-        # No input exists, don't filter
+    if (is.null(val) || all("all" == val)) {
+        # If no input exists or "all" should be shown, don't filter
+        # FIX `is.null(val)` has some unintended behavior when the user selects nothing in multiselect inputs
         return(TRUE)
     } else if (is.logical(val)) { # logical before numeric to not treat logical as numeric
         return(as.logical(col) == val)

@@ -34,8 +34,10 @@ ui <- function(id) {
                     ns("new_subscale"),
                     "Pick subscale",
                     choices = c(
+                        "All subscales" = "all",
                         "Personal standards" = "ps",
                         "Parental expectation" = "pe",
+                        "Parental criticism" = "pc",
                         "Concerns over mistakes" = "com",
                         "Doubts about actions" = "daa",
                         "Organisation" = "o"
@@ -94,8 +96,10 @@ server <- function(id, data) {
                     session = session,
                     "new_subscale",
                     choices = c(
+                        "All subscales" = "all",
                         "Personal standards" = "ps",
                         "Parental expectation" = "pe",
+                        "Parental criticism" = "pc",
                         "Concerns over mistakes" = "com",
                         "Doubts about actions" = "daa",
                         "Organisation" = "o"
@@ -106,6 +110,7 @@ server <- function(id, data) {
                     session = session,
                     "new_subscale",
                     choices = c(
+                        "All subscales" = "all",
                         "Self-oriented" = "sop",
                         "Other-oriented" = "oop",
                         "Socially-prescribed" = "spp"
