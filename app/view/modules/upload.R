@@ -160,25 +160,23 @@ server <- function(id, data) {
                             bsl$accordion(
                                 open = FALSE,
                                 bsl$accordion_panel(
-                                    title = "Pre-entered",
-                                    icon = bsi$bs_icon("clipboard2-check"),
-                                    sh$div(
-                                        class = "d-flex flex-row flex-wrap gap-4",
-                                        fe$disabled_upload_inputs$age("age_upload", session$ns, input$age),
-                                        fe$disabled_upload_inputs$year("year_upload", session$ns, input$year),
-                                        fe$disabled_upload_inputs$scale("scale_upload", session$ns, input$scale),
-                                        fe$disabled_upload_inputs$doi("doi_upload", session$ns, input$doi),
-                                        fe$disabled_upload_inputs$status("status_upload", session$ns, input$status),
-                                        fe$disabled_upload_inputs$sample("sample_upload", session$ns, input$sample),
-                                        fe$disabled_upload_inputs$type("type_upload", session$ns, input$type),
-                                        fe$disabled_upload_inputs$name("name_upload", session$ns, input$name)
-                                    )
-                                ),
-                                bsl$accordion_panel(
-                                    title = "Sample details",
+                                    title = "Sample",
                                     icon = bsi$bs_icon("person-bounding-box"),
                                     sh$div(
                                         class = "d-flex flex-row flex-wrap gap-4",
+                                        !!!pr$map(
+                                            c("total_N", "female_pct"),
+                                            # TODO add lookup for nice labels on these inputs
+                                            # "Number of participants", "Gender (% Female)"
+                                            \(v) sh$numericInput(
+                                                session$ns(v),
+                                                str$str_to_title(str$str_replace(v, "_", " ")),
+                                                value = NA,
+                                                width = "120px"
+                                            )
+                                        ),
+                                        fe$disabled_upload_inputs$sample("sample_upload", session$ns, input$sample),
+                                        fe$disabled_upload_inputs$age("age_upload", session$ns, input$age),
                                         sh$selectizeInput(
                                             session$ns("country"),
                                             "Country",
@@ -187,21 +185,32 @@ server <- function(id, data) {
                                             options = list(`live-search` = TRUE),
                                             width = "120px"
                                         ),
-                                        !!!pr$map(
-                                            c("total_N", "female_N"),
-                                            \(v) sh$numericInput(
-                                                session$ns(v),
-                                                str$str_to_title(str$str_replace(v, "_", " ")),
-                                                value = NA,
-                                                width = "120px"
-                                            )
-                                        )
+                                        fe$disabled_upload_inputs$year("year_upload", session$ns, input$year)
                                     )
                                 ),
                                 bsl$accordion_panel(
-                                    title = "Values",
+                                    title = paste0("Scale: ", input$scale),
                                     icon = bsi$bs_icon("rulers"),
-                                    fe$conditional_scale_inputs(input$scale, session$ns)
+                                    sh$div(
+                                        class = "d-flex flex-row flex-wrap gap-4",
+                                        fe$conditional_scale_inputs(input$scale, session$ns)
+                                    )
+                                ),
+                                bsl$accordion_panel(
+                                    title = "Publication",
+                                    icon = bsi$bs_icon("journal-bookmark-fill"),
+                                    sh$div(
+                                        class = "d-flex flex-row flex-wrap gap-4",
+                                        fe$disabled_upload_inputs$status("status_upload", session$ns, input$status),
+                                        fe$disabled_upload_inputs$name("name_upload", session$ns, input$name),
+                                        fe$disabled_upload_inputs$type("type_upload", session$ns, input$type),
+                                        if (input$status == "Published") {
+                                            fe$disabled_upload_inputs$doi("doi_upload", session$ns, input$doi)
+                                        } else {
+                                            # TODO add preregistration placeholder
+                                            "preregistration_placeholder"
+                                        }
+                                    )
                                 )
                             )
                         ),
