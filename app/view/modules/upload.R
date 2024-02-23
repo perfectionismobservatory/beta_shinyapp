@@ -247,26 +247,11 @@ server <- function(id, data) {
             pr$walk(c("view", "reset"), shj$enable)
         })
 
-        # Writing of data also needs to happen conditional on `input$scale`
-        # Or does it? Maybe we just start a wide format table and some NAs for the non-chosen scale
-        # Then pivot longer and append to sheet
         sh$observeEvent(input$upload, {
-            new_data <- tbl$tibble(
-                removethis = "", # TODO remove, just an artifact of saving a funny csv to drive
-                country = input$country,
-                year = input$year,
-                N = input$total_N,
-                sop_om = input$sop_om,
-                sop_osd = input$sop_osd,
-                spp_om = input$spp_om,
-                spp_osd = input$spp_osd,
-                oop_om = input$oop_om,
-                oop_osd = input$oop_osd,
-                female = input$female_N,
-                age = input$age,
-                email = input$email,
-                doi = input$doi,
-            )
+            # TODO refactor this
+            new_data <- be$write_inputs_to_tibble(input)
+            # TODO add pivot longer into correct shape for append
+            # TODO add other columns that the final data frame includes
 
             sheet_append(Sys.getenv("URL"), new_data, sheet = 1)
             sh$showNotification("Upload successful! 🎉")
