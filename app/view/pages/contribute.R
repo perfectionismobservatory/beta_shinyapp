@@ -48,9 +48,8 @@ ui <- function(id) {
             )
         ),
         fe$row2(
-            colwidths = list(1, 7, 3, 1),
+            colwidths = list(1, 7, 4),
             content = list(
-                NULL,
                 upload$ui(ns("validation")),
                 NULL,
                 NULL

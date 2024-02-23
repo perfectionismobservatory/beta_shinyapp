@@ -41,7 +41,6 @@ server <- function(id, data) {
                 unpublished_inputs
             }
             pr$walk(c(inputs_w_icons, conditional_names, "confirm", "reset", "upload"), shj$reset)
-            # shj$enable("confirm")
         })
 
         # `pass` is TRUE if a user meets the inclusion criteria, and FALSE otherwise
@@ -90,9 +89,12 @@ server <- function(id, data) {
             memory$reset <- memory$reset + 1
         })
 
+        # TODO refactor the UI components contained in this card into several lists or so
         output$dataentry <- sh$renderUI({
+            # If confirm never clicked or reset was last clicked, do not show card
             if (1 > memory$confirm || memory$reset == memory$confirm) {
                 NULL
+                # Show a failure message if the user failed the initial check
             } else if (!pass() || input$doi %in% data()$doi) {
                 sh$div(
                     id = "dataentry-card",
@@ -108,10 +110,12 @@ server <- function(id, data) {
                             )
                         ),
                         bsl$card_body(
+                            # Notify if failure was due to DOI being already included in data base
                             if (input$doi %in% data()$doi %//% FALSE) {
                                 sh$tagList(
                                     sh$p("A study with the DOI you entered is already part of our data base.")
                                 )
+                                # Otherwise generic failure message
                             } else {
                                 sh$tagList(
                                     sh$p(
@@ -122,12 +126,14 @@ server <- function(id, data) {
                                 )
                             }
                         ),
+                        # Footer contains a button that returns user to start page
                         bsl$card_footer(
                             style = "text-align: center;",
                             fe$btn_return(session$ns("return"), label = "Return to start page", icon = NULL)
                         )
                     )
                 )
+                # If check successful, card contains accordion panels with inputs
             } else {
                 sh$div(
                     id = "dataentry-card",
@@ -150,6 +156,7 @@ server <- function(id, data) {
                                 After this, you can choose between resetting this page to add another study, or jumping
                                 to a graph highlighting your contribution."
                             ),
+                            # TODO sort according to scribble
                             bsl$accordion(
                                 open = FALSE,
                                 bsl$accordion_panel(
@@ -194,34 +201,7 @@ server <- function(id, data) {
                                 bsl$accordion_panel(
                                     title = "Values",
                                     icon = bsi$bs_icon("rulers"),
-                                    sh$div(
-                                        class = "d-flex flex-row flex-wrap justify-content-center gap-4",
-                                        !!!pr$map(
-                                            c("sop_om", "sop_osd", "spp_om", "spp_osd", "oop_om", "oop_osd"),
-                                            \(v) {
-                                                sh$div(
-                                                    class = "d-flex flex-column p-3
-                                                             bg-secondary border border-info rounded",
-                                                    sh$p(toupper(str$str_replace(v, "_", " "))),
-                                                    sh$div(
-                                                        class = "d-flex flex-row gap-4",
-                                                        sh$numericInput(
-                                                            session$ns(v),
-                                                            "Value",
-                                                            value = NA,
-                                                            width = "120px"
-                                                        ),
-                                                        sh$numericInput(
-                                                            session$ns(paste0(v, "_len")),
-                                                            "Item number",
-                                                            value = NA,
-                                                            width = "120px"
-                                                        )
-                                                    ),
-                                                )
-                                            }
-                                        )
-                                    )
+                                    fe$conditional_scale_inputs(input$scale, session$ns)
                                 )
                             )
                         ),
@@ -267,6 +247,9 @@ server <- function(id, data) {
             pr$walk(c("view", "reset"), shj$enable)
         })
 
+        # Writing of data also needs to happen conditional on `input$scale`
+        # Or does it? Maybe we just start a wide format table and some NAs for the non-chosen scale
+        # Then pivot longer and append to sheet
         sh$observeEvent(input$upload, {
             new_data <- tbl$tibble(
                 removethis = "", # TODO remove, just an artifact of saving a funny csv to drive
