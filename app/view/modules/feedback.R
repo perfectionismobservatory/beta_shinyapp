@@ -20,15 +20,6 @@ ui <- function(id) {
 server <- function(id) {
     sh$moduleServer(id, function(input, output, session) {
         # Print error feedback for invalid inputs
-        sh$observeEvent(input$year, ignoreNULL = TRUE, {
-            shf$feedbackDanger(
-                "year",
-                be$invalid_format$year(input$year),
-                text = "Must be between X and Y",
-                icon = NULL,
-                session = session
-            )
-        })
 
         sh$observeEvent(input$age, ignoreNULL = TRUE, {
             shf$feedbackDanger(
@@ -65,16 +56,6 @@ server <- function(id) {
                 "doi",
                 be$invalid_format$doi(input$doi),
                 text = "Incorrect format",
-                icon = NULL,
-                session = session
-            )
-        })
-
-        sh$observeEvent(input$pubyear, ignoreNULL = TRUE, {
-            shf$feedbackDanger(
-                "pubyear",
-                be$invalid_format$pubyear(input$pubyear),
-                text = "Must be between X and Y",
                 icon = NULL,
                 session = session
             )

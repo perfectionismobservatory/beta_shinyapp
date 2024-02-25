@@ -8,6 +8,7 @@ box::use(
     str = stringr,
     shw = shinyWidgets,
     shj = shinyjs,
+    lub = lubridate,
 )
 
 box::use(
@@ -63,6 +64,7 @@ server <- function(id, data) {
             pr$reduce(
                 .f = `&`,
                 c(
+                    input$year %in% 1988:lub$year(lub$today()),
                     input$scale %in% c("F-MPS", "HF-MPS"),
                     input$sample == "University students",
                     be$between(18, input$age, 25) %ifNA% FALSE,
@@ -95,7 +97,7 @@ server <- function(id, data) {
             if (1 > memory$confirm || memory$reset == memory$confirm) {
                 NULL
                 # Show a failure message if the user failed the initial check
-            } else if (!pass() || input$doi %in% data()$doi) {
+            } else if (!pass() || input$doi %in% data()$doi_pmid_link %//% FALSE) {
                 sh$div(
                     id = "dataentry-card",
                     class = "d-flex flex-column justify-content-center align-items-center",
@@ -111,7 +113,7 @@ server <- function(id, data) {
                         ),
                         bsl$card_body(
                             # Notify if failure was due to DOI being already included in data base
-                            if (input$doi %in% data()$doi %//% FALSE) {
+                            if (input$doi %in% data()$doc_id %//% FALSE) {
                                 sh$tagList(
                                     sh$p("A study with the DOI you entered is already part of our data base.")
                                 )
@@ -165,14 +167,14 @@ server <- function(id, data) {
                                     sh$div(
                                         class = "d-flex flex-row flex-wrap gap-4",
                                         !!!pr$map(
-                                            c("total_N", "female_pct"),
+                                            c("n_sample", "pct_female"),
                                             # TODO add lookup for nice labels on these inputs
                                             # "Number of participants", "Gender (% Female)"
                                             \(v) sh$numericInput(
                                                 session$ns(v),
-                                                str$str_to_title(str$str_replace(v, "_", " ")),
+                                                if (v == "n_sample") "Number of participants" else "Gender (% Female)",
                                                 value = NA,
-                                                width = "120px"
+                                                width = "265px"
                                             )
                                         ),
                                         fe$disabled_upload_inputs$sample("sample_upload", session$ns, input$sample),
@@ -203,13 +205,12 @@ server <- function(id, data) {
                                         class = "d-flex flex-row flex-wrap gap-4",
                                         fe$disabled_upload_inputs$status("status_upload", session$ns, input$status),
                                         fe$disabled_upload_inputs$name("name_upload", session$ns, input$name),
-                                        fe$disabled_upload_inputs$type("type_upload", session$ns, input$type),
                                         if (input$status == "Published") {
-                                            fe$disabled_upload_inputs$doi("doi_upload", session$ns, input$doi)
+                                            fe$disabled_upload_inputs$doi("doc_id", session$ns, input$doi)
                                         } else {
-                                            # TODO add preregistration placeholder
-                                            "preregistration_placeholder"
-                                        }
+                                            fe$disabled_upload_inputs$doi("doc_id", session$ns, input$prereg)
+                                        },
+                                        fe$disabled_upload_inputs$type("type_upload", session$ns, input$type)
                                     )
                                 )
                             )
@@ -252,18 +253,31 @@ server <- function(id, data) {
         })
 
         sh$observeEvent(input$upload, {
-            shj$disable("upload")
-            pr$walk(c("view", "reset"), shj$enable)
-        })
+            # TODO index `names(input)` to find those ones containing subscales, e.g.,
+            # look for `daa` finds `daa_mean`, `daa_sd`, `daa_nitems`
+            upload_field_not_filled <- pr$map_lgl(
+                c(fe$scale_lookup[[input$scale]], "pct_female", "n_sample"),
+                \(x) be$is_nothing(input[[x]])
+            )
 
-        sh$observeEvent(input$upload, {
-            # TODO refactor this
-            new_data <- be$write_inputs_to_tibble(input)
-            # TODO add pivot longer into correct shape for append
-            # TODO add other columns that the final data frame includes
+            if (any(upload_field_not_filled)) {
+                print(upload_field_not_filled)
+                # Show notification and do nothing else
+                sh$showNotification("❌ Upload not successful. Please fill out all fields first.")
+            } else {
+                # Create tibble from inputs and prepare for append
+                new_data <- input %>%
+                    be$write_inputs_to_tibble() %>%
+                    be$prepare_for_append()
 
-            sheet_append(Sys.getenv("URL"), new_data, sheet = 1)
-            sh$showNotification("Upload successful! 🎉")
+                # Upload and notify user
+                sheet_append(Sys.getenv("URL"), new_data, sheet = 1)
+                sh$showNotification("✅ Upload successful. Thank you for your contribution!")
+
+                # Disable upload, enable view and reset
+                shj$disable("upload")
+                pr$walk(c("view", "reset"), shj$enable)
+            }
         })
     })
 }

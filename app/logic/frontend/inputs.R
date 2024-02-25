@@ -316,6 +316,16 @@ disabled_upload_inputs <- list(
             )
         )
     },
+    prereg = \(id, ns, value) {
+        shj$disabled(
+            sh$textInput(
+                ns(id),
+                "Preregistration link",
+                value = value,
+                width = "265px"
+            )
+        )
+    },
     status = \(id, ns, value) {
         shj$disabled(
             sh$textInput(
@@ -388,6 +398,7 @@ toggleswitch <- function(id, label, value = FALSE, class = NULL) {
     )
 }
 
+#' @export
 scale_lookup <- list(
     "HF-MPS" = c(
         sop = "Self-oriented perfectionism",

@@ -1,16 +1,31 @@
 box::use(
     tbl = tibble,
     rl = rlang[`%||%`],
+    dp = dplyr[`%>%`],
+    tdr = tidyr,
+    str = stringr,
 )
 
 #' @export
 write_inputs_to_tibble <- function(input) {
     tbl$tibble(
         # artifact of saving a funny csv to drive, removing depends on whether hosted file has rownum column
-        removethis = "",
+        X = "",
+        id = NA, # TODO should be `max(data()$id) + 1`
+        authors = input$name,
+        email = input$email, # TODO this column is not in original df, add empty col?
+        doi_pmid_link = input$doc_id, # doi or preregistration link
+        type_of_document = input$type,
+        study = NA, # TODO what goes here?
         country = input$country,
         year = input$year,
-        N = input$total_N,
+        year_adj = NA, # TODO what is this?
+        n_sample = input$n_sample,
+        ratio_female = input$pct_female / 100,
+        age = input$age,
+        n_likert = NA, # TODO will probably be known through input$scale?
+        scale = input$scale,
+        # subscale column will be generated through pivoting
         sop_mean = input$sop_mean %||% NA,
         spp_mean = input$spp_mean %||% NA,
         oop_mean = input$oop_mean %||% NA,
@@ -38,9 +53,21 @@ write_inputs_to_tibble <- function(input) {
         com_nitems = input$com_nitems %||% NA,
         daa_nitems = input$daa_nitems %||% NA,
         o_nitems = input$o_nitems %||% NA,
-        female = input$female_N,
-        age = input$age,
-        email = input$email,
-        doi = input$doi,
     )
+}
+
+#' @export
+prepare_for_append <- function(data) {
+    data %>%
+        tdr$pivot_longer(dp$contains(c("mean", "sd"))) %>%
+        dp$filter(!is.na(value)) %>%
+        tdr$separate_wider_delim(name, delim = "_", names = c("subscale", "measure")) %>%
+        tdr$pivot_longer(dp$contains("nitems"), names_to = "subscale_nitems", values_to = "n_items") %>%
+        dp$filter(str$str_detect(subscale_nitems, subscale)) %>%
+        dp$select(-subscale_nitems) %>%
+        tdr$pivot_wider(names_from = "measure", values_from = "value") %>%
+        dp$mutate(
+            dp$across(c(mean, sd), \(x) x / n_items, .names = "{.col}_adj"),
+            subscale = toupper(subscale)
+        )
 }
