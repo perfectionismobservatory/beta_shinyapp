@@ -63,28 +63,28 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
 
-        min_x <- sh$reactive(min(data()$year))
-        max_x <- sh$reactive(max(data()$year))
+        # FIX on first evaluation of reactive graph, dataframe is a 0-row df
+        # Code below is a bandaid solution only
+        min_x <- sh$reactive(if (nrow(data()) > 0) min(data()$year, na.rm = TRUE))
+        max_x <- sh$reactive(if (nrow(data()) > 0) max(data()$year, na.rm = TRUE))
 
         res_download <- sh$reactive({
             data() %>%
-                dp$mutate(scale = toupper(scale)) %>%
-                dp$rename(Scale = scale, `Sample size` = N) %>%
-                gg$ggplot(gg$aes(year, value, group = Scale, fill = Scale)) +
-                gg$geom_point(gg$aes(size = `Sample size`), shape = 21, color = "black", alpha = 0.7) +
+                dp$mutate(Subscale = toupper(subscale)) %>%
+                gg$ggplot(gg$aes(year, mean, group = Subscale, fill = Subscale)) +
+                gg$geom_point(gg$aes(size = n_sample), shape = 21, color = "black", alpha = 0.7) +
                 gg$scale_fill_manual(values = c("#aee0fa", "#92bc92", "#fefee1")) +
                 gg$labs(
                     x = "Year",
                     y = "Value",
                     title = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
                     subtitle = paste0(
-                        if (length(unique(data()$scale)) > 1) "Scales: " else "Scale: ",
-                        toupper(paste0(unique(data()$scale), collapse = ", ")),
-                        " for subscale: ",
-                        toupper(unique(data()$subscale))
+                        if (length(unique(data()$subscale)) > 1) "subscales: " else "subscale: ",
+                        toupper(paste0(unique(data()$subscale), collapse = ", "))
                     ),
                     caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
                 ) +
+                gg$ylim(0, NA) +
                 gg$scale_size(guide = "none") + # No legend for size aes
                 gg$theme_bw() +
                 fe$ggtheme
@@ -94,11 +94,11 @@ server <- function(id, data) {
             data() %>%
                 # Turn year into factor to avoid decimals on small year input ranges
                 dp$mutate(year = factor(year)) %>%
-                dp$group_by(scale) %>%
+                dp$group_by(subscale) %>%
                 dp$arrange(year) %>%
                 # Begin echart
                 e4r$e_charts(year) %>%
-                e4r$e_scatter(value, N, bind = author) %>%
+                e4r$e_scatter(mean, n_sample, bind = authors) %>%
                 e4r$e_tooltip(
                     formatter = htw$JS("
                         function(params){
@@ -115,10 +115,8 @@ server <- function(id, data) {
                 e4r$e_title(
                     text = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
                     subtext = paste0(
-                        if (length(unique(data()$scale)) > 1) "Scales: " else "Scale: ",
-                        toupper(paste0(unique(data()$scale), collapse = ", ")),
-                        " for subscale: ",
-                        toupper(unique(data()$subscale))
+                        if (length(unique(data()$subscale)) > 1) "Scales: " else "Scale: ",
+                        toupper(paste0(unique(data()$subscale), collapse = ", "))
                     ),
                 ) %>%
                 e4r$e_theme_custom("app/static/echarts_theme.json")
