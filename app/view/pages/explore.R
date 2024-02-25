@@ -31,8 +31,6 @@ add_main_window <- function(ns, n) {
                     ),
                     bsl$layout_sidebar(
                         sidebar = bsl$sidebar(
-                            # Do we want a title?
-                            # title = "Filter menu",
                             width = 300,
                             bsl$accordion(
                                 open = FALSE,
@@ -103,19 +101,16 @@ server <- function(id, data) {
             })
         })
 
-        # I am slightly confused as to how / why this works below ...
-        # all objects are named filtered_data, but there is no mixups
-        # Do the objects carry some namespace signature?
-        filtered_data <- filter$server("filter1", sh$reactive(data))
-        plot$server("plot1", filtered_data)
+        filtered_data1 <- filter$server("filter1", sh$reactive(data))
+        plot$server("plot1", filtered_data1)
 
-        filtered_data <- filter$server("filter2", sh$reactive(data))
-        plot$server("plot2", filtered_data)
+        filtered_data2 <- filter$server("filter2", sh$reactive(data))
+        plot$server("plot2", filtered_data2)
 
-        filtered_data <- filter$server("filter3", sh$reactive(data))
-        plot$server("plot3", filtered_data)
+        filtered_data3 <- filter$server("filter3", sh$reactive(data))
+        plot$server("plot3", filtered_data3)
 
-        filtered_data <- filter$server("filter4", sh$reactive(data))
-        plot$server("plot4", filtered_data)
+        filtered_data4 <- filter$server("filter4", sh$reactive(data))
+        plot$server("plot4", filtered_data4)
     })
 }

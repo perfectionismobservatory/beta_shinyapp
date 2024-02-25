@@ -21,30 +21,31 @@ ui <- function(id) {
             fe$radio(
                 ns("view"),
                 "Pick view",
-                choices = c("Higher-order factors" = "hof", "MPS" = "mps")
+                choices = c("Higher-order factors" = "hof", "MPS" = "mps"),
+                selected = "mps"
             ),
             fe$radio(
-                ns("new_scale"), # TODO lowest level for each path has to be name of filtered column
+                ns("scale"), # TODO lowest level for each path has to be name of filtered column
                 "Pick dimension",
                 choices = c("Perfectionist strivings" = "str", "Perfectionist concerns" = "con")
             ),
             sh$conditionalPanel(
                 condition = "input.view == 'mps'",
                 fe$radio(
-                    ns("new_subscale"),
+                    ns("subscale"),
                     "Pick subscale",
                     choices = c(
+                        "All subscales" = "all",
                         "Personal standards" = "ps",
                         "Parental expectation" = "pe",
+                        "Parental criticism" = "pc",
                         "Concerns over mistakes" = "com",
                         "Doubts about actions" = "daa",
                         "Organisation" = "o"
                     )
                 ),
                 ns = ns
-            ),
-            fe$checkboxgroup(ns("scale"), "Pick scale", choices = c(SOP = "sop", SPP = "spp", OOP = "oop")),
-            fe$radio(ns("subscale"), "Pick subscale", choices = c(OM = "om", OSD = "osd"))
+            )
         ),
         bsl$accordion_panel(
             "Demography",
@@ -75,40 +76,43 @@ server <- function(id, data) {
             if (input$view == "hof") {
                 shw$updatePrettyRadioButtons(
                     session = session,
-                    "new_scale",
+                    "scale",
                     choices = c("Perfectionist strivings" = "str", "Perfectionist concerns" = "con")
                 )
             } else {
                 shw$updatePrettyRadioButtons(
                     session = session,
-                    "new_scale",
+                    "scale",
                     label = "Pick scale",
-                    choices = c("F-MPS" = "fmps", "HF-MPS" = "hfmps")
+                    choices = c("F-MPS", "HF-MPS")
                 )
             }
         })
 
-        sh$observeEvent(input$new_scale, {
-            if (input$new_scale == "fmps") {
+        sh$observeEvent(input$scale, {
+            if (input$scale == "F-MPS") {
                 shw$updatePrettyRadioButtons(
                     session = session,
-                    "new_subscale",
+                    "subscale",
                     choices = c(
-                        "Personal standards" = "ps",
-                        "Parental expectation" = "pe",
-                        "Concerns over mistakes" = "com",
-                        "Doubts about actions" = "daa",
-                        "Organisation" = "o"
+                        "All subscales" = "all",
+                        "Personal standards" = "PS",
+                        "Parental expectation" = "PE",
+                        "Parental criticism" = "PC",
+                        "Concerns over mistakes" = "COM",
+                        "Doubts about actions" = "DAA",
+                        "Organisation" = "O"
                     )
                 )
             } else {
                 shw$updatePrettyRadioButtons(
                     session = session,
-                    "new_subscale",
+                    "subscale",
                     choices = c(
-                        "Self-oriented" = "sop",
-                        "Other-oriented" = "oop",
-                        "Socially-prescribed" = "spp"
+                        "All subscales" = "all",
+                        "Self-oriented" = "SOP",
+                        "Other-oriented" = "OOP",
+                        "Socially-prescribed" = "SPP"
                     )
                 )
             }
