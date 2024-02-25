@@ -6,6 +6,7 @@ box::use(
     bsl = bslib,
     rl = rlang[`%||%`],
     shj = shinyjs,
+    pr = purrr,
 )
 
 #' @export
@@ -315,6 +316,16 @@ disabled_upload_inputs <- list(
             )
         )
     },
+    prereg = \(id, ns, value) {
+        shj$disabled(
+            sh$textInput(
+                ns(id),
+                "Preregistration link",
+                value = value,
+                width = "265px"
+            )
+        )
+    },
     status = \(id, ns, value) {
         shj$disabled(
             sh$textInput(
@@ -384,5 +395,57 @@ toggleswitch <- function(id, label, value = FALSE, class = NULL) {
             `for` = id,
             label
         )
+    )
+}
+
+#' @export
+scale_lookup <- list(
+    "HF-MPS" = c(
+        sop = "Self-oriented perfectionism",
+        oop = "Other-oriented perfectionism",
+        spp = "Self-prescribed perfectionism"
+    ),
+    "F-MPS" = c(
+        ps = "Personal standards",
+        pe = "Parental expectation",
+        pc = "Parental criticism",
+        com = "Concerns over mistakes",
+        daa = "Doubts about actions",
+        o = "Organisation"
+    )
+)
+
+#' @export
+conditional_scale_inputs <- function(scale, ns) {
+    sh$div(
+        class = "d-flex flex-row flex-wrap justify-content-center gap-4",
+        !!!pr$map(names(scale_lookup[[scale]]), \(v) {
+            sh$div(
+                class = "d-flex flex-column p-3 bg-secondary border border-info rounded",
+                style = "text-align: center;",
+                sh$p(scale_lookup[[scale]][v]),
+                sh$div(
+                    class = "d-flex flex-row gap-4",
+                    sh$numericInput(
+                        ns(paste0(v, "_nitems")),
+                        "Item number",
+                        value = NA,
+                        width = "120px"
+                    ),
+                    sh$numericInput(
+                        ns(paste0(v, "_mean")),
+                        "Mean",
+                        value = NA,
+                        width = "120px"
+                    ),
+                    sh$numericInput(
+                        ns(paste0(v, "_sd")),
+                        "SD",
+                        value = NA,
+                        width = "120px"
+                    )
+                ),
+            )
+        })
     )
 }

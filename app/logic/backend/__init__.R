@@ -2,6 +2,7 @@ box::use(
     app / logic / backend / misc,
     app / logic / backend / filters,
     app / logic / backend / validations,
+    app / logic / backend / uploads,
 )
 
 # Backend reexports
@@ -32,3 +33,9 @@ invalid_format <- validations$invalid_format
 
 #' @export
 is_valid <- validations$is_valid
+
+#' @export
+write_inputs_to_tibble <- uploads$write_inputs_to_tibble
+
+#' @export
+prepare_for_append <- uploads$prepare_for_append

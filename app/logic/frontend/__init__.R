@@ -49,6 +49,12 @@ validation_summary <- inputs$validation_summary
 conditional_validation_inputs <- inputs$conditional_validation_inputs
 
 #' @export
+scale_lookup <- inputs$scale_lookup
+
+#' @export
+conditional_scale_inputs <- inputs$conditional_scale_inputs
+
+#' @export
 conditional_validation_card <- inputs$conditional_validation_card
 
 #' @export

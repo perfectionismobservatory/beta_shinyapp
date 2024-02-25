@@ -8,6 +8,7 @@ box::use(
     str = stringr,
     shw = shinyWidgets,
     shj = shinyjs,
+    lub = lubridate,
 )
 
 box::use(
@@ -41,7 +42,6 @@ server <- function(id, data) {
                 unpublished_inputs
             }
             pr$walk(c(inputs_w_icons, conditional_names, "confirm", "reset", "upload"), shj$reset)
-            # shj$enable("confirm")
         })
 
         # `pass` is TRUE if a user meets the inclusion criteria, and FALSE otherwise
@@ -64,6 +64,7 @@ server <- function(id, data) {
             pr$reduce(
                 .f = `&`,
                 c(
+                    input$year %in% 1988:lub$year(lub$today()),
                     input$scale %in% c("F-MPS", "HF-MPS"),
                     input$sample == "University students",
                     be$between(18, input$age, 25) %ifNA% FALSE,
@@ -90,10 +91,13 @@ server <- function(id, data) {
             memory$reset <- memory$reset + 1
         })
 
+        # TODO refactor the UI components contained in this card into several lists or so
         output$dataentry <- sh$renderUI({
+            # If confirm never clicked or reset was last clicked, do not show card
             if (1 > memory$confirm || memory$reset == memory$confirm) {
                 NULL
-            } else if (!pass() || input$doi %in% data()$doi) {
+                # Show a failure message if the user failed the initial check
+            } else if (!pass() || input$doi %in% data()$doi_pmid_link %//% FALSE) {
                 sh$div(
                     id = "dataentry-card",
                     class = "d-flex flex-column justify-content-center align-items-center",
@@ -108,10 +112,12 @@ server <- function(id, data) {
                             )
                         ),
                         bsl$card_body(
-                            if (input$doi %in% data()$doi %//% FALSE) {
+                            # Notify if failure was due to DOI being already included in data base
+                            if (input$doi %in% data()$doc_id %//% FALSE) {
                                 sh$tagList(
                                     sh$p("A study with the DOI you entered is already part of our data base.")
                                 )
+                                # Otherwise generic failure message
                             } else {
                                 sh$tagList(
                                     sh$p(
@@ -122,12 +128,14 @@ server <- function(id, data) {
                                 )
                             }
                         ),
+                        # Footer contains a button that returns user to start page
                         bsl$card_footer(
                             style = "text-align: center;",
                             fe$btn_return(session$ns("return"), label = "Return to start page", icon = NULL)
                         )
                     )
                 )
+                # If check successful, card contains accordion panels with inputs
             } else {
                 sh$div(
                     id = "dataentry-card",
@@ -150,28 +158,27 @@ server <- function(id, data) {
                                 After this, you can choose between resetting this page to add another study, or jumping
                                 to a graph highlighting your contribution."
                             ),
+                            # TODO sort according to scribble
                             bsl$accordion(
                                 open = FALSE,
                                 bsl$accordion_panel(
-                                    title = "Pre-entered",
-                                    icon = bsi$bs_icon("clipboard2-check"),
-                                    sh$div(
-                                        class = "d-flex flex-row flex-wrap gap-4",
-                                        fe$disabled_upload_inputs$age("age_upload", session$ns, input$age),
-                                        fe$disabled_upload_inputs$year("year_upload", session$ns, input$year),
-                                        fe$disabled_upload_inputs$scale("scale_upload", session$ns, input$scale),
-                                        fe$disabled_upload_inputs$doi("doi_upload", session$ns, input$doi),
-                                        fe$disabled_upload_inputs$status("status_upload", session$ns, input$status),
-                                        fe$disabled_upload_inputs$sample("sample_upload", session$ns, input$sample),
-                                        fe$disabled_upload_inputs$type("type_upload", session$ns, input$type),
-                                        fe$disabled_upload_inputs$name("name_upload", session$ns, input$name)
-                                    )
-                                ),
-                                bsl$accordion_panel(
-                                    title = "Sample details",
+                                    title = "Sample",
                                     icon = bsi$bs_icon("person-bounding-box"),
                                     sh$div(
                                         class = "d-flex flex-row flex-wrap gap-4",
+                                        !!!pr$map(
+                                            c("n_sample", "pct_female"),
+                                            # TODO add lookup for nice labels on these inputs
+                                            # "Number of participants", "Gender (% Female)"
+                                            \(v) sh$numericInput(
+                                                session$ns(v),
+                                                if (v == "n_sample") "Number of participants" else "Gender (% Female)",
+                                                value = NA,
+                                                width = "265px"
+                                            )
+                                        ),
+                                        fe$disabled_upload_inputs$sample("sample_upload", session$ns, input$sample),
+                                        fe$disabled_upload_inputs$age("age_upload", session$ns, input$age),
                                         sh$selectizeInput(
                                             session$ns("country"),
                                             "Country",
@@ -180,47 +187,30 @@ server <- function(id, data) {
                                             options = list(`live-search` = TRUE),
                                             width = "120px"
                                         ),
-                                        !!!pr$map(
-                                            c("total_N", "female_N"),
-                                            \(v) sh$numericInput(
-                                                session$ns(v),
-                                                str$str_to_title(str$str_replace(v, "_", " ")),
-                                                value = NA,
-                                                width = "120px"
-                                            )
-                                        )
+                                        fe$disabled_upload_inputs$year("year_upload", session$ns, input$year)
                                     )
                                 ),
                                 bsl$accordion_panel(
-                                    title = "Values",
+                                    title = paste0("Scale: ", input$scale),
                                     icon = bsi$bs_icon("rulers"),
                                     sh$div(
-                                        class = "d-flex flex-row flex-wrap justify-content-center gap-4",
-                                        !!!pr$map(
-                                            c("sop_om", "sop_osd", "spp_om", "spp_osd", "oop_om", "oop_osd"),
-                                            \(v) {
-                                                sh$div(
-                                                    class = "d-flex flex-column p-3
-                                                             bg-secondary border border-info rounded",
-                                                    sh$p(toupper(str$str_replace(v, "_", " "))),
-                                                    sh$div(
-                                                        class = "d-flex flex-row gap-4",
-                                                        sh$numericInput(
-                                                            session$ns(v),
-                                                            "Value",
-                                                            value = NA,
-                                                            width = "120px"
-                                                        ),
-                                                        sh$numericInput(
-                                                            session$ns(paste0(v, "_len")),
-                                                            "Item number",
-                                                            value = NA,
-                                                            width = "120px"
-                                                        )
-                                                    ),
-                                                )
-                                            }
-                                        )
+                                        class = "d-flex flex-row flex-wrap gap-4",
+                                        fe$conditional_scale_inputs(input$scale, session$ns)
+                                    )
+                                ),
+                                bsl$accordion_panel(
+                                    title = "Publication",
+                                    icon = bsi$bs_icon("journal-bookmark-fill"),
+                                    sh$div(
+                                        class = "d-flex flex-row flex-wrap gap-4",
+                                        fe$disabled_upload_inputs$status("status_upload", session$ns, input$status),
+                                        fe$disabled_upload_inputs$name("name_upload", session$ns, input$name),
+                                        if (input$status == "Published") {
+                                            fe$disabled_upload_inputs$doi("doc_id", session$ns, input$doi)
+                                        } else {
+                                            fe$disabled_upload_inputs$doi("doc_id", session$ns, input$prereg)
+                                        },
+                                        fe$disabled_upload_inputs$type("type_upload", session$ns, input$type)
                                     )
                                 )
                             )
@@ -263,30 +253,31 @@ server <- function(id, data) {
         })
 
         sh$observeEvent(input$upload, {
-            shj$disable("upload")
-            pr$walk(c("view", "reset"), shj$enable)
-        })
-
-        sh$observeEvent(input$upload, {
-            new_data <- tbl$tibble(
-                removethis = "", # TODO remove, just an artifact of saving a funny csv to drive
-                country = input$country,
-                year = input$year,
-                N = input$total_N,
-                sop_om = input$sop_om,
-                sop_osd = input$sop_osd,
-                spp_om = input$spp_om,
-                spp_osd = input$spp_osd,
-                oop_om = input$oop_om,
-                oop_osd = input$oop_osd,
-                female = input$female_N,
-                age = input$age,
-                email = input$email,
-                doi = input$doi,
+            # TODO index `names(input)` to find those ones containing subscales, e.g.,
+            # look for `daa` finds `daa_mean`, `daa_sd`, `daa_nitems`
+            upload_field_not_filled <- pr$map_lgl(
+                c(fe$scale_lookup[[input$scale]], "pct_female", "n_sample"),
+                \(x) be$is_nothing(input[[x]])
             )
 
-            sheet_append(Sys.getenv("URL"), new_data, sheet = 1)
-            sh$showNotification("Upload successful! 🎉")
+            if (any(upload_field_not_filled)) {
+                print(upload_field_not_filled)
+                # Show notification and do nothing else
+                sh$showNotification("❌ Upload not successful. Please fill out all fields first.")
+            } else {
+                # Create tibble from inputs and prepare for append
+                new_data <- input %>%
+                    be$write_inputs_to_tibble() %>%
+                    be$prepare_for_append()
+
+                # Upload and notify user
+                sheet_append(Sys.getenv("URL"), new_data, sheet = 1)
+                sh$showNotification("✅ Upload successful. Thank you for your contribution!")
+
+                # Disable upload, enable view and reset
+                shj$disable("upload")
+                pr$walk(c("view", "reset"), shj$enable)
+            }
         })
     })
 }
