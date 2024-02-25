@@ -35,16 +35,11 @@ font_add_google("Merriweather", "Merriweather")
 font_add_google("Noto Sans", "Noto Sans")
 showtext_auto()
 
-data <-
-  read_sheet(Sys.getenv("URL"), col_types = "_cninnnnnnincc") %>%
-  tdr$pivot_longer(c(sop_om, sop_osd, spp_osd, oop_om, oop_osd, spp_om)) %>%
-  tdr$separate_wider_delim(name, delim = "_", names = c("scale", "subscale")) %>%
-  dp$mutate(
-    author = str$str_extract(email, "[a-z]+\\.[a-z]+"),
-    author = str$str_replace(author, "\\.", " "),
-    author = str$str_to_title(author),
-    author = paste0(author, " et al., ", year) # the pipe isn't prettier than this
-  )
+data <- read_sheet(
+  Sys.getenv("URL"),
+  col_types = "_nccccccnnnnnnccnnnnn",
+  na = "NA"
+)
 
 #' @export
 ui <- function(id) {

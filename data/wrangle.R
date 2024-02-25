@@ -44,12 +44,12 @@ df_fmps <- list_df$fmps %>%
     tdr$pivot_wider(names_from = "measure", values_from = "value") %>%
     dp$select(-c(subscale_nitems, Comments, Gen)) %>%
     dp$rename_with(\(x) tolower(str$str_replace(x, "adj", "_adj"))) %>%
-    dp$rename(n_likert = "point", n_sample = "n") %>%
+    dp$rename(n_likert = "point", n_sample = "n", mean = "m", mean_adj = "m_adj") %>%
     # Reorder columns to allow for `bind_rows`
     dp$relocate(
         id, authors, doi_pmid_link, type_of_document, study, country, year,
-        year_adj, n_sample, n_items, n_likert, per_female, age, scale, subscale,
-        m, m_adj, sd, sd_adj
+        year_adj, n_sample, per_female, age, n_likert, scale, subscale, n_items,
+        mean, sd, mean_adj, sd_adj
     )
 
 
@@ -79,17 +79,18 @@ df_hfmps <- list_df$hfmps %>%
     ) %>%
     dp$select(-c(Gen, Comments)) %>%
     dp$rename_with(tolower) %>%
-    dp$rename(n_likert = "point", n_sample = "n") %>%
     tdr$pivot_wider(names_from = "measure", values_from = "value") %>%
+    dp$rename(n_likert = "point", n_sample = "n", mean = "m", mean_adj = "m_adj") %>%
     # Reorder columns to allow for `bind_rows`
     dp$relocate(
         id, authors, doi_pmid_link, type_of_document, study, country, year,
-        year_adj, n_sample, n_items, n_likert, per_female, age, scale, subscale,
-        m, m_adj, sd, sd_adj
+        year_adj, n_sample, per_female, age, n_likert, scale, subscale, n_items,
+        mean, sd, mean_adj, sd_adj
     )
 
 df_full <- dp$bind_rows(df_fmps, df_hfmps) %>%
     dp$mutate(ratio_female = per_female / 100, .before = per_female) %>%
+    dp$mutate(email = NA, .after = authors) %>%
     dp$select(-per_female)
 
 write.csv(df_full, "data/full.csv")
