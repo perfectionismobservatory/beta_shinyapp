@@ -102,6 +102,13 @@ server <- function(id) {
             pr$map(unique(c(active_conditional_inputs(), inputs_w_icons())), \(x) shj$enable(x))
         })
 
+        sh$observeEvent(input$return, {
+            pr$map(unique(c(active_conditional_inputs(), inputs_w_icons())), \(x) {
+                shj$reset(x)
+                shj$enable(x)
+            })
+        })
+
         output$card <- sh$renderUI({
             # Iterate over all input names that have a corresponding icon-function
             # If current name is last name, make icon only

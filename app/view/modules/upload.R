@@ -76,7 +76,7 @@ server <- function(id, data) {
         # Set up memory objects to track values that will be rerendered
         # input$confirm will increment, but upload and reset are rerendered
         # For correctly displaying output$dataentry, we need to keep track of input$reset
-        memory <- sh$reactiveValues(confirm = 0, reset = 0)
+        memory <- sh$reactiveValues(confirm = 0, reset = 0, return = 0)
 
         # Increment values when input is clicked
         sh$observeEvent(input$confirm, {
@@ -91,10 +91,15 @@ server <- function(id, data) {
             memory$reset <- memory$reset + 1
         })
 
+        # Same applies to return button on check failure as to reset on success
+        sh$observeEvent(input$return, {
+            memory$return <- memory$return + 1
+        })
+
         # TODO refactor the UI components contained in this card into several lists or so
         output$dataentry <- sh$renderUI({
-            # If confirm never clicked or reset was last clicked, do not show card
-            if (1 > memory$confirm || memory$reset == memory$confirm) {
+            # If confirm never clicked or reset / return was last clicked, do not show card
+            if (1 > memory$confirm || memory$reset == memory$confirm || memory$return == memory$confirm) {
                 NULL
                 # Show a failure message if the user failed the initial check
             } else if (!pass() || input$doi %in% data()$doi_pmid_link %//% FALSE) {
@@ -253,10 +258,10 @@ server <- function(id, data) {
         })
 
         sh$observeEvent(input$upload, {
-            # TODO index `names(input)` to find those ones containing subscales, e.g.,
-            # look for `daa` finds `daa_mean`, `daa_sd`, `daa_nitems`
+            all_scale_inputs <- names(input)[fe$scale_lookup[[input$scale]] %in% names(input)]
+
             upload_field_not_filled <- pr$map_lgl(
-                c(fe$scale_lookup[[input$scale]], "pct_female", "n_sample"),
+                c(all_scale_inputs, "pct_female", "n_sample"),
                 \(x) be$is_nothing(input[[x]])
             )
 
