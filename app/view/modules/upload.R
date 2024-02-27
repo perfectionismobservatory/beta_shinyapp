@@ -8,11 +8,12 @@ box::use(
     str = stringr,
     shw = shinyWidgets,
     shj = shinyjs,
+    shf = shinyFeedback,
     lub = lubridate,
 )
 
 box::use(
-    be = app / logic / backend[`%ifNA%`, `%ifNAorNULL%`, `%//%`, ],
+    be = app / logic / backend[`%ifNA%`, `%ifNAorNULL%`, `%//%`],
     fe = app / logic / frontend,
 )
 
@@ -65,6 +66,9 @@ server <- function(id, data) {
                 .f = `&`,
                 c(
                     input$year %in% 1988:lub$year(lub$today()),
+                    # Input year must be between collection year and current year
+                    # If preregistration or unpublished, always pass this check
+                    input$pubyear %||% input$year %in% input$year:lub$year(lub$today()),
                     input$scale %in% c("F-MPS", "HF-MPS"),
                     input$sample == "University students",
                     be$between(18, input$age, 25) %ifNA% FALSE,
@@ -257,16 +261,38 @@ server <- function(id, data) {
             }
         })
 
-        sh$observeEvent(input$upload, {
-            all_scale_inputs <- names(input)[fe$scale_lookup[[input$scale]] %in% names(input)]
+        all_scale_inputs <- sh$reactive({
+            rgx <- paste0(paste0("^", names(fe$scale_lookup[[input$scale]])), "_", collapse = "|")
+            names(input)[str$str_detect(names(input), rgx)]
+        })
 
-            upload_field_not_filled <- pr$map_lgl(
-                c(all_scale_inputs, "pct_female", "n_sample"),
+        upload_field_not_filled <- sh$reactive(
+            pr$map_lgl(
+                c(all_scale_inputs(), "pct_female", "n_sample"),
                 \(x) be$is_nothing(input[[x]])
             )
+        )
 
-            if (any(upload_field_not_filled)) {
-                print(upload_field_not_filled)
+        sh$observeEvent(pr$map(c(all_scale_inputs(), "pct_female", "n_sample"), \(x) input[[x]]), ignoreNULL = TRUE, {
+            pr$map2(
+                c(all_scale_inputs(), "pct_female", "n_sample"),
+                upload_field_not_filled(),
+                \(name, bool) {
+                    sh$observeEvent(input[[name]], ignoreNULL = TRUE, {
+                        shf$feedbackDanger(
+                            name,
+                            bool,
+                            text = "Required field",
+                            icon = NULL,
+                            session = session,
+                        )
+                    })
+                }
+            )
+        })
+
+        sh$observeEvent(input$upload, {
+            if (any(upload_field_not_filled())) {
                 # Show notification and do nothing else
                 sh$showNotification("❌ Upload not successful. Please fill out all fields first.")
             } else {

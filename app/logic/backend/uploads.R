@@ -11,7 +11,7 @@ write_inputs_to_tibble <- function(input) {
     tbl$tibble(
         # artifact of saving a funny csv to drive, removing depends on whether hosted file has rownum column
         X = "",
-        id = NA, # TODO should be `max(data()$id) + 1`
+        id = NA, # TODO should be `max(data()$id) + 1`, but this requires data() to update within a single session
         authors = input$name,
         email = input$email, # TODO this column is not in original df, add empty col?
         doi_pmid_link = input$doc_id, # doi or preregistration link
@@ -23,7 +23,7 @@ write_inputs_to_tibble <- function(input) {
         n_sample = input$n_sample,
         ratio_female = input$pct_female / 100,
         age = input$age,
-        n_likert = NA, # TODO will probably be known through input$scale?
+        n_likert = if (input$scale == "HF-MPS") 5 else 7,
         scale = input$scale,
         # subscale column will be generated through pivoting
         sop_mean = input$sop_mean %||% NA,

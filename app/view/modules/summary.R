@@ -83,7 +83,7 @@ server <- function(id) {
                     pr$map(
                         inputs_w_icons(),
                         # Mind the negation!
-                        \(x) (input[[x]] %ifNA% "Unspecified") != "Unspecified"
+                        \(x) !((input[[x]] %ifNA% "Unspecified") %in% c("Unspecified", ""))
                     ),
                     conditionals_filled()
                 ),
