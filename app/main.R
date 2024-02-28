@@ -14,6 +14,8 @@ box::use(
   str = stringr,
   showtext[showtext_auto],
   sysfonts[font_add_google],
+  gdtools[register_gfont],
+  lub = lubridate,
 )
 
 box::use(
@@ -35,11 +37,16 @@ font_add_google("Merriweather", "Merriweather")
 font_add_google("Noto Sans", "Noto Sans")
 showtext_auto()
 
-data <- read_sheet(
-  Sys.getenv("URL"),
-  col_types = "_nccccccnnnnnnccnnnnn",
-  na = "NA"
-)
+# Add fonts for interactive rendering
+register_gfont("Noto Sans")
+register_gfont("Merriweather")
+
+data <- Sys.getenv("URL") %>%
+  read_sheet(col_types = "_nccccccnnnnnnccnnnnn", na = "NA") %>%
+  dp$mutate(
+    year_as_date = lub$ymd(paste0(year, "-01-01")),
+    inv_var = 1 / sd^2
+  )
 
 #' @export
 ui <- function(id) {

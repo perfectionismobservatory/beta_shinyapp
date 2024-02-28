@@ -31,8 +31,10 @@ library(here)
 library(dotenv)
 
 # Visualisation
-library(echarts4r)
 library(ggplot2)
+library(ggiraph)
+library(scales)
 library(ggtext)
 library(sysfonts)
 library(showtext)
+library(gdtools)
