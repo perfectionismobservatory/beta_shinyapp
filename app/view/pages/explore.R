@@ -20,7 +20,7 @@ add_main_window <- function(ns, n) {
             NULL,
             sh$div(
                 bsl$card(
-                    height = 580, # this value is ~ the lowest we can have before scrolling is enabled
+                    height = 660, # this value is ~ the lowest we can have before scrolling is enabled
                     bsl$card_header(
                         class = "d-flex justify-content-between align-items-center",
                         sh$div(
@@ -38,7 +38,7 @@ add_main_window <- function(ns, n) {
                                 plot$sidebar_ui(ns(paste0("plot", n))),
                             )
                         ),
-                        plot$main_ui(ns(paste0("plot", n)), "Default", NULL),
+                        plot$main_ui(ns(paste0("plot", n)), NULL),
                     )
                 ),
                 sh$div(

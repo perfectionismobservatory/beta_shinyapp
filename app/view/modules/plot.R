@@ -1,16 +1,28 @@
 box::use(
     sh = shiny,
-    e4r = echarts4r,
     bsl = bslib,
     bsi = bsicons,
     dp = dplyr[`%>%`],
     htw = htmlwidgets,
     gg = ggplot2,
     lub = lubridate,
+    gir = ggiraph,
 )
 
 box::use(
     fe = app / logic / frontend,
+)
+
+# Increase point size by 20% to get borders around shapes
+# The bordered shapes (# 21 etc) behave strangely with legends
+# ... at least for me :)
+SIZEMUL <- 1.2
+
+css_default_hover <- gir$girafe_css_bicolor(primary = "yellow", secondary = "red")
+
+gir$set_girafe_defaults(
+    opts_hover = gir$opts_hover(css = css_default_hover),
+    opts_tooltip = gir$opts_tooltip(css = "padding:10px;background-color:white;color:black;border-radius:5px;border:solid 4px #7A9DAF;")
 )
 
 #' @export
@@ -49,12 +61,11 @@ sidebar_ui <- function(id) {
 }
 
 #' @export
-main_ui <- function(id, nav_title, card_title = NULL) {
+main_ui <- function(id, card_title = NULL) {
     ns <- sh$NS(id)
     bsl$nav_panel(
-        nav_title,
         bsl$card_title(card_title),
-        bsl$card_body(e4r$echarts4rOutput(ns("plot")))
+        bsl$card_body(gir$girafeOutput(ns("plot")))
     )
 }
 
@@ -70,16 +81,18 @@ server <- function(id, data) {
 
         res_download <- sh$reactive({
             data() %>%
-                dp$mutate(Subscale = toupper(subscale)) %>%
-                gg$ggplot(gg$aes(year, mean, group = Subscale, fill = Subscale)) +
-                gg$geom_point(gg$aes(size = n_sample), shape = 21, color = "black", alpha = 0.7) +
-                gg$scale_fill_manual(values = c("#aee0fa", "#92bc92", "#fefee1")) +
+                gg$ggplot(gg$aes(year_as_date, mean_adj)) +
+                gg$geom_point(gg$aes(size = inv_var * SIZEMUL, shape = country), color = "grey20", show.legend = TRUE) +
+                gg$geom_point(gg$aes(color = subscale, size = inv_var, shape = country)) +
+                gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
                 gg$labs(
                     x = "Year",
+                    color = "Subscale",
+                    shape = "Country",
                     y = "Value",
                     title = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
                     subtitle = paste0(
-                        if (length(unique(data()$subscale)) > 1) "subscales: " else "subscale: ",
+                        if (length(unique(data()$subscale)) > 1) "Subscales: " else "Subscale: ",
                         toupper(paste0(unique(data()$subscale), collapse = ", "))
                     ),
                     caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
@@ -92,37 +105,44 @@ server <- function(id, data) {
 
         res_interactive <- sh$reactive({
             data() %>%
-                # Turn year into factor to avoid decimals on small year input ranges
-                dp$mutate(year = factor(year)) %>%
-                dp$group_by(subscale) %>%
-                dp$arrange(year) %>%
-                # Begin echart
-                e4r$e_charts(year) %>%
-                e4r$e_scatter(mean, n_sample, bind = authors) %>%
-                e4r$e_tooltip(
-                    formatter = htw$JS("
-                        function(params){
-                            return('<strong>' + params.name +
-                                    '</strong><br />Year: ' + params.value[0] +
-                                    '<br />Value: ' + params.value[1] +
-                                    '<br />N: ' + params.value[2]
-                                )
-                        }
-                    "),
-                    trigger = "item"
-                ) %>%
-                e4r$e_legend(bottom = 0) %>%
-                e4r$e_title(
-                    text = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
-                    subtext = paste0(
-                        if (length(unique(data()$subscale)) > 1) "Scales: " else "Scale: ",
+                dp$mutate(lab = paste0(
+                    authors, "\n",
+                    subscale, ": ", mean_adj, "\n",
+                    "N: ", n_sample, "\n"
+                )) %>%
+                gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
+                gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", show.legend = TRUE) +
+                gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.9) +
+                gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
+                gg$labs(
+                    x = "Year",
+                    color = "Subscale",
+                    shape = "Country",
+                    y = "Value",
+                    title = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
+                    subtitle = paste0(
+                        if (length(unique(data()$subscale)) > 1) "Subscales: " else "Subscale: ",
                         toupper(paste0(unique(data()$subscale), collapse = ", "))
-                    ),
-                ) %>%
-                e4r$e_theme_custom("app/static/echarts_theme.json")
+                    )
+                ) +
+                gg$ylim(0, NA) +
+                gg$scale_size(guide = "none") + # No legend for size aes
+                gg$theme_bw() +
+                fe$ggtheme +
+                gg$theme(
+                    panel.background = gg$element_rect(fill = "#f9fbfb"),
+                    plot.background = gg$element_rect(fill = "#f9fbfb", color = "#f9fbfb"),
+                    legend.background = gg$element_rect(fill = "#f9fbfb", color = "#f9fbfb")
+                )
         })
 
-        output$plot <- e4r$renderEcharts4r(res_interactive())
+        output$plot <- gir$renderGirafe(
+            gir$girafe(
+                ggobj = res_interactive(),
+                width_svg = 7,
+                height_svg = 4
+            )
+        )
 
         output$download <- sh$downloadHandler(
             filename = \() {

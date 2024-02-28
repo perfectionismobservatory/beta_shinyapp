@@ -3,7 +3,6 @@
 # Tabular data
 library(dplyr)
 library(tidyr)
-library(vroom)
 
 # General tools
 library(rlang)
@@ -31,8 +30,10 @@ library(here)
 library(dotenv)
 
 # Visualisation
-library(echarts4r)
 library(ggplot2)
+library(ggiraph)
+library(scales)
 library(ggtext)
 library(sysfonts)
 library(showtext)
+library(gdtools)
