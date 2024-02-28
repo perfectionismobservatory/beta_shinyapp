@@ -1,13 +1,11 @@
 box::use(
     sh = shiny,
-    e4r = echarts4r,
     bsl = bslib,
     bsi = bsicons,
     dp = dplyr[`%>%`],
     htw = htmlwidgets,
     gg = ggplot2,
     lub = lubridate,
-    scales,
     gir = ggiraph,
 )
 
@@ -83,7 +81,7 @@ server <- function(id, data) {
 
         res_download <- sh$reactive({
             data() %>%
-                gg$ggplot(gg$aes(year_as_date, mean)) +
+                gg$ggplot(gg$aes(year_as_date, mean_adj)) +
                 gg$geom_point(gg$aes(size = inv_var * SIZEMUL, shape = country), color = "grey20", show.legend = TRUE) +
                 gg$geom_point(gg$aes(color = subscale, size = inv_var, shape = country)) +
                 gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
@@ -109,10 +107,10 @@ server <- function(id, data) {
             data() %>%
                 dp$mutate(lab = paste0(
                     authors, "\n",
-                    subscale, ": ", mean, "\n",
+                    subscale, ": ", mean_adj, "\n",
                     "N: ", n_sample, "\n"
                 )) %>%
-                gg$ggplot(gg$aes(year_as_date, mean, shape = country)) +
+                gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
                 gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", show.legend = TRUE) +
                 gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.9) +
                 gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
