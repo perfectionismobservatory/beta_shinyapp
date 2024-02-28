@@ -3,6 +3,7 @@ box::use(
     app / logic / backend / filters,
     app / logic / backend / validations,
     app / logic / backend / uploads,
+    app / logic / backend / plots,
 )
 
 # Backend reexports
@@ -42,3 +43,9 @@ write_inputs_to_tibble <- uploads$write_inputs_to_tibble
 
 #' @export
 prepare_for_append <- uploads$prepare_for_append
+
+#' @export
+plot_interactive <- plots$plot_interactive
+
+#' @export
+plot_static <- plots$plot_static
