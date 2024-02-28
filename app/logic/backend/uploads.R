@@ -11,7 +11,7 @@ write_inputs_to_tibble <- function(input) {
     tbl$tibble(
         # artifact of saving a funny csv to drive, removing depends on whether hosted file has rownum column
         X = "",
-        id = NA, # TODO should be `max(data()$id) + 1`
+        id = NA, # TODO should be `max(data()$id) + 1`, but this requires data() to update within a single session
         authors = input$name,
         email = input$email, # TODO this column is not in original df, add empty col?
         doi_pmid_link = input$doc_id, # doi or preregistration link
@@ -23,7 +23,7 @@ write_inputs_to_tibble <- function(input) {
         n_sample = input$n_sample,
         ratio_female = input$pct_female / 100,
         age = input$age,
-        n_likert = NA, # TODO will probably be known through input$scale?
+        n_likert = if (input$scale == "HF-MPS") 5 else 7,
         scale = input$scale,
         # subscale column will be generated through pivoting
         sop_mean = input$sop_mean %||% NA,
@@ -58,7 +58,7 @@ write_inputs_to_tibble <- function(input) {
 
 #' @export
 prepare_for_append <- function(data) {
-    data %>%
+    tmp <- data %>%
         tdr$pivot_longer(dp$contains(c("mean", "sd"))) %>%
         dp$filter(!is.na(value)) %>%
         tdr$separate_wider_delim(name, delim = "_", names = c("subscale", "measure")) %>%
@@ -66,8 +66,19 @@ prepare_for_append <- function(data) {
         dp$filter(str$str_detect(subscale_nitems, subscale)) %>%
         dp$select(-subscale_nitems) %>%
         tdr$pivot_wider(names_from = "measure", values_from = "value") %>%
-        dp$mutate(
-            dp$across(c(mean, sd), \(x) x / n_items, .names = "{.col}_adj"),
-            subscale = toupper(subscale)
-        )
+        dp$mutate(subscale = toupper(subscale))
+
+    # If the given scores are lower than that scales max Likert score, assume adjusted value
+    # and calculate raw values from adjusted values
+    if ((tmp$scale[1] == "F-MPS" && all(tmp$mean <= 5)) || (tmp$scale[1] == "HF-MPS" && all(tmp$mean <= 7))) {
+        # Not very elegant with the double rename, but it should do the job
+        # Could probably think of an improvement eventually ...
+        tmp %>%
+            dp$rename(mean_adj = "mean", sd_adj = "sd") %>%
+            dp$mutate(dp$across(c(mean_adj, sd_adj), \(x) x * n_items, .names = "{.col}_tmp")) %>%
+            dp$rename(mean = "mean_adj_tmp", sd = "sd_adj_tmp")
+    # Otherwise calculate adjusted values from raw values
+    } else {
+        dp$mutate(tmp, dp$across(c(mean, sd), \(x) x / n_items, .names = "{.col}_adj"))
+    }
 }

@@ -83,7 +83,7 @@ server <- function(id) {
                     pr$map(
                         inputs_w_icons(),
                         # Mind the negation!
-                        \(x) (input[[x]] %ifNA% "Unspecified") != "Unspecified"
+                        \(x) !((input[[x]] %ifNA% "Unspecified") %in% c("Unspecified", ""))
                     ),
                     conditionals_filled()
                 ),
@@ -100,6 +100,13 @@ server <- function(id) {
 
         sh$observeEvent(input$reset, {
             pr$map(unique(c(active_conditional_inputs(), inputs_w_icons())), \(x) shj$enable(x))
+        })
+
+        sh$observeEvent(input$return, {
+            pr$map(unique(c(active_conditional_inputs(), inputs_w_icons())), \(x) {
+                shj$reset(x)
+                shj$enable(x)
+            })
         })
 
         output$card <- sh$renderUI({

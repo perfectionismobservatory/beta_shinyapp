@@ -8,11 +8,12 @@ box::use(
     str = stringr,
     shw = shinyWidgets,
     shj = shinyjs,
+    shf = shinyFeedback,
     lub = lubridate,
 )
 
 box::use(
-    be = app / logic / backend[`%ifNA%`, `%ifNAorNULL%`, `%//%`, ],
+    be = app / logic / backend[`%ifNA%`, `%ifNAorNULL%`, `%//%`],
     fe = app / logic / frontend,
 )
 
@@ -65,6 +66,9 @@ server <- function(id, data) {
                 .f = `&`,
                 c(
                     input$year %in% 1988:lub$year(lub$today()),
+                    # Input year must be between collection year and current year
+                    # If preregistration or unpublished, always pass this check
+                    input$pubyear %||% input$year %in% input$year:lub$year(lub$today()),
                     input$scale %in% c("F-MPS", "HF-MPS"),
                     input$sample == "University students",
                     be$between(18, input$age, 25) %ifNA% FALSE,
@@ -76,7 +80,7 @@ server <- function(id, data) {
         # Set up memory objects to track values that will be rerendered
         # input$confirm will increment, but upload and reset are rerendered
         # For correctly displaying output$dataentry, we need to keep track of input$reset
-        memory <- sh$reactiveValues(confirm = 0, reset = 0)
+        memory <- sh$reactiveValues(confirm = 0, reset = 0, return = 0)
 
         # Increment values when input is clicked
         sh$observeEvent(input$confirm, {
@@ -91,10 +95,15 @@ server <- function(id, data) {
             memory$reset <- memory$reset + 1
         })
 
+        # Same applies to return button on check failure as to reset on success
+        sh$observeEvent(input$return, {
+            memory$return <- memory$return + 1
+        })
+
         # TODO refactor the UI components contained in this card into several lists or so
         output$dataentry <- sh$renderUI({
-            # If confirm never clicked or reset was last clicked, do not show card
-            if (1 > memory$confirm || memory$reset == memory$confirm) {
+            # If confirm never clicked or reset / return was last clicked, do not show card
+            if (1 > memory$confirm || memory$reset == memory$confirm || memory$return == memory$confirm) {
                 NULL
                 # Show a failure message if the user failed the initial check
             } else if (!pass() || input$doi %in% data()$doi_pmid_link %//% FALSE) {
@@ -252,16 +261,38 @@ server <- function(id, data) {
             }
         })
 
-        sh$observeEvent(input$upload, {
-            # TODO index `names(input)` to find those ones containing subscales, e.g.,
-            # look for `daa` finds `daa_mean`, `daa_sd`, `daa_nitems`
-            upload_field_not_filled <- pr$map_lgl(
-                c(fe$scale_lookup[[input$scale]], "pct_female", "n_sample"),
+        all_scale_inputs <- sh$reactive({
+            rgx <- paste0(paste0("^", names(fe$scale_lookup[[input$scale]])), "_", collapse = "|")
+            names(input)[str$str_detect(names(input), rgx)]
+        })
+
+        upload_field_not_filled <- sh$reactive(
+            pr$map_lgl(
+                c(all_scale_inputs(), "pct_female", "n_sample"),
                 \(x) be$is_nothing(input[[x]])
             )
+        )
 
-            if (any(upload_field_not_filled)) {
-                print(upload_field_not_filled)
+        sh$observeEvent(pr$map(c(all_scale_inputs(), "pct_female", "n_sample"), \(x) input[[x]]), ignoreNULL = TRUE, {
+            pr$map2(
+                c(all_scale_inputs(), "pct_female", "n_sample"),
+                upload_field_not_filled(),
+                \(name, bool) {
+                    sh$observeEvent(input[[name]], ignoreNULL = TRUE, {
+                        shf$feedbackDanger(
+                            name,
+                            bool,
+                            text = "Required field",
+                            icon = NULL,
+                            session = session,
+                        )
+                    })
+                }
+            )
+        })
+
+        sh$observeEvent(input$upload, {
+            if (any(upload_field_not_filled())) {
                 # Show notification and do nothing else
                 sh$showNotification("❌ Upload not successful. Please fill out all fields first.")
             } else {
