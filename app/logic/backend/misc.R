@@ -2,6 +2,7 @@ box::use(
   sh = shiny,
   router = shiny.router,
   rl = rlang[`%||%`],
+  pr = purrr,
 )
 
 #' @export
