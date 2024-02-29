@@ -3,6 +3,7 @@ box::use(
     sh = shiny,
     gir = ggiraph,
     dp = dplyr[`%>%`],
+    lub = lubridate,
 )
 
 box::use(
@@ -74,7 +75,7 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
 }
 
 #' @export
-plot_static <- function(data) {
+plot_static <- function(data, alpha = 0.6) {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
@@ -82,9 +83,9 @@ plot_static <- function(data) {
     max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
 
     data %>%
-        gg$ggplot(gg$aes(year_as_date, mean_adj)) +
-        gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = 0.6, show.legend = TRUE) +
-        gg$geom_point(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.6) +
+        gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
+        gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
+        gg$geom_point(gg$aes(color = subscale, size = inv_var), alpha = alpha) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",

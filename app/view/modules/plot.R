@@ -67,9 +67,18 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
 
-        res_static <- sh$reactive(be$plot_static(data()))
+        # For each plot, add regression lines if input$regression is TRUE
+        res_static <- sh$reactive({
+            if (input$regression) {
+                be$plot_static(data(), alpha = 0.3) +
+                    gg$geom_smooth(gg$aes(group = subscale), color = "grey20", linewidth = 1.5, se = FALSE) +
+                    gg$geom_smooth(gg$aes(group = subscale, color = subscale), se = FALSE)
+            } else {
+                be$plot_static(data())
+            }
+        })
+
         res_interactive <- sh$reactive({
-            # Add regression lines if that input is active
             if (input$regression) {
                 be$plot_interactive(data(), background = "#f9fbfb", alpha = 0.3) +
                     gir$geom_smooth_interactive(gg$aes(group = subscale), color = "grey20", linewidth = 1.5, se = FALSE) +

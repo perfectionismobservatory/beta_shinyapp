@@ -53,13 +53,9 @@ server <- function(id) {
             }
         })
 
-        # Uncomment once the check is implemented
-        # I also dislike that the obs_return looks different to the change page above...
-        # Generic change page obs wrapper or long version for both?
-        # be$obs_return(input)
-
         # Get those inputs that have corresponding icons
         inputs_w_icons <- sh$reactive(names(input)[names(input) %in% names(fe$validation_summary)])
+
         # Step 1, check conditional inputs (need this object further down)
         conditionals_filled <- sh$reactive(
             pr$reduce(
@@ -76,6 +72,7 @@ server <- function(id) {
                 .f = `&`
             )
         )
+
         # Step 2, check main inputs
         all_filled <- sh$reactive(
             pr$reduce(
@@ -93,7 +90,6 @@ server <- function(id) {
 
         sh$observe(shj$toggleState("confirm", condition = all_filled()))
 
-        # Probably not the most elegant, but one way to check if all items are specified
         sh$observeEvent(input$confirm, {
             pr$map(unique(c(active_conditional_inputs(), inputs_w_icons())), \(x) shj$disable(x))
         })
@@ -110,11 +106,11 @@ server <- function(id) {
         })
 
         output$card <- sh$renderUI({
-            # Iterate over all input names that have a corresponding icon-function
-            # If current name is last name, make icon only
-            # Else, make icon with padding
             bsl$card_body(
                 padding = 0,
+                # Iterate over all input names that have a corresponding icon-function
+                # If current name is last name, make icon only
+                # Else, make icon with padding
                 !!!pr$map(
                     c(inputs_w_icons(), "details"),
                     \(name) {
