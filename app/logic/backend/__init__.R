@@ -45,6 +45,12 @@ write_inputs_to_tibble <- uploads$write_inputs_to_tibble
 prepare_for_append <- uploads$prepare_for_append
 
 #' @export
+get_detail_inputs <- uploads$get_detail_inputs
+
+#' @export
+run_initial_check <- uploads$run_initial_check
+
+#' @export
 plot_interactive <- plots$plot_interactive
 
 #' @export
