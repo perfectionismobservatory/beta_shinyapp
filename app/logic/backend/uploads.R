@@ -23,7 +23,7 @@ write_inputs_to_tibble <- function(input, data) {
         # artifact of saving a funny csv to drive, removing depends on whether hosted file has rownum column
         X = "",
         id = max(data$id, na.rm = TRUE) + input$reset + 1, # first upload will be +1, second one +2, etc.
-        authors = input$name,
+        authors = format_author(input$name),
         email = input$email, # TODO this column is not in original df, add empty col?
         doi_pmid_link = input$doc_id, # doi or preregistration link
         type_of_document = input$type,
