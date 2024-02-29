@@ -10,6 +10,9 @@ box::use(
     shj = shinyjs,
     shf = shinyFeedback,
     lub = lubridate,
+    gir = ggiraph,
+    gg = ggplot2,
+    dp = dplyr,
 )
 
 box::use(
@@ -68,7 +71,7 @@ server <- function(id, data) {
                     input$year %in% 1988:lub$year(lub$today()),
                     # Input year must be between collection year and current year
                     # If preregistration or unpublished, always pass this check
-                    input$pubyear %||% input$year %in% input$year:lub$year(lub$today()),
+                    (input$pubyear %||% input$year) %in% input$year:lub$year(lub$today()),
                     input$scale %in% c("F-MPS", "HF-MPS"),
                     input$sample == "University students",
                     be$between(18, input$age, 25) %ifNA% FALSE,
@@ -80,7 +83,7 @@ server <- function(id, data) {
         # Set up memory objects to track values that will be rerendered
         # input$confirm will increment, but upload and reset are rerendered
         # For correctly displaying output$dataentry, we need to keep track of input$reset
-        memory <- sh$reactiveValues(confirm = 0, reset = 0, return = 0)
+        memory <- sh$reactiveValues(confirm = 0, reset = 0, return = 0, view = 0)
 
         # Increment values when input is clicked
         sh$observeEvent(input$confirm, {
@@ -98,6 +101,10 @@ server <- function(id, data) {
         # Same applies to return button on check failure as to reset on success
         sh$observeEvent(input$return, {
             memory$return <- memory$return + 1
+        })
+
+        sh$observeEvent(input$view, {
+            memory$view <- memory$view + 1
         })
 
         # TODO refactor the UI components contained in this card into several lists or so
@@ -246,14 +253,18 @@ server <- function(id, data) {
                                 )
                             ),
                             shj$disabled(
-                                sh$actionButton(
-                                    session$ns("view"),
-                                    class = fe$class_button,
-                                    sh$div(
+                                fe$btn_modal(
+                                    id = session$ns("view"),
+                                    label = sh$div(
                                         class = "d-flex align-items-center gap-2",
                                         bsi$bs_icon("graph-up-arrow", size = "1.25rem"), "Show graph"
-                                    )
-                                ) %>% bsl$tooltip("Feature in development")
+                                    ),
+                                    modal_title = "Your data points are shown in red",
+                                    footer_confirm = NULL,
+                                    footer_dismiss = NULL,
+                                    class_toggle = fe$class_button,
+                                    gir$girafeOutput(session$ns("new_data_plot"))
+                                )
                             )
                         )
                     )
@@ -298,7 +309,7 @@ server <- function(id, data) {
             } else {
                 # Create tibble from inputs and prepare for append
                 new_data <- input %>%
-                    be$write_inputs_to_tibble() %>%
+                    be$write_inputs_to_tibble(data()) %>% # needs data to calculate study `id`
                     be$prepare_for_append()
 
                 # Upload and notify user
@@ -307,8 +318,32 @@ server <- function(id, data) {
 
                 # Disable upload, enable view and reset
                 shj$disable("upload")
-                pr$walk(c("view", "reset"), shj$enable)
+                pr$walk(c("view_toggle", "view_dismiss", "view_x", "reset"), shj$enable) # TODO missing upper right close button
             }
+        })
+
+        new_plot <- sh$eventReactive(input$upload, {
+            # Format new entry
+            new_entry <- input %>%
+                be$write_inputs_to_tibble(data()) %>%
+                be$prepare_for_append() %>%
+                be$create_label() %>%
+                dp$mutate(
+                    dp$across(c(mean_adj, sd, year), as.numeric),
+                    year_as_date = lub$ymd(paste0(year, "-01-01")),
+                    inv_var = 1 / sd^2,
+                    id = max(data()$id, na.rm = TRUE) + 1
+                )
+
+            # Plot
+            data() %>%
+                dp$filter(scale == input$scale) %>% # Show plot for scale that user entered data for
+                be$plot_interactive() + # First "layer" is existing data, then new points in red on top
+                gir$geom_point_interactive(data = new_entry, gg$aes(size = inv_var, tooltip = lab, data_id = id), color = "red", show.legend = FALSE)
+        })
+
+        output$new_data_plot <- gir$renderGirafe({
+            gir$girafe(ggobj = new_plot(), width_svg = 7, height_svg = 4)
         })
     })
 }

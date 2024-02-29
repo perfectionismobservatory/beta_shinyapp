@@ -63,7 +63,7 @@ ui <- function(id) {
                                 sh$p(
                                     style = "font-size: 7pt; text-align: center;",
                                     class = "text-secondary",
-                                    "¹ London School of Economics, ² University of York, ³ Karolinska Institutet"
+                                    "¹ London School of Economics, ² York St John, ³ Karolinska Institutet"
                                 )
                             )
                         )

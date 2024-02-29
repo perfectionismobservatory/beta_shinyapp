@@ -192,8 +192,9 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
 
     if (!is.null(footer_dismiss)) {
         footer_dismiss <- sh$tags$button(
+            id = paste0(id, "_dismiss"),
             type = "button",
-            class = "btn btn-secondary hover",
+            class = class_button,
             `data-bs-dismiss` = "modal",
             footer_dismiss
         )
@@ -201,7 +202,7 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
 
     if (!is.null(footer_confirm)) {
         footer_confirm <- sh$tags$button(
-            id = id,
+            id = paste0(id, "_confirm"),
             type = "button",
             class = "btn btn-success action-button hover-success",
             `data-bs-dismiss` = "modal",
@@ -211,7 +212,7 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
 
     if (!is.null(dots$class_toggle)) {
         toggle <- sh$tags$button(
-            id = paste("openModal", id, sep = "-"),
+            id = paste0(id, "_toggle"),
             class = dots$class_toggle,
             type = "button",
             `data-bs-toggle` = "modal",
@@ -220,7 +221,7 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
         )
     } else {
         toggle <- sh$tags$button(
-            id = paste("openModal", id, sep = "-"),
+            id = paste0(id, "_toggle"),
             class = "btn btn-secondary hover",
             type = "button",
             `data-bs-toggle` = "modal",
@@ -249,6 +250,7 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
                             modal_title
                         ),
                         sh$tags$button(
+                            id = paste0(id, "_x"),
                             type = "button",
                             class = "btn-close",
                             `data-bs-dismiss` = "modal",

@@ -10,7 +10,6 @@ box::use(
   dotenv[load_dot_env],
   here[here],
   shinyFeedback[useShinyFeedback],
-  vroom,
   str = stringr,
   showtext[showtext_auto],
   sysfonts[font_add_google],
@@ -42,10 +41,10 @@ register_gfont("Noto Sans")
 register_gfont("Merriweather")
 
 data <- Sys.getenv("URL") %>%
-  read_sheet(col_types = "_nccccccnnnnnnccnnnnn", na = "NA") %>%
+  read_sheet(col_types = "_cccccccccccccccccccc", na = "NA") %>%
   dp$mutate(
     year_as_date = lub$ymd(paste0(year, "-01-01")),
-    inv_var = 1 / sd^2
+    inv_var = 1 / sd^2,
   )
 
 #' @export
