@@ -6,6 +6,10 @@ box::use(
     str = stringr,
 )
 
+box::use(
+    be = app / logic / backend,
+)
+
 # Create paths to read from and store names separately
 nms <- c("fmps", "hfmps")
 paths <- paste0("data/", nms, "_dat.csv")
@@ -90,7 +94,11 @@ df_hfmps <- list_df$hfmps %>%
 
 df_full <- dp$bind_rows(df_fmps, df_hfmps) %>%
     dp$mutate(ratio_female = per_female / 100, .before = per_female) %>%
-    dp$mutate(email = NA, .after = authors) %>%
+    dp$mutate(
+        email = NA, .after = authors,
+        dp$across(dp$where(is.numeric), \(x) be$specify_decimal(x, 2)),
+        dp$across(dp$everything(), \(x) as.character(x))
+    ) %>%
     dp$select(-per_female)
 
 write.csv(df_full, "data/full.csv")

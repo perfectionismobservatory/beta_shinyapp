@@ -6,6 +6,10 @@ box::use(
     str = stringr,
 )
 
+box::use(
+    be = app / logic / backend,
+)
+
 #' @export
 write_inputs_to_tibble <- function(input) {
     tbl$tibble(
@@ -57,13 +61,13 @@ write_inputs_to_tibble <- function(input) {
 }
 
 #' @export
-prepare_for_append <- function(data) {
+prepare_for_append <- function(data, to_chr = TRUE) {
     tmp <- data %>%
         tdr$pivot_longer(dp$contains(c("mean", "sd"))) %>%
         dp$filter(!is.na(value)) %>%
         tdr$separate_wider_delim(name, delim = "_", names = c("subscale", "measure")) %>%
         tdr$pivot_longer(dp$contains("nitems"), names_to = "subscale_nitems", values_to = "n_items") %>%
-        dp$filter(str$str_detect(subscale_nitems, subscale)) %>%
+        dp$filter(str$str_detect(subscale_nitems, paste0("^", subscale, "_.+"))) %>% # Avoid matching "com" with "o"
         dp$select(-subscale_nitems) %>%
         tdr$pivot_wider(names_from = "measure", values_from = "value") %>%
         dp$mutate(subscale = toupper(subscale))
@@ -73,12 +77,18 @@ prepare_for_append <- function(data) {
     if ((tmp$scale[1] == "F-MPS" && all(tmp$mean <= 5)) || (tmp$scale[1] == "HF-MPS" && all(tmp$mean <= 7))) {
         # Not very elegant with the double rename, but it should do the job
         # Could probably think of an improvement eventually ...
-        tmp %>%
+        out <- tmp %>%
             dp$rename(mean_adj = "mean", sd_adj = "sd") %>%
             dp$mutate(dp$across(c(mean_adj, sd_adj), \(x) x * n_items, .names = "{.col}_tmp")) %>%
             dp$rename(mean = "mean_adj_tmp", sd = "sd_adj_tmp")
-    # Otherwise calculate adjusted values from raw values
+        # Otherwise calculate adjusted values from raw values
     } else {
-        dp$mutate(tmp, dp$across(c(mean, sd), \(x) x / n_items, .names = "{.col}_adj"))
+        out <- dp$mutate(tmp, dp$across(c(mean, sd), \(x) x / n_items, .names = "{.col}_adj"))
     }
+
+    dp$mutate(
+        out,
+        dp$across(dp$where(is.numeric), \(x) be$specify_decimal(x, 2)),
+        if (to_chr) dp$across(dp$everything(), \(x) as.character(x))
+    )
 }

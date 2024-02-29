@@ -24,6 +24,9 @@ between <- misc$between
 
 #' @export
 is_nothing <- misc$is_nothing
+specify_decimal <- misc$specify_decimal
+
+#' @export
 
 #' @export
 filter_inputs <- filters$filter_inputs

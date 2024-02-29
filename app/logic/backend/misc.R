@@ -6,6 +6,9 @@ box::use(
 )
 
 #' @export
+specify_decimal <- function(x, k) trimws(format(round(x, k), nsmall = k))
+
+#' @export
 obs_return <- function(input) {
   sh$observeEvent(input$return, {
     router$change_page("/")

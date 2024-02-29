@@ -330,7 +330,7 @@ server <- function(id, data) {
             # Format new entry
             new_entry <- input %>%
                 be$write_inputs_to_tibble() %>%
-                be$prepare_for_append() %>%
+                be$prepare_for_append(to_chr = FALSE) %>%
                 dp$mutate(
                     year_as_date = lub$ymd(paste0(year, "-01-01")),
                     inv_var = 1 / sd^2
