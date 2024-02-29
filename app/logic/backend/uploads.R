@@ -61,7 +61,7 @@ write_inputs_to_tibble <- function(input) {
 }
 
 #' @export
-prepare_for_append <- function(data, to_chr = TRUE) {
+prepare_for_append <- function(data) {
     tmp <- data %>%
         tdr$pivot_longer(dp$contains(c("mean", "sd"))) %>%
         dp$filter(!is.na(value)) %>%
@@ -86,9 +86,6 @@ prepare_for_append <- function(data, to_chr = TRUE) {
         out <- dp$mutate(tmp, dp$across(c(mean, sd), \(x) x / n_items, .names = "{.col}_adj"))
     }
 
-    dp$mutate(
-        out,
-        dp$across(dp$where(is.numeric), \(x) be$specify_decimal(x, 2)),
-        if (to_chr) dp$across(dp$everything(), \(x) as.character(x))
-    )
+    # Convert numeric values to characters with two decimals to prevent google sheets converting numbers to dates
+    dp$mutate(out, dp$across(dp$where(is.numeric), \(x) be$specify_decimal(x, 2)))
 }

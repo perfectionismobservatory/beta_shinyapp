@@ -187,13 +187,14 @@ conditional_validation_card <- function(...) {
 }
 
 #' @export
-btn_modal <- function(ids, label, modal_title, footer_confirm = NULL, footer_dismiss = NULL, ..., modal_bl = NULL) {
+btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dismiss = NULL, ..., modal_bl = NULL) {
     dots <- rl$list2(...)
 
     if (!is.null(footer_dismiss)) {
         footer_dismiss <- sh$tags$button(
+            id = paste0(id, "_dismiss"),
             type = "button",
-            class = "btn btn-secondary hover",
+            class = class_button,
             `data-bs-dismiss` = "modal",
             footer_dismiss
         )
@@ -201,7 +202,7 @@ btn_modal <- function(ids, label, modal_title, footer_confirm = NULL, footer_dis
 
     if (!is.null(footer_confirm)) {
         footer_confirm <- sh$tags$button(
-            id = ids$close,
+            id = paste0(id, "_confirm"),
             type = "button",
             class = "btn btn-success action-button hover-success",
             `data-bs-dismiss` = "modal",
@@ -211,20 +212,20 @@ btn_modal <- function(ids, label, modal_title, footer_confirm = NULL, footer_dis
 
     if (!is.null(dots$class_toggle)) {
         toggle <- sh$tags$button(
-            id = ids$toggle,
+            id = paste0(id, "_toggle"),
             class = dots$class_toggle,
             type = "button",
             `data-bs-toggle` = "modal",
-            `data-bs-target` = paste("#inputModal", ids$raw, sep = "-"),
+            `data-bs-target` = paste("#inputModal", id, sep = "-"),
             label
         )
     } else {
         toggle <- sh$tags$button(
-            id = ids$toggle,
+            id = paste0(id, "_toggle"),
             class = "btn btn-secondary hover",
             type = "button",
             `data-bs-toggle` = "modal",
-            `data-bs-target` = paste("#inputModal", ids$raw, sep = "-"),
+            `data-bs-target` = paste("#inputModal", id, sep = "-"),
             label
         )
     }
@@ -233,9 +234,9 @@ btn_modal <- function(ids, label, modal_title, footer_confirm = NULL, footer_dis
         toggle,
         sh$div(
             class = "modal fade",
-            id = paste("inputModal", ids$raw, sep = "-"),
+            id = paste("inputModal", id, sep = "-"),
             tabindex = "-1",
-            `aria-labelledby` = paste("inputModalLabel", ids$raw, sep = "-"),
+            `aria-labelledby` = paste("inputModalLabel", id, sep = "-"),
             `aria-hidden` = "true",
             sh$div(
                 class = "modal-dialog",
@@ -245,10 +246,11 @@ btn_modal <- function(ids, label, modal_title, footer_confirm = NULL, footer_dis
                         class = "bg-secondary modal-header",
                         sh$tags$h1(
                             class = "modal-title fs-5",
-                            id = paste("inputModalLabel", ids$raw, sep = "-"),
+                            id = paste("inputModalLabel", id, sep = "-"),
                             modal_title
                         ),
                         sh$tags$button(
+                            id = paste0(id, "_x"),
                             type = "button",
                             class = "btn-close",
                             `data-bs-dismiss` = "modal",

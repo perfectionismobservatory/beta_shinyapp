@@ -10,7 +10,6 @@ box::use(
   dotenv[load_dot_env],
   here[here],
   shinyFeedback[useShinyFeedback],
-  vroom,
   str = stringr,
   showtext[showtext_auto],
   sysfonts[font_add_google],

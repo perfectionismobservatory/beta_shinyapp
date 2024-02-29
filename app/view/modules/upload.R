@@ -254,18 +254,14 @@ server <- function(id, data) {
                             ),
                             shj$disabled(
                                 fe$btn_modal(
-                                    ids = list(
-                                        raw = session$ns("view"),
-                                        toggle = session$ns("view_toggle"),
-                                        close = session$ns("view_close")
-                                    ),
+                                    id = session$ns("view"),
                                     label = sh$div(
                                         class = "d-flex align-items-center gap-2",
                                         bsi$bs_icon("graph-up-arrow", size = "1.25rem"), "Show graph"
                                     ),
                                     modal_title = "Your data points are shown in red",
                                     footer_confirm = NULL,
-                                    footer_dismiss = "Close",
+                                    footer_dismiss = NULL,
                                     class_toggle = fe$class_button,
                                     gir$girafeOutput(session$ns("new_data_plot"))
                                 )
@@ -322,7 +318,7 @@ server <- function(id, data) {
 
                 # Disable upload, enable view and reset
                 shj$disable("upload")
-                pr$walk(c("view_toggle", "view_close", "reset"), shj$enable) # TODO missing upper right close button
+                pr$walk(c("view_toggle", "view_dismiss", "view_x", "reset"), shj$enable) # TODO missing upper right close button
             }
         })
 
@@ -330,8 +326,9 @@ server <- function(id, data) {
             # Format new entry
             new_entry <- input %>%
                 be$write_inputs_to_tibble() %>%
-                be$prepare_for_append(to_chr = FALSE) %>%
+                be$prepare_for_append() %>%
                 dp$mutate(
+                    dp$across(c(mean_adj, sd, year), as.numeric),
                     year_as_date = lub$ymd(paste0(year, "-01-01")),
                     inv_var = 1 / sd^2
                 )
@@ -339,8 +336,8 @@ server <- function(id, data) {
             # Plot
             data() %>%
                 dp$filter(scale == input$scale) %>% # Show plot for scale that user entered data for
-                be$plot_interactive() +
-                gir$geom_point_interactive(data = new_entry, color = "red", show.legend = FALSE) # Highlight new points in red
+                be$plot_interactive() + # First "layer" is existing data, then new points in red on top
+                gir$geom_point_interactive(data = new_entry, gg$aes(size = inv_var), color = "red", show.legend = FALSE)
         })
 
         output$new_data_plot <- gir$renderGirafe({
