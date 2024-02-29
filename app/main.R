@@ -43,6 +43,7 @@ register_gfont("Merriweather")
 data <- Sys.getenv("URL") %>%
   read_sheet(col_types = "_cccccccccccccccccccc", na = "NA") %>%
   dp$mutate(
+    dp$across(c(id, year, year_adj, n_sample, ratio_female, age, n_likert, n_items, mean, sd, mean_adj, sd_adj), as.numeric),
     year_as_date = lub$ymd(paste0(year, "-01-01")),
     inv_var = 1 / sd^2,
   )
