@@ -68,7 +68,16 @@ server <- function(id, data) {
         stopifnot(sh$is.reactive(data))
 
         res_static <- sh$reactive(be$plot_static(data()))
-        res_interactive <- sh$reactive(be$plot_interactive(data(), background = "#f9fbfb"))
+        res_interactive <- sh$reactive({
+            # Add regression lines if that input is active
+            if (input$regression) {
+                be$plot_interactive(data(), background = "#f9fbfb", alpha = 0.3) +
+                    gir$geom_smooth_interactive(gg$aes(group = subscale), color = "grey20", linewidth = 1.5, se = FALSE) +
+                    gir$geom_smooth_interactive(gg$aes(group = subscale, color = subscale), se = FALSE)
+            } else {
+                be$plot_interactive(data(), background = "#f9fbfb")
+            }
+        })
 
         output$plot <- gir$renderGirafe(gir$girafe(ggobj = res_interactive(), width_svg = 7, height_svg = 4))
 

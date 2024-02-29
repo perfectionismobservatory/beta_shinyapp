@@ -21,6 +21,10 @@ gir$set_girafe_defaults(
 # The problem with these bordered shapes is how they show in the legend
 SIZEMUL <- 1.2
 
+# Degree to which grey border is less opaque than actual shapes
+# This makes the real color stand out more since those are also opaque to some degree
+ALPHADIFF <- 0.3
+
 #' @export
 create_label <- function(data, .name = "lab") {
     dp$mutate(
@@ -34,7 +38,7 @@ create_label <- function(data, .name = "lab") {
 }
 
 #' @export
-plot_interactive <- function(data, background = "#ffffff") {
+plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
@@ -44,8 +48,8 @@ plot_interactive <- function(data, background = "#ffffff") {
     data %>%
         create_label() %>%
         gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
-        gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = 0.6, show.legend = TRUE) +
-        gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.6) +
+        gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
+        gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = alpha) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",
