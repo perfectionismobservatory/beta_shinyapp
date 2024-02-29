@@ -27,12 +27,12 @@ is_nothing <- misc$is_nothing
 
 #' @export
 filter_inputs <- filters$filter_inputs
-specify_decimal <- misc$specify_decimal
-
-#' @export
 
 #' @export
 invalid_format <- validations$invalid_format
+specify_decimal <- misc$specify_decimal
+
+#' @export
 
 #' @export
 is_valid <- validations$is_valid
