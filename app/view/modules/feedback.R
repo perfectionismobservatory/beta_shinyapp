@@ -60,7 +60,5 @@ server <- function(id) {
                 session = session
             )
         })
-
-        
     })
 }

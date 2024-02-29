@@ -55,7 +55,8 @@ input_fmps <- list(
     com_nitems = 15,
     ps_nitems = 15,
     o_nitems = 15,
-    pc_nitems = 15
+    pc_nitems = 15,
+    reset = 0
 )
 
 # Made-up inputs HF-MPS
@@ -78,20 +79,21 @@ input_hfmps <- list(
     oop_sd = 17,
     sop_nitems = 15,
     spp_nitems = 15,
-    oop_nitems = 15
+    oop_nitems = 15,
+    reset = 0
 )
-
-# Prepare entry for appending
-new_entry_hfmps <- input_hfmps %>%
-    be$write_inputs_to_tibble() %>%
-    be$prepare_for_append()
-
-new_entry_fmps <- input_fmps %>%
-    be$write_inputs_to_tibble() %>%
-    be$prepare_for_append()
 
 # Load existing data
 target <- read.csv("data/full.csv")
+
+# Prepare entry for appending
+new_entry_hfmps <- input_hfmps %>%
+    be$write_inputs_to_tibble(target) %>%
+    be$prepare_for_append()
+
+new_entry_fmps <- input_fmps %>%
+    be$write_inputs_to_tibble(target) %>%
+    be$prepare_for_append()
 
 # Run test
 tt$test_that(

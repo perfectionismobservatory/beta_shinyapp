@@ -10,12 +10,19 @@ box::use(
     be = app / logic / backend,
 )
 
+format_author <- function(name) {
+    name %>%
+        str$str_to_title() %>%
+        str$str_extract(".+(?=,)") %>%
+        paste0(" et al.")
+}
+
 #' @export
-write_inputs_to_tibble <- function(input) {
+write_inputs_to_tibble <- function(input, data) {
     tbl$tibble(
         # artifact of saving a funny csv to drive, removing depends on whether hosted file has rownum column
         X = "",
-        id = NA, # TODO should be `max(data()$id) + 1`, but this requires data() to update within a single session
+        id = max(data$id, na.rm = TRUE) + input$reset + 1, # first upload will be +1, second one +2, etc.
         authors = input$name,
         email = input$email, # TODO this column is not in original df, add empty col?
         doi_pmid_link = input$doc_id, # doi or preregistration link

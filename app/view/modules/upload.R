@@ -309,7 +309,7 @@ server <- function(id, data) {
             } else {
                 # Create tibble from inputs and prepare for append
                 new_data <- input %>%
-                    be$write_inputs_to_tibble() %>%
+                    be$write_inputs_to_tibble(data()) %>% # needs data to calculate study `id`
                     be$prepare_for_append()
 
                 # Upload and notify user
@@ -325,19 +325,21 @@ server <- function(id, data) {
         new_plot <- sh$eventReactive(input$upload, {
             # Format new entry
             new_entry <- input %>%
-                be$write_inputs_to_tibble() %>%
+                be$write_inputs_to_tibble(data()) %>%
                 be$prepare_for_append() %>%
+                be$create_label() %>%
                 dp$mutate(
                     dp$across(c(mean_adj, sd, year), as.numeric),
                     year_as_date = lub$ymd(paste0(year, "-01-01")),
-                    inv_var = 1 / sd^2
+                    inv_var = 1 / sd^2,
+                    id = max(data()$id, na.rm = TRUE) + 1
                 )
 
             # Plot
             data() %>%
                 dp$filter(scale == input$scale) %>% # Show plot for scale that user entered data for
                 be$plot_interactive() + # First "layer" is existing data, then new points in red on top
-                gir$geom_point_interactive(data = new_entry, gg$aes(size = inv_var), color = "red", show.legend = FALSE)
+                gir$geom_point_interactive(data = new_entry, gg$aes(size = inv_var, tooltip = lab, data_id = id), color = "red", show.legend = FALSE)
         })
 
         output$new_data_plot <- gir$renderGirafe({
