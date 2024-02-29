@@ -68,7 +68,7 @@ server <- function(id, data) {
         stopifnot(sh$is.reactive(data))
 
         res_static <- sh$reactive(be$plot_static(data()))
-        res_interactive <- sh$reactive(be$plot_interactive(data()))
+        res_interactive <- sh$reactive(be$plot_interactive(data(), background = "#f9fbfb"))
 
         output$plot <- gir$renderGirafe(gir$girafe(ggobj = res_interactive(), width_svg = 7, height_svg = 4))
 

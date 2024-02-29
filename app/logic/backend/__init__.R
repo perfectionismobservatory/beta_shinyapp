@@ -49,3 +49,6 @@ plot_interactive <- plots$plot_interactive
 
 #' @export
 plot_static <- plots$plot_static
+
+#' @export
+create_label <- plots$create_label

@@ -22,7 +22,19 @@ gir$set_girafe_defaults(
 SIZEMUL <- 1.2
 
 #' @export
-plot_interactive <- function(data) {
+create_label <- function(data, .name = "lab") {
+    dp$mutate(
+        data,
+        !!.name := paste0(
+            authors, "\n",
+            subscale, ": ", mean_adj, "\n",
+            "N: ", n_sample, "\n"
+        )
+    )
+}
+
+#' @export
+plot_interactive <- function(data, background = "#ffffff") {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
@@ -30,14 +42,10 @@ plot_interactive <- function(data) {
     max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
 
     data %>%
-        dp$mutate(lab = paste0(
-            authors, "\n",
-            subscale, ": ", mean_adj, "\n",
-            "N: ", n_sample, "\n"
-        )) %>%
+        create_label() %>%
         gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
-        gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", show.legend = TRUE) +
-        gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.9) +
+        gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = 0.6, show.legend = TRUE) +
+        gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.6) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",
@@ -55,9 +63,9 @@ plot_interactive <- function(data) {
         gg$theme_bw() +
         fe$ggtheme +
         gg$theme(
-            panel.background = gg$element_rect(fill = "#f9fbfb"),
-            plot.background = gg$element_rect(fill = "#f9fbfb", color = "#f9fbfb"),
-            legend.background = gg$element_rect(fill = "#f9fbfb", color = "#f9fbfb")
+            panel.background = gg$element_rect(fill = background),
+            plot.background = gg$element_rect(fill = background, color = background),
+            legend.background = gg$element_rect(fill = background, color = background)
         )
 }
 
@@ -71,8 +79,8 @@ plot_static <- function(data) {
 
     data %>%
         gg$ggplot(gg$aes(year_as_date, mean_adj)) +
-        gg$geom_point(gg$aes(size = inv_var * SIZEMUL, shape = country), color = "grey20", show.legend = TRUE) +
-        gg$geom_point(gg$aes(color = subscale, size = inv_var, shape = country)) +
+        gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = 0.6, show.legend = TRUE) +
+        gg$geom_point(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.6) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",

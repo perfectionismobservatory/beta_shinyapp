@@ -58,7 +58,7 @@ ui <- function(id) {
             fe$checkboxgroup( # eventually replace this with shinyWidgets
                 ns("country"),
                 "Select countries",
-                choices = c("USA", "CAN", "UK")
+                choices = c("US", "CA", "UK")
             )
         )
         # Not sure how many panels we need, but these can then be spliced
