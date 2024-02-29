@@ -31,9 +31,9 @@ filter_inputs <- filters$filter_inputs
 
 #' @export
 invalid_format <- validations$invalid_format
-specify_decimal <- misc$specify_decimal
 
 #' @export
+specify_decimal <- misc$specify_decimal
 
 #' @export
 is_valid <- validations$is_valid
