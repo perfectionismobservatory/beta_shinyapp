@@ -2,6 +2,7 @@ box::use(
     app / logic / frontend / layouts,
     app / logic / frontend / inputs,
     app / logic / frontend / themes,
+    app / logic / frontend / uploads,
 )
 
 # Frontend reexports
@@ -62,3 +63,9 @@ theme_light <- themes$light
 
 #' @export
 ggtheme <- themes$ggtheme
+
+#' @export
+upload_form_failure <- uploads$upload_form_failure
+
+#' @export
+upload_form_success <- uploads$upload_form_success
