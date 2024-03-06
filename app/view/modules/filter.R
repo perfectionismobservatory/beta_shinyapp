@@ -36,12 +36,12 @@ ui <- function(id) {
                     "Pick subscale",
                     choices = c(
                         "All subscales" = "all",
-                        "Personal standards" = "ps",
-                        "Parental expectation" = "pe",
-                        "Parental criticism" = "pc",
-                        "Concerns over mistakes" = "com",
-                        "Doubts about actions" = "daa",
-                        "Organisation" = "o"
+                        "PS (Personal standards)" = "ps",
+                        "PE (Parental expectation)" = "pe",
+                        "PC (Parental criticism)" = "pc",
+                        "COM (Concerns over mistakes)" = "com",
+                        "DAA (Doubts about actions)" = "daa",
+                        "O (Organisation)" = "o"
                     )
                 ),
                 ns = ns
@@ -96,12 +96,12 @@ server <- function(id, data) {
                     "subscale",
                     choices = c(
                         "All subscales" = "all",
-                        "Personal standards" = "PS",
-                        "Parental expectation" = "PE",
-                        "Parental criticism" = "PC",
-                        "Concerns over mistakes" = "COM",
-                        "Doubts about actions" = "DAA",
-                        "Organisation" = "O"
+                        "PS (Personal standards)" = "ps",
+                        "PE (Parental expectation)" = "pe",
+                        "PC (Parental criticism)" = "pc",
+                        "COM (Concerns over mistakes)" = "com",
+                        "DAA (Doubts about actions)" = "daa",
+                        "O (Organisation)" = "o"
                     )
                 )
             } else {
@@ -110,9 +110,9 @@ server <- function(id, data) {
                     "subscale",
                     choices = c(
                         "All subscales" = "all",
-                        "Self-oriented" = "SOP",
-                        "Other-oriented" = "OOP",
-                        "Socially-prescribed" = "SPP"
+                        "SOP (Self-oriented)" = "SOP",
+                        "OOP (Other-oriented)" = "OOP",
+                        "SPP (Socially-prescribed)" = "SPP"
                     )
                 )
             }

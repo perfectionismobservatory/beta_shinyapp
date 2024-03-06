@@ -45,25 +45,27 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
 
     min_x <- if (nrow(data) > 0) min(data$year, na.rm = TRUE)
     max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
+    min_y <- if (nrow(data) > 0) min(data$mean_adj, na.rm = TRUE) else 0
+    max_y <- if (nrow(data) > 0) max(data$mean_adj, na.rm = TRUE) else 0
 
     data %>%
         create_label() %>%
-        gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
+        gg$ggplot(gg$aes(year_as_date, mean_adj)) +
         gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
-        gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = alpha) +
+        gir$geom_point_interactive(gg$aes(color = country, size = inv_var, tooltip = lab, data_id = id), alpha = alpha) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",
             color = "Subscale",
             shape = "Country",
-            y = "Value",
+            y = "Perfectionism Mean",
             title = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
             subtitle = paste0(
                 if (length(unique(data$subscale)) > 1) "Subscales: " else "Subscale: ",
                 toupper(paste0(unique(data$subscale), collapse = ", "))
             )
         ) +
-        gg$ylim(0, NA) +
+        gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
         gg$scale_size(guide = "none") + # No legend for size aes
         gg$theme_bw() +
         fe$ggtheme +
@@ -81,17 +83,18 @@ plot_static <- function(data, alpha = 0.6) {
 
     min_x <- if (nrow(data) > 0) min(data$year, na.rm = TRUE)
     max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
+    min_y <- if (nrow(data) > 0) min(data$mean_adj, na.rm = TRUE) else 0
+    max_y <- if (nrow(data) > 0) max(data$mean_adj, na.rm = TRUE) else 0
 
     data %>%
-        gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
+        gg$ggplot(gg$aes(year_as_date, mean_adj)) +
         gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
-        gg$geom_point(gg$aes(color = subscale, size = inv_var), alpha = alpha) +
+        gg$geom_point(gg$aes(color = country, size = inv_var), alpha = alpha) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",
-            color = "Subscale",
             shape = "Country",
-            y = "Value",
+            y = "Perfectionism Mean",
             title = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
             subtitle = paste0(
                 if (length(unique(data$subscale)) > 1) "Subscales: " else "Subscale: ",
@@ -99,7 +102,7 @@ plot_static <- function(data, alpha = 0.6) {
             ),
             caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
         ) +
-        gg$ylim(0, NA) +
+        gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
         gg$scale_size(guide = "none") + # No legend for size aes
         gg$theme_bw() +
         fe$ggtheme

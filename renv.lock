@@ -1330,7 +1330,7 @@
     },
     "rhino": {
       "Package": "rhino",
-      "Version": "1.6.0",
+      "Version": "1.7.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1351,9 +1351,10 @@
         "testthat",
         "utils",
         "withr",
+        "xml2",
         "yaml"
       ],
-      "Hash": "ff605bc0e89a93b4ccf76f565bc1cdfc"
+      "Hash": "59ee79b26dd590b08dd1a3111d093832"
     },
     "rlang": {
       "Package": "rlang",

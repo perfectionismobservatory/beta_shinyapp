@@ -45,7 +45,7 @@ data <- Sys.getenv("URL") %>%
   dp$mutate(
     dp$across(c(id, year, year_adj, n_sample, ratio_female, age, n_likert, n_items, mean, sd, mean_adj, sd_adj), as.numeric),
     year_as_date = lub$ymd(paste0(year, "-01-01")),
-    inv_var = 1 / sd^2,
+    inv_var = 1 / sd_adj^2,
   )
 
 #' @export
