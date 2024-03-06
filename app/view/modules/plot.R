@@ -71,8 +71,8 @@ server <- function(id, data) {
         res_static <- sh$reactive({
             if (input$regression) {
                 be$plot_static(data(), alpha = 0.3) +
-                    gg$geom_smooth(gg$aes(group = subscale), color = "grey20", linewidth = 1.5, se = FALSE) +
-                    gg$geom_smooth(gg$aes(group = subscale, color = subscale), se = FALSE)
+                    gg$geom_smooth(gg$aes(group = subscale), color = "grey20", linewidth = 1.5, se = FALSE, method = "lm") +
+                    gg$geom_smooth(gg$aes(group = subscale, color = subscale), se = FALSE, method = "lm")
             } else {
                 be$plot_static(data())
             }
@@ -81,8 +81,8 @@ server <- function(id, data) {
         res_interactive <- sh$reactive({
             if (input$regression) {
                 be$plot_interactive(data(), background = "#f9fbfb", alpha = 0.3) +
-                    gir$geom_smooth_interactive(gg$aes(group = subscale), color = "grey20", linewidth = 1.5, se = FALSE) +
-                    gir$geom_smooth_interactive(gg$aes(group = subscale, color = subscale), se = FALSE)
+                    gir$geom_smooth_interactive(gg$aes(group = subscale), color = "grey20", linewidth = 1.5, se = FALSE, method = "lm") +
+                    gir$geom_smooth_interactive(gg$aes(group = subscale, color = subscale), se = FALSE, method = "lm")
             } else {
                 be$plot_interactive(data(), background = "#f9fbfb")
             }
