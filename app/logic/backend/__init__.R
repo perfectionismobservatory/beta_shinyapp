@@ -36,6 +36,9 @@ invalid_format <- validations$invalid_format
 specify_decimal <- misc$specify_decimal
 
 #' @export
+standardise <- misc$standardise
+
+#' @export
 is_valid <- validations$is_valid
 
 #' @export

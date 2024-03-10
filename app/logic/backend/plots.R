@@ -32,7 +32,7 @@ create_label <- function(data, .name = "lab") {
         data,
         !!.name := paste0(
             authors, "\n",
-            subscale, ": ", mean_adj, "\n",
+            subscale, ": ", plotvalue, "\n",
             "N: ", n_sample, "\n"
         )
     )
@@ -45,19 +45,18 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
 
     min_x <- if (nrow(data) > 0) min(data$year, na.rm = TRUE)
     max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
-    min_y <- if (nrow(data) > 0) min(data$mean_adj, na.rm = TRUE) else 0
-    max_y <- if (nrow(data) > 0) max(data$mean_adj, na.rm = TRUE) else 0
+    #min_y <- if (nrow(data) > 0) min(data$plotvalue, na.rm = TRUE) else 0
+    #max_y <- if (nrow(data) > 0) max(data$plotvalue, na.rm = TRUE) else 0
 
     data %>%
         create_label() %>%
-        gg$ggplot(gg$aes(year_as_date, mean_adj)) +
-        gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
-        gir$geom_point_interactive(gg$aes(color = country, size = inv_var, tooltip = lab, data_id = id), alpha = alpha) +
+        gg$ggplot(gg$aes(year_as_date, plotvalue)) +
+        gir$geom_point_interactive(gg$aes(size = n_sample * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
+        gir$geom_point_interactive(gg$aes(color = country, size = n_sample, tooltip = lab, data_id = id), alpha = alpha) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",
-            color = "Subscale",
-            shape = "Country",
+            color = "Country",
             y = "Perfectionism Mean",
             title = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
             subtitle = paste0(
@@ -65,7 +64,7 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
                 toupper(paste0(unique(data$subscale), collapse = ", "))
             )
         ) +
-        gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
+        #gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
         gg$scale_size(guide = "none") + # No legend for size aes
         gg$theme_bw() +
         fe$ggtheme +
@@ -83,11 +82,11 @@ plot_static <- function(data, alpha = 0.6) {
 
     min_x <- if (nrow(data) > 0) min(data$year, na.rm = TRUE)
     max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
-    min_y <- if (nrow(data) > 0) min(data$mean_adj, na.rm = TRUE) else 0
-    max_y <- if (nrow(data) > 0) max(data$mean_adj, na.rm = TRUE) else 0
+    min_y <- if (nrow(data) > 0) min(data$plotvalue, na.rm = TRUE) else 0
+    max_y <- if (nrow(data) > 0) max(data$plotvalue, na.rm = TRUE) else 0
 
     data %>%
-        gg$ggplot(gg$aes(year_as_date, mean_adj)) +
+        gg$ggplot(gg$aes(year_as_date, plotvalue)) +
         gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
         gg$geom_point(gg$aes(color = country, size = inv_var), alpha = alpha) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
