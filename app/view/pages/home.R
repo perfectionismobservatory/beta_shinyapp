@@ -2,10 +2,30 @@ box::use(
     sh = shiny,
     pr = purrr,
     router = shiny.router,
+    bsi = bsicons,
+    bsl = bslib,
 )
 
 box::use(
     fe = app / logic / frontend,
+)
+
+sourcelink <- bsl$popover(
+    bsi$bs_icon("link-45deg"),
+    sh$div(
+        sh$p(
+            sh$span(style = "font-weight: 700;", "Frost, R. O., Marten, P., Lahart, C., & Rosenblate, R. (1990)."),
+            "The dimensions of perfectionism. Cognitive Therapy and Research, 14(5), 449–468. ",
+            sh$a(href = "https://doi.org/10.1007/BF01172967", "https://doi.org/10.1007/BF01172967")
+        ),
+        sh$p(
+            sh$span(style = "font-weight: 700;", "Hewitt, P. L., & Flett, G. L. (1991)."),
+            " Perfectionism in the self and social contexts: Conceptualization, assessment, and association with 
+            psychopathology. Journal of Personality and Social Psychology, 60(3), 456–470. ",
+            sh$a(href = "https://doi.org/10.1037/0022-3514.60.3.456", "https://doi.org/10.1037/0022-3514.60.3.456")
+        )
+    ),
+    title = "Citations"
 )
 
 #' @export
@@ -34,7 +54,7 @@ ui <- function(id) {
                                 style = "max-width: 775px; text-align: left; margin: 0; letter-spacing: 0.02rem; line-height: 140%;",
                                 "How is perfectionism changing over time? This tool provides a real-time, open access
                                 database to track levels of perfectionism among young people based on the Frost and Hewitt-Flett
-                                Multidimensional Perfectionism Scales.ᵃ ᵇ"
+                                Multidimensional Perfectionism Scales.", sourcelink
                             )
                         ),
                         sh$div(
@@ -59,20 +79,6 @@ ui <- function(id) {
                         ),
                         sh$div(
                             class = "d-flex flex-column justify-content-center align-items-center gap-3",
-                            sh$div(
-                                class = "text-secondary",
-                                sh$p(
-                                    style = "font-size: 7pt; text-align: center; max-width: 600px;",
-                                    "a - Frost, R. O., Marten, P., Lahart, C., & Rosenblate, R. (1990). The dimensions of perfectionism.
-                                Cognitive Therapy and Research, 14(5), 449–468. https://doi.org/10.1007/BF01172967"
-                                ),
-                                sh$p(
-                                    style = "font-size: 7pt; text-align: center; max-width: 600px;",
-                                    "b - Hewitt, P. L., & Flett, G. L. (1991). Perfectionism in the self and social contexts: Conceptualization,
-                                assessment, and association with psychopathology. Journal of Personality and Social Psychology, 60(3), 456–470.
-                                https://doi.org/10.1037/0022-3514.60.3.456"
-                                )
-                            ),
                             sh$img(
                                 src = "static/uni_logos.png",
                                 width = "400px",

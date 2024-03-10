@@ -38,12 +38,12 @@ ui <- function(id) {
                 "Pick subscale",
                 choices = c(
                     "All subscales" = "all",
-                    "PS (Personal standards)" = "ps",
-                    "PE (Parental expectation)" = "pe",
-                    "PC (Parental criticism)" = "pc",
-                    "COM (Concerns over mistakes)" = "com",
-                    "DAA (Doubts about actions)" = "daa",
-                    "O (Organisation)" = "o"
+                    "PS (Personal standards)" = "PS",
+                    "PE (Parental expectation)" = "PE",
+                    "PC (Parental criticism)" = "PC",
+                    "COM (Concerns over mistakes)" = "COM",
+                    "DAA (Doubts about actions)" = "DAA",
+                    "O (Organisation)" = "O"
                 )
             )
         ),
@@ -105,12 +105,12 @@ server <- function(id, data) {
                     "subscale",
                     choices = c(
                         "All subscales" = "all",
-                        "PS (Personal standards)" = "ps",
-                        "PE (Parental expectation)" = "pe",
-                        "PC (Parental criticism)" = "pc",
-                        "COM (Concerns over mistakes)" = "com",
-                        "DAA (Doubts about actions)" = "daa",
-                        "O (Organisation)" = "o"
+                        "PS (Personal standards)" = "PS",
+                        "PE (Parental expectation)" = "PE",
+                        "PC (Parental criticism)" = "PC",
+                        "COM (Concerns over mistakes)" = "COM",
+                        "DAA (Doubts about actions)" = "DAA",
+                        "O (Organisation)" = "O"
                     )
                 )
             } else if (input$scale == "HF-MPS") {
