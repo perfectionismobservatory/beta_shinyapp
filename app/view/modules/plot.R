@@ -67,8 +67,26 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
 
-        res_static <- sh$reactive(be$plot_static(data()))
-        res_interactive <- sh$reactive(be$plot_interactive(data(), background = "#f9fbfb"))
+        # For each plot, add regression lines if input$regression is TRUE
+        res_static <- sh$reactive({
+            if (input$regression) {
+                be$plot_static(data()) +
+                    gg$geom_smooth(color = "white", linewidth = 1.5, se = FALSE, method = "lm") +
+                    gg$geom_smooth(color = "darkred", se = FALSE, method = "lm")
+            } else {
+                be$plot_static(data())
+            }
+        })
+
+        res_interactive <- sh$reactive({
+            if (input$regression) {
+                be$plot_interactive(data(), background = "#f9fbfb") +
+                    gir$geom_smooth_interactive(color = "white", linewidth = 1.5, se = FALSE, method = "lm") +
+                    gir$geom_smooth_interactive(color = "darkred", se = FALSE, method = "lm")
+            } else {
+                be$plot_interactive(data(), background = "#f9fbfb")
+            }
+        })
 
         output$plot <- gir$renderGirafe(gir$girafe(ggobj = res_interactive(), width_svg = 7, height_svg = 4))
 

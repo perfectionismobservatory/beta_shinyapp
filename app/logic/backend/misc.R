@@ -3,7 +3,11 @@ box::use(
   router = shiny.router,
   rl = rlang[`%||%`],
   pr = purrr,
+  stats,
 )
+
+#' @export
+standardise <- function(x) (x - mean(x, na.rm = TRUE)) / stats$sd(x, na.rm = TRUE)
 
 #' @export
 specify_decimal <- function(x, k) trimws(format(round(x, k), nsmall = k))

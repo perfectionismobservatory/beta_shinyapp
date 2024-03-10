@@ -3,6 +3,7 @@ box::use(
     sh = shiny,
     gir = ggiraph,
     dp = dplyr[`%>%`],
+    lub = lubridate,
 )
 
 box::use(
@@ -21,44 +22,49 @@ gir$set_girafe_defaults(
 # The problem with these bordered shapes is how they show in the legend
 SIZEMUL <- 1.2
 
+# Degree to which grey border is less opaque than actual shapes
+# This makes the real color stand out more since those are also opaque to some degree
+ALPHADIFF <- 0.3
+
 #' @export
 create_label <- function(data, .name = "lab") {
     dp$mutate(
         data,
         !!.name := paste0(
             authors, "\n",
-            subscale, ": ", mean_adj, "\n",
+            subscale, ": ", plotvalue, "\n",
             "N: ", n_sample, "\n"
         )
     )
 }
 
 #' @export
-plot_interactive <- function(data, background = "#ffffff") {
+plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
     min_x <- if (nrow(data) > 0) min(data$year, na.rm = TRUE)
     max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
+    #min_y <- if (nrow(data) > 0) min(data$plotvalue, na.rm = TRUE) else 0
+    #max_y <- if (nrow(data) > 0) max(data$plotvalue, na.rm = TRUE) else 0
 
     data %>%
         create_label() %>%
-        gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
-        gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = 0.6, show.legend = TRUE) +
-        gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.6) +
+        gg$ggplot(gg$aes(year_as_date, plotvalue)) +
+        gir$geom_point_interactive(gg$aes(size = n_sample * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
+        gir$geom_point_interactive(gg$aes(color = country, size = n_sample, tooltip = lab, data_id = id), alpha = alpha) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",
-            color = "Subscale",
-            shape = "Country",
-            y = "Value",
+            color = "Country",
+            y = "Perfectionism Mean",
             title = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
             subtitle = paste0(
                 if (length(unique(data$subscale)) > 1) "Subscales: " else "Subscale: ",
                 toupper(paste0(unique(data$subscale), collapse = ", "))
             )
         ) +
-        gg$ylim(0, NA) +
+        #gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
         gg$scale_size(guide = "none") + # No legend for size aes
         gg$theme_bw() +
         fe$ggtheme +
@@ -70,23 +76,24 @@ plot_interactive <- function(data, background = "#ffffff") {
 }
 
 #' @export
-plot_static <- function(data) {
+plot_static <- function(data, alpha = 0.6) {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
     min_x <- if (nrow(data) > 0) min(data$year, na.rm = TRUE)
     max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
+    min_y <- if (nrow(data) > 0) min(data$plotvalue, na.rm = TRUE) else 0
+    max_y <- if (nrow(data) > 0) max(data$plotvalue, na.rm = TRUE) else 0
 
     data %>%
-        gg$ggplot(gg$aes(year_as_date, mean_adj)) +
-        gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = 0.6, show.legend = TRUE) +
-        gg$geom_point(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.6) +
+        gg$ggplot(gg$aes(year_as_date, plotvalue)) +
+        gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
+        gg$geom_point(gg$aes(color = country, size = inv_var), alpha = alpha) +
         gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
         gg$labs(
             x = "Year",
-            color = "Subscale",
             shape = "Country",
-            y = "Value",
+            y = "Perfectionism Mean",
             title = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
             subtitle = paste0(
                 if (length(unique(data$subscale)) > 1) "Subscales: " else "Subscale: ",
@@ -94,7 +101,7 @@ plot_static <- function(data) {
             ),
             caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
         ) +
-        gg$ylim(0, NA) +
+        gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
         gg$scale_size(guide = "none") + # No legend for size aes
         gg$theme_bw() +
         fe$ggtheme

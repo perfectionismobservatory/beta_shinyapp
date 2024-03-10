@@ -18,6 +18,7 @@ box::use(
 )
 
 box::use(
+  be = app / logic / backend,
   app / view / pages / home,
   app / view / pages / explore,
   app / view / pages / contribute,
@@ -42,10 +43,29 @@ register_gfont("Merriweather")
 
 data <- Sys.getenv("URL") %>%
   read_sheet(col_types = "_cccccccccccccccccccc", na = "NA") %>%
+  dp$select(id, authors, doi_pmid_link, country, year, year_adj, n_sample, age, scale, subscale, mean_adj) %>%
   dp$mutate(
-    dp$across(c(id, year, year_adj, n_sample, ratio_female, age, n_likert, n_items, mean, sd, mean_adj, sd_adj), as.numeric),
+    dp$across(c(id, year, year_adj, n_sample, age, mean_adj), as.numeric),
     year_as_date = lub$ymd(paste0(year, "-01-01")),
-    inv_var = 1 / sd^2,
+  ) %>%
+  dp$mutate(
+    .by = "id",
+    strivings = sum(.data[["mean_adj"]][.data[["subscale"]] %in% c("PS", "SOP")], na.rm = TRUE),
+    concerns = sum(
+      .data[["mean_adj"]][.data[["subscale"]] == "SPP"],
+      mean(.data[["mean_adj"]][.data[["subscale"]] %in% c("COM", "DAA")]),
+      na.rm = TRUE
+    )
+  ) %>%
+  dp$mutate(dp$across(c(strivings, concerns), be$standardise, .names = "z_{.col}")) %>%
+  dp$select(!c(strivings, concerns)) %>%
+  # The following back and forth pivot is not nice, happy to adjust this but could not quickly think of a solution
+  tdr$pivot_wider(names_from = "subscale", values_from = "mean_adj") %>%
+  tdr$pivot_longer(c(z_strivings:OOP), names_to = "subscale", values_to = "plotvalue") %>%
+  dp$filter(!is.na(plotvalue)) %>%
+  dp$mutate(
+    is_standardised = ifelse(str$str_detect(subscale, "^z_"), TRUE, FALSE),
+    scale = ifelse(str$str_detect(subscale, "^z_"), "HOF", scale)
   )
 
 #' @export

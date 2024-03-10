@@ -40,9 +40,6 @@ ui <- function(id) {
                 validation$ui(
                     ns("validation"),
                     !!!fe$validation_inputs
-                    # Passing the popout correctly will either have us
-                    # skip the last element of inputs in `validation.R`, or
-                    # make another arg field
                 ),
                 NULL
             )

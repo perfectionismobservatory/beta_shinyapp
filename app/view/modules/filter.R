@@ -24,27 +24,27 @@ ui <- function(id) {
                 choices = c("Higher-order factors" = "hof", "MPS" = "mps"),
                 selected = "mps"
             ),
-            fe$radio(
-                ns("scale"), # TODO lowest level for each path has to be name of filtered column
-                "Pick dimension",
-                choices = c("Perfectionist strivings" = "str", "Perfectionist concerns" = "con")
-            ),
             sh$conditionalPanel(
                 condition = "input.view == 'mps'",
                 fe$radio(
-                    ns("subscale"),
-                    "Pick subscale",
-                    choices = c(
-                        "All subscales" = "all",
-                        "Personal standards" = "ps",
-                        "Parental expectation" = "pe",
-                        "Parental criticism" = "pc",
-                        "Concerns over mistakes" = "com",
-                        "Doubts about actions" = "daa",
-                        "Organisation" = "o"
-                    )
+                    ns("scale"),
+                    label = "Pick scale",
+                    choices = c("F-MPS", "HF-MPS")
                 ),
-                ns = ns
+                ns = ns,
+            ),
+            fe$radio(
+                ns("subscale"),
+                "Pick subscale",
+                choices = c(
+                    "All subscales" = "all",
+                    "PS (Personal standards)" = "PS",
+                    "PE (Parental expectation)" = "PE",
+                    "PC (Parental criticism)" = "PC",
+                    "COM (Concerns over mistakes)" = "COM",
+                    "DAA (Doubts about actions)" = "DAA",
+                    "O (Organisation)" = "O"
+                )
             )
         ),
         bsl$accordion_panel(
@@ -71,19 +71,27 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
 
-        # Update scale choices depending on chosen level 1 input
         sh$observeEvent(input$view, {
             if (input$view == "hof") {
+                # Set scale to HOF for filtering
+                # This radio button is hidden in the `conditionalPanel`
                 shw$updatePrettyRadioButtons(
                     session = session,
                     "scale",
-                    choices = c("Perfectionist strivings" = "str", "Perfectionist concerns" = "con")
+                    choices = "HOF"
                 )
-            } else {
+                # Set correct "subscale" options for higher order factors
+                shw$updatePrettyRadioButtons(
+                    session = session,
+                    "subscale",
+                    choices = c("Perfectionist strivings" = "z_strivings", "Perfectionist concerns" = "z_concerns")
+                )
+            } else if (input$view != "hof") {
+                # Set correct scale choices if HOF are not displayed
+                # This radio button will be displayed
                 shw$updatePrettyRadioButtons(
                     session = session,
                     "scale",
-                    label = "Pick scale",
                     choices = c("F-MPS", "HF-MPS")
                 )
             }
@@ -91,33 +99,36 @@ server <- function(id, data) {
 
         sh$observeEvent(input$scale, {
             if (input$scale == "F-MPS") {
+                # Set correct subscale choices for F-MPS
                 shw$updatePrettyRadioButtons(
                     session = session,
                     "subscale",
                     choices = c(
                         "All subscales" = "all",
-                        "Personal standards" = "PS",
-                        "Parental expectation" = "PE",
-                        "Parental criticism" = "PC",
-                        "Concerns over mistakes" = "COM",
-                        "Doubts about actions" = "DAA",
-                        "Organisation" = "O"
+                        "PS (Personal standards)" = "PS",
+                        "PE (Parental expectation)" = "PE",
+                        "PC (Parental criticism)" = "PC",
+                        "COM (Concerns over mistakes)" = "COM",
+                        "DAA (Doubts about actions)" = "DAA",
+                        "O (Organisation)" = "O"
                     )
                 )
-            } else {
+            } else if (input$scale == "HF-MPS") {
+                # Set correct subscale choices for HF-MPS
                 shw$updatePrettyRadioButtons(
                     session = session,
                     "subscale",
                     choices = c(
                         "All subscales" = "all",
-                        "Self-oriented" = "SOP",
-                        "Other-oriented" = "OOP",
-                        "Socially-prescribed" = "SPP"
+                        "SOP (Self-oriented)" = "SOP",
+                        "OOP (Other-oriented)" = "OOP",
+                        "SPP (Socially-prescribed)" = "SPP"
                     )
                 )
             }
         })
 
+        # Filter data by inputs and drop rows where at least one filter condition is not met
         sieve <- be$filter_inputs(data, input)
         sh$reactive(data()[sieve(), ])
     })
