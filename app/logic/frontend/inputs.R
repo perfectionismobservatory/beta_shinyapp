@@ -276,7 +276,6 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
 }
 
 #' @export
-#' Custom toggle switch
 disabled_upload_inputs <- list(
     age = \(id, ns, value) {
         shj$disabled(
@@ -412,8 +411,7 @@ scale_lookup <- list(
         pe = "PE (Parental expectation)",
         pc = "PC (Parental criticism)",
         com = "COM (Concerns over mistakes)",
-        daa = "DAA (Doubts about actions)",
-        o = "O (Organisation)"
+        daa = "DAA (Doubts about actions)"
     )
 )
 

@@ -48,7 +48,6 @@ write_inputs_to_tibble <- function(input, data) {
         pc_mean = input$pc_mean %||% NA,
         com_mean = input$com_mean %||% NA,
         daa_mean = input$daa_mean %||% NA,
-        o_mean = input$o_mean %||% NA,
         sop_sd = input$sop_sd %||% NA,
         spp_sd = input$spp_sd %||% NA,
         oop_sd = input$oop_sd %||% NA,

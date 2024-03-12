@@ -89,6 +89,8 @@ ui <- function(id) {
 #' @export
 server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
+        stopifnot(sh$is.reactive(data))
+        
         be$obs_return(input)
 
         pr$map(paste0("add", 1:4), \(id) {
@@ -101,16 +103,16 @@ server <- function(id, data) {
             })
         })
 
-        filtered_data1 <- filter$server("filter1", sh$reactive(data))
+        filtered_data1 <- filter$server("filter1", data)
         plot$server("plot1", filtered_data1)
 
-        filtered_data2 <- filter$server("filter2", sh$reactive(data))
+        filtered_data2 <- filter$server("filter2", data)
         plot$server("plot2", filtered_data2)
 
-        filtered_data3 <- filter$server("filter3", sh$reactive(data))
+        filtered_data3 <- filter$server("filter3", data)
         plot$server("plot3", filtered_data3)
 
-        filtered_data4 <- filter$server("filter4", sh$reactive(data))
+        filtered_data4 <- filter$server("filter4", data)
         plot$server("plot4", filtered_data4)
     })
 }

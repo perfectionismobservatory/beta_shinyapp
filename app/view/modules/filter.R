@@ -42,8 +42,7 @@ ui <- function(id) {
                     "PE (Parental expectation)" = "PE",
                     "PC (Parental criticism)" = "PC",
                     "COM (Concerns over mistakes)" = "COM",
-                    "DAA (Doubts about actions)" = "DAA",
-                    "O (Organisation)" = "O"
+                    "DAA (Doubts about actions)" = "DAA"
                 )
             )
         ),
@@ -109,8 +108,7 @@ server <- function(id, data) {
                         "PE (Parental expectation)" = "PE",
                         "PC (Parental criticism)" = "PC",
                         "COM (Concerns over mistakes)" = "COM",
-                        "DAA (Doubts about actions)" = "DAA",
-                        "O (Organisation)" = "O"
+                        "DAA (Doubts about actions)" = "DAA"
                     )
                 )
             } else if (input$scale == "HF-MPS") {
