@@ -20,6 +20,7 @@ library(shinyjs)
 library(shinyFeedback)
 library(shinyWidgets)
 library(htmlwidgets)
+library(waiter)
 
 # Data storage
 library(googledrive)

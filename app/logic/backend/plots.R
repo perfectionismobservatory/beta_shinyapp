@@ -4,10 +4,12 @@ box::use(
     gir = ggiraph,
     dp = dplyr[`%>%`],
     lub = lubridate,
+    str = stringr,
 )
 
 box::use(
     fe = app / logic / frontend,
+    app / logic / frontend / themes,
 )
 
 css_default_hover <- gir$girafe_css_bicolor(primary = "yellow", secondary = "red")
@@ -25,6 +27,15 @@ SIZEMUL <- 1.2
 # Degree to which grey border is less opaque than actual shapes
 # This makes the real color stand out more since those are also opaque to some degree
 ALPHADIFF <- 0.3
+
+transcribe <- function(x) {
+    ux <- unique(x)
+    if (any(ux %in% c("z_strivings", "z_concerns"))) {
+        str$str_to_title(str$str_extract(ux, "[^z_].+"))
+    } else {
+        toupper(paste0(ux, collapse = ", "))
+    }
+}
 
 #' @export
 create_label <- function(data, .name = "lab") {
@@ -53,7 +64,7 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
         gg$ggplot(gg$aes(year_as_date, plotvalue)) +
         gir$geom_point_interactive(gg$aes(size = n_sample * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
         gir$geom_point_interactive(gg$aes(color = country, size = n_sample, tooltip = lab, data_id = id), alpha = alpha) +
-        gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
+        gg$scale_color_manual(values = themes$plot_palette) +
         gg$labs(
             x = "Year",
             color = "Country",
@@ -61,7 +72,7 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
             title = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
             subtitle = paste0(
                 if (length(unique(data$subscale)) > 1) "Subscales: " else "Subscale: ",
-                toupper(paste0(unique(data$subscale), collapse = ", "))
+                transcribe(data$subscale)
             )
         ) +
         #gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
@@ -89,7 +100,7 @@ plot_static <- function(data, alpha = 0.6) {
         gg$ggplot(gg$aes(year_as_date, plotvalue)) +
         gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
         gg$geom_point(gg$aes(color = country, size = inv_var), alpha = alpha) +
-        gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
+        gg$scale_color_manual(values = themes$plot_palette) +
         gg$labs(
             x = "Year",
             shape = "Country",
@@ -97,7 +108,7 @@ plot_static <- function(data, alpha = 0.6) {
             title = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
             subtitle = paste0(
                 if (length(unique(data$subscale)) > 1) "Subscales: " else "Subscale: ",
-                toupper(paste0(unique(data$subscale), collapse = ", "))
+                transcribe(data$subscale)
             ),
             caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
         ) +

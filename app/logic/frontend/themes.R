@@ -5,6 +5,9 @@ box::use(
 )
 
 #' @export
+plot_palette <- c("#2CACF2", "#5D985D", "#FDFD81", "#57707d", "#495e49", "#7f7f71")
+
+#' @export
 light <- bsl$bs_theme(
   version = 5,
   primary = "#7A9DAF",

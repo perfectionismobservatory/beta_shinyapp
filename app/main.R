@@ -1,31 +1,26 @@
 box::use(
   sh = shiny,
   bsl = bslib,
-  dp = dplyr[`%>%`],
-  tdr = tidyr,
   shiny.router[router_ui, router_server, route],
   googlesheets4[gs4_auth, read_sheet],
   googledrive[drive_token, drive_auth],
   shinyjs[useShinyjs],
-  dotenv[load_dot_env],
-  here[here],
   shinyFeedback[useShinyFeedback],
-  str = stringr,
   showtext[showtext_auto],
   sysfonts[font_add_google],
   gdtools[register_gfont],
-  lub = lubridate,
+  waiter,
 )
 
 box::use(
   be = app / logic / backend,
+  fe = app / logic / frontend,
+  app / view / modules / load,
   app / view / pages / home,
   app / view / pages / explore,
   app / view / pages / contribute,
   app / logic / frontend[theme_light],
 )
-
-load_dot_env(file = here(".env"))
 
 # Authenticate Google sheets
 drive_auth(cache = ".secrets", email = Sys.getenv("EMAIL"))
@@ -41,39 +36,18 @@ showtext_auto()
 register_gfont("Noto Sans")
 register_gfont("Merriweather")
 
-data <- Sys.getenv("URL") %>%
-  read_sheet(col_types = "_cccccccccccccccccccc", na = "NA") %>%
-  dp$select(id, authors, doi_pmid_link, country, year, year_adj, n_sample, age, scale, subscale, mean_adj) %>%
-  dp$mutate(
-    dp$across(c(id, year, year_adj, n_sample, age, mean_adj), as.numeric),
-    year_as_date = lub$ymd(paste0(year, "-01-01")),
-  ) %>%
-  dp$mutate(
-    .by = "id",
-    strivings = sum(.data[["mean_adj"]][.data[["subscale"]] %in% c("PS", "SOP")], na.rm = TRUE),
-    concerns = sum(
-      .data[["mean_adj"]][.data[["subscale"]] == "SPP"],
-      mean(.data[["mean_adj"]][.data[["subscale"]] %in% c("COM", "DAA")]),
-      na.rm = TRUE
-    )
-  ) %>%
-  dp$mutate(dp$across(c(strivings, concerns), be$standardise, .names = "z_{.col}")) %>%
-  dp$select(!c(strivings, concerns)) %>%
-  # The following back and forth pivot is not nice, happy to adjust this but could not quickly think of a solution
-  tdr$pivot_wider(names_from = "subscale", values_from = "mean_adj") %>%
-  tdr$pivot_longer(c(z_strivings:OOP), names_to = "subscale", values_to = "plotvalue") %>%
-  dp$filter(!is.na(plotvalue)) %>%
-  dp$mutate(
-    is_standardised = ifelse(str$str_detect(subscale, "^z_"), TRUE, FALSE),
-    scale = ifelse(str$str_detect(subscale, "^z_"), "HOF", scale)
-  )
-
 #' @export
 ui <- function(id) {
   ns <- sh$NS(id)
   bsl$page(
     useShinyjs(),
     useShinyFeedback(),
+    waiter$useWaiter(),
+    waiter$waiterPreloader(
+      html = fe$waiting_screen(sh$h1(style = "margin-top: 1.25rem;", "Initiating...")),
+      fadeout = TRUE,
+      color = "#7A9DAF"
+    ),
     theme = theme_light,
     router_ui(
       route(
@@ -97,6 +71,7 @@ server <- function(id) {
   sh$moduleServer(id, function(input, output, session) {
     router_server("/")
     home$server("home", page = c("explore", "contribute"))
+    data <- load$server("load")
     explore$server("explore", data)
     contribute$server("contribute", data)
     # Would it make sense to download the data separately inside the contribute server and update that

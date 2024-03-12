@@ -49,7 +49,7 @@ sidebar_ui <- function(id) {
     bsl$accordion_panel(
         "Analysis",
         icon = bsi$bs_icon("graph-up-arrow"),
-        fe$toggleswitch(ns("regression"), "Toggle regression line")
+        fe$toggleswitch(ns("regression"), "Toggle regression line", value = TRUE)
     )
 }
 
