@@ -7,6 +7,7 @@ box::use(
     dotenv[load_dot_env],
     here[here],
     googlesheets4[read_sheet],
+    utils[read.csv],
 )
 
 box::use(
@@ -25,7 +26,7 @@ server <- function(id) {
         )
 
         if (be$is_nothing(Sys.getenv("URL"))) {
-            data <- read.csv("data/full.csv")
+            data <- read.csv("data/test.csv")
         } else {
             data <- read_sheet(Sys.getenv("URL"), col_types = "_ccccccccccccccccccccc", na = "NA")
         }
