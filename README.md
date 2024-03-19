@@ -18,14 +18,16 @@ Next, clone the repository from your fork to your local machine:
 git clone https://github.com/yourusername/perfectrepo
 ```
 
-Once downloaded, activate [renv](https://rstudio.github.io/renv/articles/renv.html):
+Once downloaded, activate [renv](https://rstudio.github.io/renv/articles/renv.html) and restore the project environment:
 
 ```r
 renv::activate()
+renv::restore()
 ```
 
 Now, the dependencies of the app should be installed.
 For troubleshooting, refer to the renv documentation linked above.
+A good start is usually to look at the output of `renv::status()`.
 
 You are now ready to run the app locally:
 
