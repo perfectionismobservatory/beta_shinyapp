@@ -25,6 +25,7 @@ write_inputs_to_tibble <- function(input, data) {
         id = max(data$id, na.rm = TRUE) + input$reset + 1, # first upload will be +1, second one +2, etc.
         authors = format_author(input$name),
         email = input$email, # TODO this column is not in original df, add empty col?
+        date_added = as.character(lub$today()),
         doi_pmid_link = input$doc_id, # doi or preregistration link
         type_of_document = input$type,
         study = NA, # TODO what goes here?

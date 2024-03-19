@@ -4,6 +4,8 @@ box::use(
     dp = dplyr[`%>%`],
     str = stringr,
     tt = testthat,
+    tbl = tibble,
+    here,
 )
 
 # Made-up inputs HF-MPS
@@ -84,7 +86,7 @@ input_hfmps <- list(
 )
 
 # Load existing data
-target <- read.csv("data/full.csv")
+target <- tbl$tibble(read.csv(here$here("data/test.csv")))
 
 # Prepare entry for appending
 new_entry_hfmps <- input_hfmps %>%

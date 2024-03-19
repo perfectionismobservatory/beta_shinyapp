@@ -74,66 +74,25 @@ server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
 
-        # FIX on first evaluation of reactive graph, dataframe is a 0-row df
-        # Code below is a bandaid solution only
-        min_x <- sh$reactive(if (nrow(data()) > 0) min(data()$year, na.rm = TRUE))
-        max_x <- sh$reactive(if (nrow(data()) > 0) max(data()$year, na.rm = TRUE))
-
-        res_download <- sh$reactive({
-            data() %>%
-                gg$ggplot(gg$aes(year_as_date, mean_adj)) +
-                gg$geom_point(gg$aes(size = inv_var * SIZEMUL, shape = country), color = "grey20", show.legend = TRUE) +
-                gg$geom_point(gg$aes(color = subscale, size = inv_var, shape = country)) +
-                gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
-                gg$labs(
-                    x = "Year",
-                    color = "Subscale",
-                    shape = "Country",
-                    y = "Value",
-                    title = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
-                    subtitle = paste0(
-                        if (length(unique(data()$subscale)) > 1) "Subscales: " else "Subscale: ",
-                        toupper(paste0(unique(data()$subscale), collapse = ", "))
-                    ),
-                    caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
-                ) +
-                gg$ylim(0, NA) +
-                gg$scale_size(guide = "none") + # No legend for size aes
-                gg$theme_bw() +
-                fe$ggtheme
+        # For each plot, add regression lines if input$regression is TRUE
+        res_static <- sh$reactive({
+            if (input$regression) {
+                be$plot_static(data()) +
+                    gg$geom_smooth(color = "white", linewidth = 1.2, se = TRUE, method = "lm", fill = "darkred") +
+                    gg$geom_smooth(color = "darkred", linewidth = 0.6, se = TRUE, method = "lm")
+            } else {
+                be$plot_static(data())
+            }
         })
 
         res_interactive <- sh$reactive({
-            data() %>%
-                dp$mutate(lab = paste0(
-                    authors, "\n",
-                    subscale, ": ", mean_adj, "\n",
-                    "N: ", n_sample, "\n"
-                )) %>%
-                gg$ggplot(gg$aes(year_as_date, mean_adj, shape = country)) +
-                gir$geom_point_interactive(gg$aes(size = inv_var * SIZEMUL), color = "grey20", show.legend = TRUE) +
-                gir$geom_point_interactive(gg$aes(color = subscale, size = inv_var, tooltip = lab, data_id = id), alpha = 0.9) +
-                gg$scale_color_manual(values = c("#aee0fa", "#92bc92", "#fefee1", "#57707d", "#495e49", "#7f7f71")) +
-                gg$labs(
-                    x = "Year",
-                    color = "Subscale",
-                    shape = "Country",
-                    y = "Value",
-                    title = paste0("Perfectionism Observatory: ", min_x(), " - ", max_x()),
-                    subtitle = paste0(
-                        if (length(unique(data()$subscale)) > 1) "Subscales: " else "Subscale: ",
-                        toupper(paste0(unique(data()$subscale), collapse = ", "))
-                    )
-                ) +
-                gg$ylim(0, NA) +
-                gg$scale_size(guide = "none") + # No legend for size aes
-                gg$theme_bw() +
-                fe$ggtheme +
-                gg$theme(
-                    panel.background = gg$element_rect(fill = "#f9fbfb"),
-                    plot.background = gg$element_rect(fill = "#f9fbfb", color = "#f9fbfb"),
-                    legend.background = gg$element_rect(fill = "#f9fbfb", color = "#f9fbfb")
-                )
+            if (input$regression) {
+                be$plot_interactive(data(), background = "#f9fbfb") +
+                    gir$geom_smooth_interactive(color = "white", linewidth = 1.2, se = TRUE, method = "lm", fill = "darkred") +
+                    gir$geom_smooth_interactive(color = "darkred", linewidth = 0.6, se = TRUE, method = "lm")
+            } else {
+                be$plot_interactive(data(), background = "#f9fbfb")
+            }
         })
 
         output$plot <- gir$renderGirafe(

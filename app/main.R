@@ -27,8 +27,10 @@ box::use(
 load_dot_env(file = here(".env"))
 
 # Authenticate Google sheets
-drive_auth(cache = ".secrets", email = Sys.getenv("EMAIL"))
-gs4_auth(token = drive_token(), email = Sys.getenv("EMAIL"))
+if (!be$is_nothing(Sys.getenv("EMAIL"))) {
+  drive_auth(cache = ".secrets", email = Sys.getenv("EMAIL"))
+  gs4_auth(token = drive_token(), email = Sys.getenv("EMAIL"))
+}
 
 # Add the fonts needed for pdf exports
 font_add_google("Roboto", "Roboto") # Are we using Roboto right now?

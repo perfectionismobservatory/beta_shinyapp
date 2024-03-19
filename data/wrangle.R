@@ -4,6 +4,7 @@ box::use(
     tdr = tidyr,
     pr = purrr,
     str = stringr,
+    lub = lubridate,
 )
 
 box::use(
@@ -95,10 +96,15 @@ df_hfmps <- list_df$hfmps %>%
 df_full <- dp$bind_rows(df_fmps, df_hfmps) %>%
     dp$mutate(ratio_female = per_female / 100, .before = per_female) %>%
     dp$mutate(
-        email = NA, .after = authors,
+        email = NA,
+        date_added = lub$ymd("2024-01-01"),
+        .after = authors,
         dp$across(dp$where(is.numeric), \(x) be$specify_decimal(x, 2)),
         dp$across(dp$everything(), \(x) as.character(x))
     ) %>%
     dp$select(-per_female)
 
 write.csv(df_full, "data/full.csv")
+
+randomrows <- sample(seq_len(nrow(df_full)), 20)
+write.csv(df_full[randomrows, ], "data/test.csv")
