@@ -11,19 +11,12 @@ box::use(
 
 box::use(
     fe = app / logic / frontend,
+    be = app / logic / backend,
 )
 
 # Increase point size by 20% to get borders around shapes
 # The bordered shapes (# 21 etc) behave strangely with legends
 # ... at least for me :)
-SIZEMUL <- 1.2
-
-css_default_hover <- gir$girafe_css_bicolor(primary = "yellow", secondary = "red")
-
-gir$set_girafe_defaults(
-    opts_hover = gir$opts_hover(css = css_default_hover),
-    opts_tooltip = gir$opts_tooltip(css = "padding:10px;background-color:white;color:black;border-radius:5px;border:solid 4px #7A9DAF;")
-)
 
 #' @export
 header_ui <- function(id) {
@@ -56,7 +49,7 @@ sidebar_ui <- function(id) {
     bsl$accordion_panel(
         "Analysis",
         icon = bsi$bs_icon("graph-up-arrow"),
-        fe$toggleswitch(ns("regression"), "Toggle regression line")
+        fe$toggleswitch(ns("regression"), "Toggle regression line", value = TRUE)
     )
 }
 
@@ -95,21 +88,11 @@ server <- function(id, data) {
             }
         })
 
-        output$plot <- gir$renderGirafe(
-            gir$girafe(
-                ggobj = res_interactive(),
-                width_svg = 7,
-                height_svg = 4
-            )
-        )
+        output$plot <- gir$renderGirafe(gir$girafe(ggobj = res_interactive(), width_svg = 7, height_svg = 4))
 
         output$download <- sh$downloadHandler(
-            filename = \() {
-                paste(lub$today(), "perfectrepo.pdf", sep = "_")
-            },
-            content = \(file) {
-                gg$ggsave(file, res_download(), width = 7, height = 5)
-            }
+            filename = \() paste(lub$today(), "perfectrepo.pdf", sep = "_"),
+            content = \(file) gg$ggsave(file, res_static(), width = 7, height = 5)
         )
     })
 }

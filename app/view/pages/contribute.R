@@ -40,9 +40,6 @@ ui <- function(id) {
                 validation$ui(
                     ns("validation"),
                     !!!fe$validation_inputs
-                    # Passing the popout correctly will either have us
-                    # skip the last element of inputs in `validation.R`, or
-                    # make another arg field
                 ),
                 NULL
             )
@@ -61,10 +58,15 @@ ui <- function(id) {
 #' @export
 server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
+        # Assert that data is a reactive
+        stopifnot(sh$is.reactive(data))
+
+        # Return to home page if back button pressed
         be$obs_return(input)
+
         validation$server("validation")
         feedback$server("validation")
         summary$server("validation")
-        upload$server("validation", sh$reactive(data))
+        upload$server("validation", data)
     })
 }

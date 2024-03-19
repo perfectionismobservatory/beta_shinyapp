@@ -1,0 +1,13 @@
+// general is a really poor name... but naming is hard
+
+body {
+    background-color: $primary;
+}
+
+.hover {
+    &:hover {
+        border-color: lighten($secondary, 1%) !important;
+        background-color: darken($info, 1%) !important;
+        transition: all ease-in-out 300ms;
+      }
+}

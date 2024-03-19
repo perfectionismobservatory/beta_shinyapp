@@ -276,7 +276,6 @@ btn_modal <- function(id, label, modal_title, footer_confirm = NULL, footer_dism
 }
 
 #' @export
-#' Custom toggle switch
 disabled_upload_inputs <- list(
     age = \(id, ns, value) {
         shj$disabled(
@@ -403,17 +402,16 @@ toggleswitch <- function(id, label, value = FALSE, class = NULL) {
 #' @export
 scale_lookup <- list(
     "HF-MPS" = c(
-        sop = "Self-oriented perfectionism",
-        oop = "Other-oriented perfectionism",
-        spp = "Self-prescribed perfectionism"
+        sop = "SOP (Self-oriented perfectionism)",
+        oop = "OOP (Other-oriented perfectionism)",
+        spp = "SPP (Self-prescribed perfectionism)"
     ),
     "F-MPS" = c(
-        ps = "Personal standards",
-        pe = "Parental expectation",
-        pc = "Parental criticism",
-        com = "Concerns over mistakes",
-        daa = "Doubts about actions",
-        o = "Organisation"
+        ps = "PS (Personal standards)",
+        pe = "PE (Parental expectation)",
+        pc = "PC (Parental criticism)",
+        com = "COM (Concerns over mistakes)",
+        daa = "DAA (Doubts about actions)"
     )
 )
 

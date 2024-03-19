@@ -4,10 +4,13 @@ box::use(
     dp = dplyr[`%>%`],
     tdr = tidyr,
     str = stringr,
+    pr = purrr,
+    sh = shiny,
+    lub = lubridate,
 )
 
 box::use(
-    be = app / logic / backend,
+    be = app / logic / backend[`%ifNA%`, `%ifNAorNULL%`, `%//%`],
 )
 
 format_author <- function(name) {
@@ -46,7 +49,6 @@ write_inputs_to_tibble <- function(input, data) {
         pc_mean = input$pc_mean %||% NA,
         com_mean = input$com_mean %||% NA,
         daa_mean = input$daa_mean %||% NA,
-        o_mean = input$o_mean %||% NA,
         sop_sd = input$sop_sd %||% NA,
         spp_sd = input$spp_sd %||% NA,
         oop_sd = input$oop_sd %||% NA,
@@ -69,6 +71,7 @@ write_inputs_to_tibble <- function(input, data) {
 }
 
 #' @export
+#' Format user-entered data for appending to existing data
 prepare_for_append <- function(data) {
     tmp <- data %>%
         tdr$pivot_longer(dp$contains(c("mean", "sd"))) %>%
@@ -96,4 +99,54 @@ prepare_for_append <- function(data) {
 
     # Convert numeric values to characters with two decimals to prevent google sheets converting numbers to dates
     dp$mutate(out, dp$across(dp$where(is.numeric), \(x) be$specify_decimal(x, 2)))
+}
+
+# Certain `detail` inputs are active depending on whether a user's study is published or not
+published_inputs <- c("name", "email", "type", "pubyear", "doi")
+unpublished_inputs <- c("name", "email", "prereg")
+
+#' @export
+#' Return names of active `detail` inputs depending on publication status
+get_detail_inputs <- function(status) {
+    if (status == "Unspecified") {
+        NULL
+    } else if (status == "Published") {
+        published_inputs
+    } else {
+        unpublished_inputs
+    }
+}
+
+#' @export
+run_initial_check <- function(input) {
+    # Validate conditional `detail` elements
+    if (input$status == "Unspecified") {
+        cond_valid <- FALSE
+    } else if (input$status == "Published") {
+        cond_valid <- pr$reduce(
+            .f = `&`,
+            # This here should also check for NULLs?
+            pr$map(published_inputs, \(x) !be$is_nothing(input[[x]]) && input[[x]] != "Unspecified")
+        )
+    } else {
+        cond_valid <- pr$reduce(
+            .f = `&`,
+            # This here should also check for NULLs?
+            pr$map(unpublished_inputs, \(x) !be$is_nothing(input[[x]]) && input[[x]] != "Unspecified")
+        )
+    }
+    # Validate all
+    pr$reduce(
+        .f = `&`,
+        c(
+            input$year %in% 1988:lub$year(lub$today()),
+            # Input year must be between collection year and current year
+            # If preregistration or unpublished, always pass this check
+            (input$pubyear %||% input$year) %in% input$year:lub$year(lub$today()),
+            input$scale %in% c("F-MPS", "HF-MPS"),
+            input$sample == "University students",
+            be$between(18, input$age, 25) %ifNA% FALSE,
+            cond_valid
+        )
+    )
 }

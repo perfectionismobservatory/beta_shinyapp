@@ -1330,7 +1330,7 @@
     },
     "rhino": {
       "Package": "rhino",
-      "Version": "1.6.0",
+      "Version": "1.7.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1351,9 +1351,10 @@
         "testthat",
         "utils",
         "withr",
+        "xml2",
         "yaml"
       ],
-      "Hash": "ff605bc0e89a93b4ccf76f565bc1cdfc"
+      "Hash": "59ee79b26dd590b08dd1a3111d093832"
     },
     "rlang": {
       "Package": "rlang",
@@ -1837,6 +1838,18 @@
         "R"
       ],
       "Hash": "c826c7c4241b6fc89ff55aaea3fa7491"
+    },
+    "waiter": {
+      "Package": "waiter",
+      "Version": "0.2.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R6",
+        "htmltools",
+        "shiny"
+      ],
+      "Hash": "93e6b6c8ae3f81d4be77a0dc74e5cf5e"
     },
     "waldo": {
       "Package": "waldo",

@@ -95,6 +95,7 @@ df_hfmps <- list_df$hfmps %>%
 
 df_full <- dp$bind_rows(df_fmps, df_hfmps) %>%
     dp$mutate(ratio_female = per_female / 100, .before = per_female) %>%
+    dp$filter(mean_adj > 0) %>%
     dp$mutate(
         email = NA,
         date_added = lub$ymd("2024-01-01"),
