@@ -48,7 +48,7 @@ ui <- function(id) {
     waiter$waiterPreloader(
       html = fe$waiting_screen(sh$h1(style = "margin-top: 1.25rem;", "Initiating...")),
       fadeout = TRUE,
-      color = "#7A9DAF"
+      color = "#43639e"
     ),
     theme = theme_light,
     router_ui(
