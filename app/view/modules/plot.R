@@ -46,11 +46,7 @@ header_ui <- function(id) {
 #' @export
 sidebar_ui <- function(id) {
     ns <- sh$NS(id)
-    bsl$accordion_panel(
-        "Analysis",
-        icon = bsi$bs_icon("graph-up-arrow"),
-        fe$toggleswitch(ns("regression"), "Toggle regression line", value = TRUE)
-    )
+    fe$toggleswitch(ns("regression"), "Toggle regression line", value = TRUE)
 }
 
 #' @export

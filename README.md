@@ -42,7 +42,7 @@ rhino::app()
 ```bibtex
 @article{pose2024XXXX,
   title={This is a placeholder title},
-  author={Davis, Miles and Jeffreys, Garland},
+  author={Curran, Thomas and Pose, Pia Marie and Hill, Andrew and Steiger, Simon},
   journal={Placeholder journal name},
   year={2024}
 }
