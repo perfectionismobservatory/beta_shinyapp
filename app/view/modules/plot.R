@@ -23,7 +23,6 @@ header_ui <- function(id) {
     ns <- sh$NS(id)
     sh$div(
         class = "d-flex flex-row gap-2 align-items-center",
-        fe$toggleswitch(ns("regression"), "Regression line", value = TRUE),
         sh$downloadButton(
             icon = NULL,
             class = "btn btn-secondary hover bg-transparent border-0 p-2",
@@ -42,6 +41,12 @@ header_ui <- function(id) {
             )
         ) %>% bsl$tooltip("Feature in development")
     )
+}
+
+#' @export
+sidebar_ui <- function(id) {
+    ns <- sh$NS(id)
+    fe$toggleswitch(ns("regression"), "Toggle regression line", value = TRUE)
 }
 
 #' @export

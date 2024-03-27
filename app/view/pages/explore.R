@@ -34,7 +34,8 @@ add_main_window <- function(ns, n) {
                             width = 300,
                             bsl$accordion(
                                 open = FALSE,
-                                !!!filter$ui(ns(paste0("filter", n)))
+                                !!!filter$ui(ns(paste0("filter", n))),
+                                plot$sidebar_ui(ns(paste0("plot", n))),
                             )
                         ),
                         plot$main_ui(ns(paste0("plot", n)), NULL),
