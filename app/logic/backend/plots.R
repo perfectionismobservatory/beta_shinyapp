@@ -50,7 +50,7 @@ create_label <- function(data, .name = "lab") {
 }
 
 #' @export
-plot_interactive <- function(data, background = "#ffffff", alpha = 0.6) {
+plot_interactive <- function(data, background = "#ffffff", alpha = 0.8) {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
