@@ -23,6 +23,24 @@ header_ui <- function(id) {
     ns <- sh$NS(id)
     sh$div(
         class = "d-flex flex-row gap-2 align-items-center",
+        fe$toggleswitch(ns("regression"), "Regression line", value = TRUE)
+    )
+}
+
+#' @export
+main_ui <- function(id, card_title = NULL) {
+    ns <- sh$NS(id)
+    bsl$nav_panel(
+        bsl$card_title(card_title),
+        bsl$card_body(gir$girafeOutput(ns("plot")))
+    )
+}
+
+#' @export
+footer_ui <- function(id) {
+    ns <- sh$NS(id)
+    sh$div(
+        class = "d-flex flex-row gap-2 align-items-center",
         sh$downloadButton(
             icon = NULL,
             class = "btn btn-secondary hover bg-transparent border-0 p-2",
@@ -40,21 +58,6 @@ header_ui <- function(id) {
                 bsi$bs_icon("brush", size = "1.25rem"), "Customise"
             )
         ) %>% bsl$tooltip("Feature in development")
-    )
-}
-
-#' @export
-sidebar_ui <- function(id) {
-    ns <- sh$NS(id)
-    fe$toggleswitch(ns("regression"), "Toggle regression line", value = TRUE)
-}
-
-#' @export
-main_ui <- function(id, card_title = NULL) {
-    ns <- sh$NS(id)
-    bsl$nav_panel(
-        bsl$card_title(card_title),
-        bsl$card_body(gir$girafeOutput(ns("plot")))
     )
 }
 

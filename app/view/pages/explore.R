@@ -20,7 +20,7 @@ add_main_window <- function(ns, n) {
             NULL,
             sh$div(
                 bsl$card(
-                    height = 660, # this value is ~ the lowest we can have before scrolling is enabled
+                    height = 715, # this value is ~ the lowest we can have before scrolling is enabled
                     bsl$card_header(
                         class = "d-flex justify-content-between align-items-center",
                         sh$div(
@@ -34,24 +34,27 @@ add_main_window <- function(ns, n) {
                             width = 300,
                             bsl$accordion(
                                 open = FALSE,
-                                !!!filter$ui(ns(paste0("filter", n))),
-                                plot$sidebar_ui(ns(paste0("plot", n))),
+                                !!!filter$ui(ns(paste0("filter", n)))
                             )
                         ),
                         plot$main_ui(ns(paste0("plot", n)), NULL),
+                    ),
+                    bsl$card_footer(
+                        class = "d-flex justify-content-between align-items-center",
+                        sh$div(
+                            style = "text-align: center;",
+                            if (n == 4) {
+                                NULL
+                            } else {
+                                sh$actionButton(
+                                    class = fe$class_button,
+                                    ns(paste0("add", n)),
+                                    "Add window below"
+                                )
+                            }
+                        ),
+                        plot$footer_ui(ns(paste("plot", n)))
                     )
-                ),
-                sh$div(
-                    style = "text-align: center;",
-                    if (n == 4) {
-                        NULL
-                    } else {
-                        sh$actionButton(
-                            class = paste(fe$class_button, "my-3"),
-                            ns(paste0("add", n)),
-                            "Add window below"
-                        )
-                    }
                 )
             ),
             NULL
@@ -90,7 +93,7 @@ ui <- function(id) {
 server <- function(id, data) {
     sh$moduleServer(id, function(input, output, session) {
         stopifnot(sh$is.reactive(data))
-        
+
         be$obs_return(input)
 
         pr$map(paste0("add", 1:4), \(id) {
