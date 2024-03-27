@@ -27,7 +27,7 @@ renv::restore()
 
 Now, the dependencies of the app should be installed.
 For troubleshooting, refer to the renv documentation linked above.
-A good start is usually to look at the output of `renv::status()`.
+A good start is to look at the output of `renv::status()`.
 
 You are now ready to run the app locally:
 

@@ -5,17 +5,17 @@ box::use(
 )
 
 #' @export
-plot_palette <- c("#2CACF2", "#5D985D", "#FDFD81", "#57707d", "#495e49", "#7f7f71")
+plot_palette <- c("#6495ed", "#ff4040", "#ffe4c4")
 
 #' @export
 light <- bsl$bs_theme(
   version = 5,
-  primary = "#7A9DAF",
-  secondary = "#f9fbfb",
+  primary = "#43639e",
+  secondary = "#f3f0ed",
   warning = "#FFD885",
-  danger = "#FF230F",
+  danger = "#ff4040",
   success = "#00B321",
-  info = "#cfdce2",
+  info = "#cdc3b6",
   base_font = bsl$font_collection(
     bsl$font_google("Noto Sans", local = FALSE), "Roboto", "serif"
   ),

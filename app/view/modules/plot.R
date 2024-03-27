@@ -71,8 +71,8 @@ server <- function(id, data) {
         res_static <- sh$reactive({
             if (input$regression) {
                 be$plot_static(data()) +
-                    gg$geom_smooth(color = "white", linewidth = 1.2, se = TRUE, method = "lm", fill = "darkred") +
-                    gg$geom_smooth(color = "darkred", linewidth = 0.6, se = TRUE, method = "lm")
+                    gg$geom_smooth(color = "white", linewidth = 1.2, se = TRUE, method = "lm", fill = "#554c41") +
+                    gg$geom_smooth(color = "#554c41", linewidth = 0.6, se = TRUE, method = "lm")
             } else {
                 be$plot_static(data())
             }
@@ -80,11 +80,11 @@ server <- function(id, data) {
 
         res_interactive <- sh$reactive({
             if (input$regression) {
-                be$plot_interactive(data(), background = "#f9fbfb") +
-                    gir$geom_smooth_interactive(color = "white", linewidth = 1.2, se = TRUE, method = "lm", fill = "darkred") +
-                    gir$geom_smooth_interactive(color = "darkred", linewidth = 0.6, se = TRUE, method = "lm")
+                be$plot_interactive(data(), background = "#f2f0ed") +
+                    gir$geom_smooth_interactive(color = "white", linewidth = 1.2, se = TRUE, method = "lm", fill = "#554c41") +
+                    gir$geom_smooth_interactive(color = "#554c41", linewidth = 0.6, se = TRUE, method = "lm")
             } else {
-                be$plot_interactive(data(), background = "#f9fbfb")
+                be$plot_interactive(data(), background = "#f2f0ed")
             }
         })
 

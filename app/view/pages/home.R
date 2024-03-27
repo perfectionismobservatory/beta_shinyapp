@@ -15,13 +15,17 @@ sourcelink <- bsl$popover(
     sh$div(
         sh$p(
             sh$span(style = "font-weight: 700;", "Frost, R. O., Marten, P., Lahart, C., & Rosenblate, R. (1990)."),
-            "The dimensions of perfectionism. Cognitive Therapy and Research, 14(5), 449–468. ",
+            "The dimensions of perfectionism.",
+            sh$tags$i(" Cognitive Therapy and Research, 14(5)"),
+            ", 449–468. ",
             sh$a(href = "https://doi.org/10.1007/BF01172967", "https://doi.org/10.1007/BF01172967")
         ),
         sh$p(
             sh$span(style = "font-weight: 700;", "Hewitt, P. L., & Flett, G. L. (1991)."),
             " Perfectionism in the self and social contexts: Conceptualization, assessment, and association with 
-            psychopathology. Journal of Personality and Social Psychology, 60(3), 456–470. ",
+            psychopathology.",
+            sh$tags$i("Journal of Personality and Social Psychology, 60(3)"),
+            ", 456–470. ",
             sh$a(href = "https://doi.org/10.1037/0022-3514.60.3.456", "https://doi.org/10.1037/0022-3514.60.3.456")
         )
     ),
