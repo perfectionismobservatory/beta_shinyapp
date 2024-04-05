@@ -54,8 +54,8 @@ ui <- function(id) {
                                 style = "max-width: 775px; margin-bottom: 1.5rem; text-align: center;",
                                 "A global database and visualisation tool for perfectionism data"
                             ),
-                            sh$h6(
-                                style = "max-width: 775px; text-align: left; margin: 0; letter-spacing: 0.02rem; line-height: 140%;",
+                            sh$p(
+                                style = "font-size: 11pt; max-width: 775px; text-align: left; margin: 0; letter-spacing: 0.02rem; line-height: 140%;",
                                 "How is perfectionism changing over time? This tool provides a real-time, open access
                                 database to track levels of perfectionism among young people based on the Frost and Hewitt-Flett
                                 Multidimensional Perfectionism Scales.", sourcelink

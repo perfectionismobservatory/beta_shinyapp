@@ -19,7 +19,9 @@ light <- bsl$bs_theme(
   base_font = bsl$font_collection(
     bsl$font_google("Noto Sans", local = FALSE), "Roboto", "serif"
   ),
-  heading_font = bsl$font_google("Palatino"),
+  heading_font = bsl$font_collection(
+    bsl$font_google("Palatino", local = FALSE), "Times New Roman", "serif"
+  ),
   code_font = bsl$font_google("Roboto Mono"),
   "btn-border-radius" = "10px"
 )
