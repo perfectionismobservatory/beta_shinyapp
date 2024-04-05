@@ -19,13 +19,25 @@ box::use(
 # ... at least for me :)
 
 #' @export
-header_ui <- function(id) {
+header_ui <- function(id) { # nolint
     ns <- sh$NS(id)
     sh$div(
         class = "d-flex flex-row gap-2 align-items-center",
-        fe$toggleswitch(ns("regression"), "Regression line", value = TRUE)
+        fe$toggleswitch(ns("regression"), "Regression line", value = TRUE),
+        bsl$popover(
+            bsi$bs_icon("info-circle"),
+            title = "Regression Line",
+            sh$div(
+                sh$p(
+                    sh$span(
+                        "For illustrative purposes, the shown regression line and 95% confidence intervals are based on a linear regression per default. This is most likely not the best fitting metaregression model. For best-fitting metaregression models for each dataset, see the original publication.", # nolint
+                    ),
+                )
+            )
+        )
     )
 }
+
 
 #' @export
 main_ui <- function(id, card_title = NULL) {
@@ -41,6 +53,14 @@ footer_ui <- function(id) {
     ns <- sh$NS(id)
     sh$div(
         class = "d-flex flex-row gap-2 align-items-center",
+        sh$actionButton(
+            class = "btn btn-secondary hover bg-transparent border-0 p-2",
+            ns("customise"),
+            sh$div(
+                class = "d-flex gap-2 align-items-center",
+                bsi$bs_icon("brush", size = "1.25rem"), "Customise"
+            )
+        ) %>% bsl$tooltip("Feature in development"),
         sh$downloadButton(
             icon = NULL,
             class = "btn btn-secondary hover bg-transparent border-0 p-2",
@@ -49,15 +69,7 @@ footer_ui <- function(id) {
                 class = "d-flex gap-2 align-items-center",
                 bsi$bs_icon("download", size = "1.25rem"), "Download"
             )
-        ),
-        sh$actionButton(
-            class = "btn btn-secondary hover bg-transparent border-0 p-2",
-            ns("customise"),
-            sh$div(
-                class = "d-flex gap-2 align-items-center",
-                bsi$bs_icon("brush", size = "1.25rem"), "Customise"
-            )
-        ) %>% bsl$tooltip("Feature in development")
+        )
     )
 }
 
