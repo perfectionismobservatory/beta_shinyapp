@@ -4,6 +4,7 @@ box::use(
     bsi = bsicons,
     lub = lubridate,
     shw = shinyWidgets,
+    shj = shinyjs,
 )
 
 box::use(
@@ -22,27 +23,19 @@ ui <- function(id) {
                 ns("view"),
                 "Pick view",
                 choices = c("Higher-order factors" = "hof", "MPS" = "mps"),
-                selected = "mps"
+                selected = "hof"
             ),
-            sh$conditionalPanel(
-                condition = "input.view == 'mps'",
-                fe$radio(
-                    ns("scale"),
-                    label = "Pick scale",
-                    choices = c("F-MPS", "HF-MPS")
-                ),
-                ns = ns,
+            fe$radio(
+                ns("scale"),
+                label = "Pick scale",
+                choices = c("F-MPS", "HF-MPS")
             ),
             fe$radio(
                 ns("subscale"),
                 "Pick subscale",
                 choices = c(
-                    "All subscales" = "all",
-                    "PS (Personal standards)" = "PS",
-                    "PE (Parental expectation)" = "PE",
-                    "PC (Parental criticism)" = "PC",
-                    "COM (Concerns over mistakes)" = "COM",
-                    "DAA (Doubts about actions)" = "DAA"
+                    "Perfectionist strivings" = "z_strivings",
+                    "Perfectionist concerns" = "z_concerns"
                 )
             )
         ),
@@ -71,6 +64,7 @@ server <- function(id, data) {
         stopifnot(sh$is.reactive(data))
 
         sh$observeEvent(input$view, {
+            shj$toggle("scale")
             if (input$view == "hof") {
                 # Set scale to HOF for filtering
                 # This radio button is hidden in the `conditionalPanel`
@@ -78,12 +72,6 @@ server <- function(id, data) {
                     session = session,
                     "scale",
                     choices = "HOF"
-                )
-                # Set correct "subscale" options for higher order factors
-                shw$updatePrettyRadioButtons(
-                    session = session,
-                    "subscale",
-                    choices = c("Perfectionist strivings" = "z_strivings", "Perfectionist concerns" = "z_concerns")
                 )
             } else if (input$view != "hof") {
                 # Set correct scale choices if HOF are not displayed
@@ -121,6 +109,15 @@ server <- function(id, data) {
                         "SOP (Self-oriented)" = "SOP",
                         "OOP (Other-oriented)" = "OOP",
                         "SPP (Socially-prescribed)" = "SPP"
+                    )
+                )
+            } else {
+                shw$updatePrettyRadioButtons(
+                    session = session,
+                    "subscale",
+                    choices = c(
+                        "Perfectionist strivings" = "z_strivings",
+                        "Perfectionist concerns" = "z_concerns"
                     )
                 )
             }
