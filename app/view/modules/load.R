@@ -36,7 +36,7 @@ server <- function(id) {
             dp$select(id, authors, date_added, doi_pmid_link, country, year, year_adj, n_sample, age, scale, subscale, mean_adj) %>%
             dp$mutate(
                 dp$across(c(id, year, year_adj, n_sample, age, mean_adj), as.numeric),
-                year_as_date = lub$ymd(paste0(year, "-01-01")),
+                year_as_date = lub$ymd(paste0(year_adj, "-01-01")),
             ) %>%
             # Drop Organization subscale and all records uploaded in the current month
             dp$filter(subscale != "O" & lub$ceiling_date(lub$ymd(date_added), "months") <= lub$today()) %>%

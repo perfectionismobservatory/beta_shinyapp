@@ -33,3 +33,7 @@
 .popover {
     --bs-popover-max-width: 600px;
 }
+
+.accordion-title {
+    font-size: $font-size-medium !important;
+}
