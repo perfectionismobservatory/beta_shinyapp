@@ -31,7 +31,10 @@ ALPHADIFF <- 0.3
 transcribe <- function(x) {
     ux <- unique(x)
     if (any(ux %in% c("z_strivings", "z_concerns"))) {
-        str$str_to_title(str$str_extract(ux, "[^z_].+"))
+        # At app startup, there is a brief period where HOF subscales are both active (this is probably the real bug!)
+        # To prevent a `textbox_grob() is not vectorised` error, the selected HOF subscales are also collapsed into a single string
+        # even though there _should_ never be a scenario where two HOF subscales are active simultaneously
+        paste0(str$str_to_title(str$str_extract(ux, "[^z_].+")), collapse = ", ")
     } else {
         toupper(paste0(ux, collapse = ", "))
     }
@@ -56,8 +59,6 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.8) {
 
     min_x <- if (nrow(data) > 0) min(data$year_adj, na.rm = TRUE)
     max_x <- if (nrow(data) > 0) max(data$year_adj, na.rm = TRUE)
-    #min_y <- if (nrow(data) > 0) min(data$plotvalue, na.rm = TRUE) else 0
-    #max_y <- if (nrow(data) > 0) max(data$plotvalue, na.rm = TRUE) else 0
 
     data %>%
         create_label() %>%
@@ -75,7 +76,6 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.8) {
                 transcribe(data$subscale)
             )
         ) +
-        #gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
         gg$scale_size(guide = "none") + # No legend for size aes
         gg$theme_bw() +
         fe$ggtheme +

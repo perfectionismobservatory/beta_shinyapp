@@ -7,6 +7,7 @@ box::use(
     gg = ggplot2,
     lub = lubridate,
     gir = ggiraph,
+    utils,
 )
 
 box::use(
@@ -99,7 +100,9 @@ server <- function(id, data) {
             }
         })
 
-        output$plot <- gir$renderGirafe(gir$girafe(ggobj = res_interactive(), width_svg = 7, height_svg = 4))
+        output$plot <- gir$renderGirafe({
+            gir$girafe(ggobj = res_interactive(), width_svg = 7, height_svg = 4)
+        })
 
         output$download <- sh$downloadHandler(
             filename = \() paste(lub$today(), "perfectrepo.pdf", sep = "_"),
