@@ -23,6 +23,7 @@ server <- function(id, data) {
 
     # Fit model
     model <- sh$reactive({
+      sh$req(nrow(data()) > 0)
       lm(plotvalue ~ year_adj, data = data())
     })
 
