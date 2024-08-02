@@ -91,8 +91,8 @@ plot_static <- function(data, alpha = 0.6) {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
-    min_x <- if (nrow(data) > 0) min(data$year, na.rm = TRUE)
-    max_x <- if (nrow(data) > 0) max(data$year, na.rm = TRUE)
+    min_x <- if (nrow(data) > 0) min(data$year_adj, na.rm = TRUE)
+    max_x <- if (nrow(data) > 0) max(data$year_adj, na.rm = TRUE)
     min_y <- if (nrow(data) > 0) min(data$plotvalue, na.rm = TRUE) else 0
     max_y <- if (nrow(data) > 0) max(data$plotvalue, na.rm = TRUE) else 0
 
