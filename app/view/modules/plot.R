@@ -13,7 +13,7 @@ box::use(
 box::use(
   fe = app / logic / frontend,
   be = app / logic / backend,
-  re = app / view / modules / regression,
+  app / view / modules / regression,
 )
 
 # Increase point size by 20% to get borders around shapes
@@ -29,14 +29,7 @@ header_ui <- function(id) { # nolint
     bsl$popover(
       bsi$bs_icon("info-circle"),
       title = "Regression Line",
-      sh$div(
-        # Here goes the R2 text from the regression module
-        sh$p(
-          sh$span(
-            "For illustrative purposes, the shown regression line and 95% confidence intervals are based on a linear regression per default. This is most likely not the best fitting metaregression model. For best-fitting metaregression models for each dataset, see the original publication.", # nolint
-          ),
-        )
-      )
+      regression$ui(ns("regression"))
     )
   )
 }
@@ -82,7 +75,7 @@ server <- function(id, data) {
     stopifnot(sh$is.reactive(data))
 
     # Fit model and get data with predictions
-    data_preds <- re$server("regression", data)
+    data_preds <- regression$server("regression", data)
     stopifnot(sh$is.reactive(data_preds))
 
     # For each plot, add regression lines if input$regression is TRUE

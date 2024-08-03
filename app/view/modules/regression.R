@@ -3,16 +3,17 @@ box::use(
   stats[lm, predict],
   dp = dplyr[`%>%`],
   lub = lubridate,
-  utils[head],
+)
+
+box::use(
+  be = app / logic / backend,
 )
 
 #' @export
 ui <- function(id) {
   ns <- sh$NS(id)
-  sh$tagList(
-    sh$p(
-      sh$span() # output R2 here as ... text?!
-    )
+  sh$div(
+    sh$htmlOutput(ns("r2")),
   )
 }
 
@@ -24,20 +25,35 @@ server <- function(id, data) {
     # Fit model
     model <- sh$reactive({
       sh$req(nrow(data()) > 0)
-      lm(plotvalue ~ year_adj, data = data())
+      be$basic_model(data())
     })
 
     # Create some pseudo data to generate predictions for
     new_data <- sh$reactive({
-      lwr_year <- if (nrow(data()) > 0) min(data()$year_adj, na.rm = TRUE) else 1981
-      upr_year <- if (nrow(data()) > 0) max(data()$year_adj, na.rm = TRUE) else 2020
+      sh$req(nrow(data()) > 0)
+      lwr_year <- min(data()$year_adj, na.rm = TRUE)
+      upr_year <- max(data()$year_adj, na.rm = TRUE)
       data.frame(year_adj = lwr_year:upr_year)
     })
 
     # Get predictions and 95% CIs
     predictions <- sh$reactive(
-      predict(model(), newdata = new_data(), interval = "confidence")
+      be$basic_predictions(model(), new_data())
     )
+
+    r2 <- sh$reactive(
+      be$basic_r2(model())
+    )
+
+    output$r2 <- sh$renderUI({
+      sh$p(
+        sh$span(
+          paste0("The R-squared value of the model is ", r2(), ".")
+        )
+      )
+    })
+
+    # TODO calculate R2 and add it to the UI
 
     # Return combined pseudo data with predictions
     # The plotting pipeline that follows expects the following columns:

@@ -4,6 +4,7 @@ box::use(
     app / logic / backend / validations,
     app / logic / backend / uploads,
     app / logic / backend / plots,
+    app / logic / backend / regressions,
 )
 
 # Backend reexports
@@ -61,3 +62,12 @@ plot_static <- plots$plot_static
 
 #' @export
 create_label <- plots$create_label
+
+#' @export
+basic_model <- regressions$basic_model
+
+#' @export
+basic_predictions <- regressions$basic_predictions
+
+#' @export
+basic_r2 <- regressions$basic_r2
