@@ -56,11 +56,6 @@ server <- function(id, data) {
     # TODO calculate R2 and add it to the UI
 
     # Return combined pseudo data with predictions
-    # The plotting pipeline that follows expects the following columns:
-    # - x axis: year_adj
-    # - y axis: fit
-    # - 97.5 CI limit: upr
-    # - 2.5 CI limit: lwr
     plot_data <- sh$reactive({
       cbind(new_data(), predictions()) %>%
         dp$mutate(
