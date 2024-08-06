@@ -33,11 +33,6 @@ basic_predictions <- function(model, subscale, xs) {
 }
 
 #' @export
-basic_r2 <- function(model, digits = 3) {
-  round(summary(model)$r.squared, digits)
-}
-
-#' @export
 decimal_to_date <- function(decimal_year) {
   year <- floor(decimal_year)
   days_in_year <- 365

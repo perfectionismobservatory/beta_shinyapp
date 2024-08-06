@@ -70,7 +70,4 @@ basic_model <- regressions$basic_model
 basic_predictions <- regressions$basic_predictions
 
 #' @export
-basic_r2 <- regressions$basic_r2
-
-#' @export
 decimal_to_date <- regressions$decimal_to_date

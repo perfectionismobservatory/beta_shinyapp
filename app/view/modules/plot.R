@@ -24,7 +24,7 @@ header_ui <- function(id) { # nolint
   ns <- sh$NS(id)
   sh$div(
     class = "d-flex flex-row gap-2 align-items-center",
-    fe$toggleswitch(ns("regression"), "Regression line", value = TRUE),
+    fe$toggleswitch(ns("regression"), "Regression line", value = FALSE),
     bsl$popover(
       bsi$bs_icon("info-circle"),
       title = "Regression Line",
