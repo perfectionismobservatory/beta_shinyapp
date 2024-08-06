@@ -33,9 +33,9 @@ server <- function(id) {
 
         # Read data
         data <- data %>%
-            dp$select(id, authors, date_added, doi_pmid_link, country, year, year_adj, n_sample, age, scale, subscale, mean_adj) %>%
+            dp$select(id, authors, date_added, doi_pmid_link, country, year, year_adj, n_sample, age, scale, subscale, mean_adj, sd_adj) %>%
             dp$mutate(
-                dp$across(c(id, year, year_adj, n_sample, age, mean_adj), as.numeric),
+                dp$across(c(id, year, year_adj, n_sample, age, mean_adj, sd_adj), as.numeric),
                 year_as_date = lub$ymd(paste0(year_adj, "-01-01")),
             ) %>%
             # Drop Organization subscale and all records uploaded in the current month
@@ -57,7 +57,7 @@ server <- function(id) {
                 )
             ) %>%
             # The following back and forth pivot is not nice, happy to adjust this but could not quickly think of a solution
-            tdr$pivot_wider(names_from = "subscale", values_from = "mean_adj") %>%
+            tdr$pivot_wider(names_from = "subscale", values_from = "z") %>%
             tdr$pivot_longer(c(z_strivings:OOP), names_to = "subscale", values_to = "plotvalue") %>%
             dp$filter(!is.na(plotvalue)) %>%
             dp$mutate(scale = ifelse(str$str_detect(subscale, "^z_"), "HOF", scale))

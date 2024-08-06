@@ -7,7 +7,6 @@ box::use(
   gg = ggplot2,
   lub = lubridate,
   gir = ggiraph,
-  utils,
 )
 
 box::use(
@@ -82,9 +81,9 @@ server <- function(id, data) {
     res_static <- sh$reactive({
       if (input$regression) {
         be$plot_static(data()) +
-          gg$geom_line(data = data_preds(), gg$aes(y = fit), color = "white", linewidth = 1.2) +
-          gg$geom_line(data = data_preds(), gg$aes(y = fit), color = "#554c41", linewidth = 0.6) +
-          gg$geom_ribbon(data = data_preds(), gg$aes(x = year_as_date, y = fit, ymin = lwr, ymax = upr), alpha = 0.2)
+          gg$geom_line(data = data_preds(), gg$aes(y = pred), color = "white", linewidth = 1.2) +
+          gg$geom_line(data = data_preds(), gg$aes(y = pred), color = "#554c41", linewidth = 0.6) +
+          gg$geom_ribbon(data = data_preds(), gg$aes(x = year_as_date, y = pred, ymin = ci.lb, ymax = ci.ub), alpha = 0.2)
       } else {
         be$plot_static(data())
       }
@@ -93,9 +92,9 @@ server <- function(id, data) {
     res_interactive <- sh$reactive({
       if (input$regression) {
         be$plot_interactive(data(), background = "#f2f0ed") +
-          gg$geom_line(data = data_preds(), gg$aes(year_as_date, fit), color = "white", linewidth = 1.2) +
-          gg$geom_line(data = data_preds(), gg$aes(year_as_date, fit), color = "#554c41", linewidth = 0.6) +
-          gg$geom_ribbon(data = data_preds(), gg$aes(year_as_date, fit, ymin = lwr, ymax = upr), alpha = 0.2)
+          gg$geom_line(data = data_preds(), gg$aes(year_as_date, pred), color = "white", linewidth = 1.2) +
+          gg$geom_line(data = data_preds(), gg$aes(year_as_date, pred), color = "#554c41", linewidth = 0.6) +
+          gg$geom_ribbon(data = data_preds(), gg$aes(year_as_date, pred, ymin = ci.lb, ymax = ci.ub), alpha = 0.2)
       } else {
         be$plot_interactive(data(), background = "#f2f0ed")
       }

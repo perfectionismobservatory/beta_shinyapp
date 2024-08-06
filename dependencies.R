@@ -38,3 +38,7 @@ library(ggtext)
 library(sysfonts)
 library(showtext)
 library(gdtools)
+
+# Modelling
+library(metafor)
+library(stats)

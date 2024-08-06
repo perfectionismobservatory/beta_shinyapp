@@ -23,26 +23,27 @@ server <- function(id, data) {
     stopifnot(sh$is.reactive(data))
 
     # Fit model
-    model <- sh$reactive({
+    fit <- sh$reactive({
       sh$req(nrow(data()) > 0)
       be$basic_model(data())
     })
 
-    # Create some pseudo data to generate predictions for
-    new_data <- sh$reactive({
+    # Create a sequence of x values to generate predictions for
+    xs <- sh$reactive({
       sh$req(nrow(data()) > 0)
       lwr_year <- min(data()$year_adj, na.rm = TRUE)
       upr_year <- max(data()$year_adj, na.rm = TRUE)
-      data.frame(year_adj = lwr_year:upr_year)
+      seq(lwr_year, upr_year, length = 500) # does seq length have to be 500?
     })
 
     # Get predictions and 95% CIs
-    predictions <- sh$reactive(
-      be$basic_predictions(model(), new_data())
-    )
+    predictions <- sh$reactive({
+      sh$req(length(unique(data()$subscale)) > 0)
+      as.data.frame(be$basic_predictions(fit(), data()$subscale, xs()))
+    })
 
     r2 <- sh$reactive(
-      be$basic_r2(model())
+      round(fit()$R2, digits = 1)
     )
 
     output$r2 <- sh$renderUI({
@@ -53,14 +54,9 @@ server <- function(id, data) {
       )
     })
 
-    # TODO calculate R2 and add it to the UI
-
     # Return combined pseudo data with predictions
     plot_data <- sh$reactive({
-      cbind(new_data(), predictions()) %>%
-        dp$mutate(
-          year_as_date = lub$ymd(paste0(year_adj, "-01-01")),
-        )
+      dp$mutate(predictions(), year_as_date = be$decimal_to_date(xs()))
     })
   })
 }
