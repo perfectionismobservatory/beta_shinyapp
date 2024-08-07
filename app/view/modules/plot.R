@@ -69,12 +69,13 @@ footer_ui <- function(id) {
 }
 
 #' @export
-server <- function(id, data) {
+server <- function(id, data, raw_data) {
   sh$moduleServer(id, function(input, output, session) {
     stopifnot(sh$is.reactive(data))
+    stopifnot(sh$is.reactive(raw_data))
 
     # Fit model and get data with predictions
-    data_preds <- regression$server("regression", data)
+    data_preds <- regression$server("regression", raw_data, data)
     stopifnot(sh$is.reactive(data_preds))
 
     # For each plot, add regression lines if input$regression is TRUE

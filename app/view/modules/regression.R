@@ -18,28 +18,30 @@ ui <- function(id) {
 }
 
 #' @export
-server <- function(id, data) {
+server <- function(id, full_data, filtered_data) {
   sh$moduleServer(id, function(input, output, session) {
-    stopifnot(sh$is.reactive(data))
+    stopifnot(sh$is.reactive(full_data))
+    stopifnot(sh$is.reactive(filtered_data))
 
     # Fit model
     fit <- sh$reactive({
-      sh$req(nrow(data()) > 0)
-      be$basic_model(data())
+      sh$req(nrow(filtered_data()) > 0)
+      subscale <- unique(filtered_data()$subscale)
+      be$basic_model(full_data(), subscale)
     })
 
     # Create a sequence of x values to generate predictions for
     xs <- sh$reactive({
-      sh$req(nrow(data()) > 0)
-      lwr_year <- min(data()$year_adj, na.rm = TRUE)
-      upr_year <- max(data()$year_adj, na.rm = TRUE)
-      seq(lwr_year, upr_year, length = 500) # does seq length have to be 500?
+      sh$req(nrow(filtered_data()) > 0)
+      lwr_year <- min(filtered_data()$year_adj, na.rm = TRUE)
+      upr_year <- max(filtered_data()$year_adj, na.rm = TRUE)
+      seq(lwr_year, upr_year, length = 250)
     })
 
     # Get predictions and 95% CIs
     predictions <- sh$reactive({
-      sh$req(length(unique(data()$subscale)) > 0)
-      as.data.frame(be$basic_predictions(fit(), data()$subscale, xs()))
+      sh$req(length(unique(filtered_data()$subscale)) > 0)
+      as.data.frame(be$basic_predictions(fit(), filtered_data()$subscale, xs()))
     })
 
     r2 <- sh$reactive(

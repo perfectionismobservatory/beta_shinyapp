@@ -107,15 +107,15 @@ server <- function(id, data) {
         })
 
         filtered_data1 <- filter$server("filter1", data)
-        plot$server("plot1", filtered_data1)
+        plot$server("plot1", filtered_data1, data)
 
         filtered_data2 <- filter$server("filter2", data)
-        plot$server("plot2", filtered_data2)
+        plot$server("plot2", filtered_data2, data)
 
         filtered_data3 <- filter$server("filter3", data)
-        plot$server("plot3", filtered_data3)
+        plot$server("plot3", filtered_data3, data)
 
         filtered_data4 <- filter$server("filter4", data)
-        plot$server("plot4", filtered_data4)
+        plot$server("plot4", filtered_data4, data)
     })
 }

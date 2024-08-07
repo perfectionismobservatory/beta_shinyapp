@@ -43,7 +43,7 @@ ui <- function(id) {
       "Demography",
       icon = bsi$bs_icon("person-bounding-box"),
       shw$numericRangeInput(
-        ns("year"),
+        ns("year_adj"),
         "Select years",
         value = c(1988, lub$year(lub$today()))
       ),

@@ -2,19 +2,30 @@ box::use(
   metafor[...],
   stats[predict, poly],
   lub = lubridate,
+  dp = dplyr[`%>%`],
+  utils,
 )
 
 #' @export
-basic_model <- function(data) {
-  comb1 <- escalc(measure = "MN", mi = plotvalue, sdi = sd_adj, ni = n_sample, data = data, append = TRUE)
+basic_model <- function(full_data, active_subscale) {
+  data_subscale_only <- dp$filter(full_data, subscale %in% active_subscale)
+
+  comb1 <- escalc(
+    measure = "MN",
+    mi = plotvalue,
+    sdi = sd_adj,
+    ni = n_sample,
+    data = data_subscale_only,
+    append = TRUE
+  )
 
   # Fit quadratic model only for concerns or SPP, linear for all other subscales or combined
-  if (length(unique(data$subscale)) > 1) {
-    fit <- rma(yi, vi, mods = ~ as.numeric(comb1$year_adj), data = comb1)
-  } else if (unique(data$subscale) %in% c("z_concerns", "SPP")) {
-    fit <- rma(yi, vi, mods = ~ as.numeric(comb1$year_adj) + I(as.numeric(comb1$year_adj)^2), data = comb1)
+  if (length(unique(active_subscale)) > 1) {
+    fit <- rma(yi, vi, mods = ~ comb1$year_adj, data = comb1)
+  } else if (unique(active_subscale) %in% c("z_concerns", "SPP")) {
+    fit <- rma(yi, vi, mods = ~ comb1$year_adj + I(comb1$year_adj^2), data = comb1)
   } else {
-    fit <- rma(yi, vi, mods = ~ as.numeric(comb1$year_adj), data = comb1)
+    fit <- rma(yi, vi, mods = ~ comb1$year_adj, data = comb1)
   }
 
   fit
