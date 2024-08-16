@@ -1,10 +1,10 @@
 # Global Perfectionism Observatory <img src='app/static/icon.png' align='right' height='130'/>
 
-A Shiny app to explore real-time, open access data tracking levels of perfectionism among young people. See the live version [here](https://simonsteiger.shinyapps.io/perfectrepo).
+[![DOI](https://zenodo.org/badge/754298396.svg)](https://zenodo.org/doi/10.5281/zenodo.13333232)
+
+A [Shiny app](https://simonsteiger.shinyapps.io/perfectrepo) to explore real-time, open access data tracking levels of perfectionism among young people.
 
 ------------------------------------------------------------------------------------
-
-*TODO*: A short introductory text, maybe related to the section discussing the app in the related article.
 
 ## Installation
 
