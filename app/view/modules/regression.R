@@ -31,7 +31,15 @@ server <- function(id, full_data, filtered_data) {
     })
 
     # Create a sequence of x values to generate predictions for
-    xs <- sh$reactive({
+    centered_xs <- sh$reactive({
+      sh$req(nrow(filtered_data()) > 0)
+      lwr_year <- min(filtered_data()$centered_year, na.rm = TRUE)
+      upr_year <- max(filtered_data()$centered_year, na.rm = TRUE)
+      seq(lwr_year, upr_year, length = 250)
+    })
+
+    # Create a similar sequence with non-centered values for plotting
+    raw_xs <- sh$reactive({
       sh$req(nrow(filtered_data()) > 0)
       lwr_year <- min(filtered_data()$year_adj, na.rm = TRUE)
       upr_year <- max(filtered_data()$year_adj, na.rm = TRUE)
@@ -41,7 +49,14 @@ server <- function(id, full_data, filtered_data) {
     # Get predictions and 95% CIs
     predictions <- sh$reactive({
       sh$req(length(unique(filtered_data()$subscale)) > 0)
-      as.data.frame(be$basic_predictions(fit(), filtered_data()$subscale, xs()))
+      as.data.frame(
+        be$basic_predictions(
+          fit(),
+          filtered_data()$subscale,
+          raw_xs(),
+          centered_xs()
+        )
+      )
     })
 
     r2 <- sh$reactive(
@@ -58,7 +73,7 @@ server <- function(id, full_data, filtered_data) {
 
     # Return combined pseudo data with predictions
     plot_data <- sh$reactive({
-      dp$mutate(predictions(), year_as_date = be$decimal_to_date(xs()))
+      dp$mutate(predictions(), year_as_date = be$decimal_to_date(raw_xs()))
     })
   })
 }

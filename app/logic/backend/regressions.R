@@ -23,7 +23,7 @@ basic_model <- function(full_data, active_subscale) {
   if (length(unique(active_subscale)) > 1) {
     fit <- rma(yi, vi, mods = ~ comb1$year_adj, data = comb1)
   } else if (unique(active_subscale) %in% c("z_concerns", "SPP")) {
-    fit <- rma(yi, vi, mods = ~ comb1$year_adj + I(comb1$year_adj^2), data = comb1)
+    fit <- rma(yi, vi, mods = ~ comb1$centered_year + I(comb1$centered_year^2), data = comb1)
   } else {
     fit <- rma(yi, vi, mods = ~ comb1$year_adj, data = comb1)
   }
@@ -32,14 +32,14 @@ basic_model <- function(full_data, active_subscale) {
 }
 
 #' @export
-basic_predictions <- function(model, subscale, xs) {
+basic_predictions <- function(model, subscale, raw_xs, centered_xs) {
   # Predict quadratic only for concerns or SPP, linear for all other subscales or combined
   if (length(unique(subscale)) > 1) {
-    predict(model, newmods = xs)
+    predict(model, newmods = raw_xs)
   } else if (unique(subscale) %in% c("z_concerns", "SPP")) {
-    predict(model, newmods = unname(poly(xs, degree = 2, raw = TRUE)))
+    predict(model, newmods = poly(centered_xs, degree = 2, raw = TRUE))
   } else {
-    predict(model, newmods = xs)
+    predict(model, newmods = raw_xs)
   }
 }
 
