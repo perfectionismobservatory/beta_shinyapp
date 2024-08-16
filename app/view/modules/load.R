@@ -58,7 +58,7 @@ server <- function(id) {
                 )
             ) %>%
             # The following back and forth pivot is not nice, happy to adjust this but could not quickly think of a solution
-            tdr$pivot_wider(names_from = "subscale", values_from = "z") %>%
+            tdr$pivot_wider(names_from = "subscale", values_from = "mean_adj") %>%
             tdr$pivot_longer(c(z_strivings:OOP), names_to = "subscale", values_to = "plotvalue") %>%
             dp$filter(!is.na(plotvalue)) %>%
             dp$mutate(scale = ifelse(str$str_detect(subscale, "^z_"), "HOF", scale))

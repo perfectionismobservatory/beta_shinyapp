@@ -34,8 +34,8 @@ ui <- function(id) {
         ns("subscale"),
         "Pick subscale",
         choices = c(
-          "Perfectionist strivings" = "z_strivings",
-          "Perfectionist concerns" = "z_concerns"
+          "Perfectionistic strivings" = "z_strivings",
+          "Perfectionistic concerns" = "z_concerns"
         )
       )
     ),
@@ -116,8 +116,8 @@ server <- function(id, data) {
           session = session,
           "subscale",
           choices = c(
-            "Perfectionist strivings" = "z_strivings",
-            "Perfectionist concerns" = "z_concerns"
+            "Perfectionistic strivings" = "z_strivings",
+            "Perfectionistic concerns" = "z_concerns"
           )
         )
       }
