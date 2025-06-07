@@ -15,7 +15,7 @@ Begin by [forking](https://docs.github.com/en/pull-requests/collaborating-with-p
 Next, clone the repository from your fork to your local machine:
 
 ```
-git clone https://github.com/yourusername/perfectrepo
+git clone https://github.com/yourusername/perfectionismobservatory.git
 ```
 
 Once downloaded, activate [renv](https://rstudio.github.io/renv/articles/renv.html) and restore the project environment:
@@ -42,8 +42,8 @@ rhino::app()
 ```bibtex
 @article{pose2024XXXX,
   title={This is a placeholder title},
-  author={Curran, Thomas and Pose, Pia Marie and Hill, Andrew and Steiger, Simon},
+  author={Curran, Thomas; Hill, Andrew; Pose, Pia Marie; Steiger, Simon},
   journal={Placeholder journal name},
-  year={2024}
+  year={2025}
 }
 ```
