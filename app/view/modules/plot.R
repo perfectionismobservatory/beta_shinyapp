@@ -106,7 +106,7 @@ server <- function(id, data, raw_data) {
     })
 
     output$download <- sh$downloadHandler(
-      filename = \() paste(lub$today(), "perfectrepo.pdf", sep = "_"),
+      filename = \() paste(lub$today(), "perfectrepo.svg", sep = "_"),
       content = \(file) gg$ggsave(file, res_static(), width = 7, height = 5)
     )
   })

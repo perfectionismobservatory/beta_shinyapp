@@ -98,8 +98,8 @@ plot_static <- function(data, alpha = 0.6) {
 
     data %>%
         gg$ggplot(gg$aes(year_as_date, plotvalue)) +
-        gg$geom_point(gg$aes(size = inv_var * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
-        gg$geom_point(gg$aes(color = country, size = inv_var), alpha = alpha) +
+        gg$geom_point(gg$aes(size = n_sample * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
+        gg$geom_point(gg$aes(color = country, size = n_sample), alpha = alpha) +
         gg$scale_color_manual(values = themes$plot_palette) +
         gg$labs(
             x = "Year",
