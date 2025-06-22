@@ -53,7 +53,7 @@ add_main_window <- function(ns, n) {
                                 )
                             }
                         ),
-                        plot$footer_ui(ns(paste("plot", n)))
+                        plot$footer_ui(ns(paste0("plot", n)))
                     )
                 )
             ),
