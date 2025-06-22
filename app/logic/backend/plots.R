@@ -53,7 +53,7 @@ create_label <- function(data, .name = "lab") {
 }
 
 #' @export
-plot_interactive <- function(data, background = "#ffffff", alpha = 0.8) {
+plot_interactive <- function(data, colors = themes$plot_palette, background = "#ffffff", shapes = 21:23, alpha = 0.8) {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
@@ -63,9 +63,19 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.8) {
     data %>%
         create_label() %>%
         gg$ggplot(gg$aes(year_as_date, plotvalue)) +
-        gir$geom_point_interactive(gg$aes(size = n_sample * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
-        gir$geom_point_interactive(gg$aes(color = country, size = n_sample, tooltip = lab, data_id = id), alpha = alpha) +
-        gg$scale_color_manual(values = themes$plot_palette) +
+        gir$geom_point_interactive(
+          gg$aes(
+            fill = country,
+            shape = country,
+            size = n_sample,
+            tooltip = lab,
+            data_id = id
+          ),
+          alpha = alpha,
+          color = "black"
+        ) +
+        gg$scale_fill_manual(values = colors) +
+        gg$scale_shape_manual(values = shapes) +
         gg$labs(
             x = "Year",
             color = "Country",
@@ -87,23 +97,24 @@ plot_interactive <- function(data, background = "#ffffff", alpha = 0.8) {
 }
 
 #' @export
-plot_static <- function(data, alpha = 0.6) {
+plot_static <- function(data, colors = themes$plot_palette, shapes = 21:23, alpha = 0.6) {
     # Stop if reactive
     stopifnot(!sh$is.reactive(data))
 
     min_x <- if (nrow(data) > 0) min(data$year_adj, na.rm = TRUE)
     max_x <- if (nrow(data) > 0) max(data$year_adj, na.rm = TRUE)
-    min_y <- if (nrow(data) > 0) min(data$plotvalue, na.rm = TRUE) else 0
-    max_y <- if (nrow(data) > 0) max(data$plotvalue, na.rm = TRUE) else 0
+    min_y <- if (nrow(data) > 0) min(data$plotvalue, na.rm = TRUE) else -3
+    max_y <- if (nrow(data) > 0) max(data$plotvalue, na.rm = TRUE) else -3
 
     data %>%
         gg$ggplot(gg$aes(year_as_date, plotvalue)) +
-        gg$geom_point(gg$aes(size = n_sample * SIZEMUL), color = "grey20", alpha = max(0, alpha - ALPHADIFF), show.legend = TRUE) +
-        gg$geom_point(gg$aes(color = country, size = n_sample), alpha = alpha) +
-        gg$scale_color_manual(values = themes$plot_palette) +
+        gg$geom_point(gg$aes(fill = country, shape = country, size = n_sample), color = "black", alpha = alpha) +
+        gg$scale_fill_manual(values = colors) +
+        gg$scale_shape_manual(values = shapes) +
         gg$labs(
             x = "Year",
             shape = "Country",
+            fill = "Country",
             y = "Perfectionism Mean",
             title = paste0("Perfectionism Observatory: ", min_x, " - ", max_x),
             subtitle = paste0(
@@ -112,7 +123,7 @@ plot_static <- function(data, alpha = 0.6) {
             ),
             caption = paste0("Accessed ", lub$today(), "\n @ <link-to-page>")
         ) +
-        gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
+        #gg$ylim(c(max(min_y - 0.5, 0), max_y + 0.5)) +
         gg$scale_size(guide = "none") + # No legend for size aes
         gg$theme_bw() +
         fe$ggtheme

@@ -15,7 +15,8 @@ invalid_format <- list(
     age = \(x) !str$str_detect(x, "\\d+\\.\\d+") && x != "",
     name = \(x) !str$str_detect(x, "\\w+\\, \\w+") && x != "",
     email = \(x) !str$str_detect(x, regex_mail) && x != "",
-    doi = \(x) !str$str_detect(x, regex_doi) && x != ""
+    doi = \(x) !str$str_detect(x, regex_doi) && x != "",
+    color = \(x) !(str$str_length(x) == 7) && !(str$str_length(x) == 9)
 )
 
 #' @export

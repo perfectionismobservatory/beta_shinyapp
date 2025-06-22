@@ -49,5 +49,6 @@ ggtheme <- gg$theme(
     margin = gg$margin(t = 20)
   ),
   plot.margin = gg$margin(16, 20, 16, 16),
-  strip.placement = "outside"
+  strip.placement = "outside",
+  legend.title = gg$element_blank()
 )
