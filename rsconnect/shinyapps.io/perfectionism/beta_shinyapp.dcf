@@ -1,0 +1,10 @@
+name: beta_shinyapp
+title:
+username: perfectionism
+account: perfectionism
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15884722
+bundleId: 11092428
+url: https://perfectionism.shinyapps.io/beta_shinyapp/
+version: 1

@@ -48,12 +48,12 @@ server <- function(id) {
             if (input$status == "Unspecified") {
                 NULL
             } else if (input$status == "Published") {
-                names <- c("name", "email", "type", "pubyear", "doi")
+                names <- c("name", "email", "type", "ethics", "pubyear", "doi")
                 fe$conditional_validation_card(
                     !!!pr$map(names, \(x) fe$conditional_validation_inputs[[x]](session$ns))
                 )
             } else {
-                names <- c("name", "email", "type", "prereg")
+                names <- c("name", "email", "type", "ethics", "prereg")
                 fe$conditional_validation_card(
                     !!!pr$map(names, \(x) fe$conditional_validation_inputs[[x]](session$ns))
                 )

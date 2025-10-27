@@ -10,6 +10,7 @@ box::use(
   sysfonts[font_add_google],
   gdtools[register_gfont],
   waiter,
+  dotenv,
 )
 
 box::use(
@@ -21,6 +22,8 @@ box::use(
   app / view / pages / contribute,
   app / logic / frontend[theme_light],
 )
+
+dotenv$load_dot_env()
 
 # Authenticate Google sheets
 if (!be$is_nothing(Sys.getenv("EMAIL"))) {

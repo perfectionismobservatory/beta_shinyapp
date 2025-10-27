@@ -63,7 +63,8 @@ validation_icons <- list(
     sample = bsi$bs_icon("person-bounding-box"),
     age = bsi$bs_icon("calculator"),
     status = bsi$bs_icon("send-check"),
-    details = bsi$bs_icon("zoom-in")
+    details = bsi$bs_icon("zoom-in"),
+    ethics = bsi$bs_icon("file-earmark-check")
 )
 
 icon_filled <- list(
@@ -105,6 +106,12 @@ validation_summary <- list(
             sh$div(class = class_header, validation_icons$status, x), icon_filled[[fill + 1]]
         )
     },
+    #ethics = \(x, fill) {
+    #     sh$div(
+    #         class = class_summary,
+    #         sh$div(class = class_header, validation_icons$ethics, x), icon_filled[[fill + 1]]
+    #     )
+    # },
     details = \(x, fill) {
         sh$div(
             class = class_summary,
@@ -157,7 +164,16 @@ validation_inputs <- list(
             label = NULL,
             choices = c("Unspecified", "University students", "General public", "Other")
         )
-    )
+    ) #,
+    # list(
+    #   class = class_center,
+    #   header = sh$div(class = class_header, validation_icons$ethics, "Ethics approval"),
+    #   body = \(ns) radio(
+    #     ns("ethics"),
+    #     label = NULL,
+    #     choices = c("Unspecified", "Approval received", "Approval not received")
+    #   )
+    # )
 )
 
 #' @export
@@ -175,6 +191,7 @@ conditional_validation_inputs <- list(
         width = "150px",
     ),
     doi = \(ns) sh$textInput(ns("doi"), "Enter doi", placeholder = "10. ..."),
+    ethics = \(ns) radio(ns("ethics"), "Ethics approval", c("Unspecified", "Approved", "Not approved")),
     prereg = \(ns) sh$textInput(ns("prereg"), "Enter preregistration link", placeholder = "https:// ...")
 )
 
